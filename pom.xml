@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+        Licensed to the Apache Software Foundation (ASF) under one or more
+        contributor license agreements.  See the NOTICE file distributed with
+        this work for additional information regarding copyright ownership.
+        The ASF licenses this file to You under the Apache License, Version 2.0
+        (the "License"); you may not use this file except in compliance with
+        the License.  You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+    --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.mhus.osgi.cherry</groupId>
+    <artifactId>cherry-web</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    
+  <name>Cherry Webserver</name>
+  <description>A virtual host enabling web server based on OSGi</description>
+  <url>http://www.mhus.de</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>https://mhu-lib.googlecode.com/svn/trunk/mhu-lib</url>
+    <connection>scm:git:https://github.com/mhus/mhus-osgi-tools/</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>mhu</id>
+      <name>Mike Hummel</name>
+      <email>mh@mikehummel.de</email>
+      <url>http://www.mhus.de</url>
+    </developer>
+  </developers>
+    <properties>
+        <scr.packages>*</scr.packages>
+        <felix.scr.version>1.6.0</felix.scr.version>
+        <karaf.version>3.0.1</karaf.version>
+        <bndlib.version>1.50.0</bndlib.version>
+        <felix.metatype.version>1.0.10</felix.metatype.version>
+		<compileSource>1.7</compileSource>
+        <maven-bundle-plugin.version>2.4.0</maven-bundle-plugin.version>
+        <osgi.version>5.0.0</osgi.version>
+        <cxf.version>2.7.9</cxf.version>
+		<vaadin.version>7.1.12</vaadin.version>
+		<gwt.version>2.3.0</gwt.version>
+		<gwt.plugin.version>2.2.0</gwt.plugin.version>
+		<osgi.version>5.0.0</osgi.version>	
+		<jaxws.version>1.0-MR1</jaxws.version>
+		<mhulib.version>3.2.8-SNAPSHOT</mhulib.version>
+		<javax.mail.version>1.4.1</javax.mail.version>
+		<javax.activation.version>1.1.1</javax.activation.version>
+		
+		<dependency.jetty.version>8.1.14.v20131031</dependency.jetty.version>
+		 <pax.version>3.1.0</pax.version>
+		
+      </properties>
+
+   <build>
+           <defaultGoal>install</defaultGoal>
+	   
+    <plugins>
+		<plugin>
+		  <artifactId>maven-compiler-plugin</artifactId>
+		  <version>3.0</version>
+		  <configuration>
+		    <source>${compileSource}</source>
+		    <target>${compileSource}</target>
+		  </configuration>
+		</plugin>
+		
+        <plugin>
+		  <artifactId>maven-assembly-plugin</artifactId>
+		  <version>2.1</version> 
+		  <configuration>
+		    <finalName>doc</finalName>
+		    <descriptors>
+		      <descriptor>descriptor.xml</descriptor>
+		    </descriptors>
+		  </configuration>
+		</plugin> 
+		
+    </plugins>
+  </build>
+
+    <modules>
+    <module>web</module>
+    <module>ports</module>
+    <module>commands</module>
+    <module>tutorial</module>
+    </modules>
+
+
+	<distributionManagement>
+	  <snapshotRepository>
+	     <id>doexecute</id>
+	     <name>Internal Snapshot Releases</name>
+	     <url>http://nexus.doexecute.com/nexus/content/repositories/snapshots/</url>
+	  </snapshotRepository>
+	  
+          <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Sonatype Nexus release repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+          </repository>
+          	  
+	</distributionManagement>
+
+        <profiles>
+          <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+              <property>
+                <name>performRelease</name>
+                <value>true</value>
+              </property>
+            </activation>
+            <build>
+              <plugins>
+                <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-gpg-plugin</artifactId>
+                  <version>1.4</version>
+                  <configuration>
+                    <passphrase>${gpg.passphrase}</passphrase>
+                  </configuration>
+                  <executions>
+                    <execution>
+                      <id>sign-artifacts</id>
+                      <phase>verify</phase>
+                      <goals>
+                        <goal>sign</goal>
+                      </goals>
+                    </execution>
+                  </executions>
+                </plugin>
+              </plugins>
+            </build>
+          </profile>
+
+        </profiles>
+
+</project>
