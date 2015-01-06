@@ -80,8 +80,16 @@ public class HostDispatcherHandler extends AbstractCentralRequestHandler {
 
 	private VirtualHostProvider findHostProvider(String host) {
 		synchronized (hostProviders) {
-			return hostProviders.get(host);
+			VirtualHostProvider hp = hostProviders.get(host);
+			if (hp != null) return hp;
+			for (VirtualHostProvider p : tracker.getTracked().values()) {
+				if (p.existsHost(host)) {
+					hostProviders.put(host, p);
+					return p;
+				}
+			}
 		}
+		return null;
 	}
 
 	@Override
