@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -16,17 +17,21 @@ import org.w3c.dom.Element;
 import aQute.bnd.annotation.component.Activate;
 import aQute.bnd.annotation.component.Component;
 import aQute.bnd.annotation.component.Deactivate;
+import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MXml;
 import de.mhus.lib.core.config.XmlConfig;
+import de.mhus.lib.core.logging.Log;
 import de.mhus.osgi.cherry.api.VirtualApplication;
 import de.mhus.osgi.cherry.api.VirtualHost;
 import de.mhus.osgi.cherry.api.VirtualHostProvider;
 
 @Component(immediate=true)
-public class DefaultHostProvider implements VirtualHostProvider {
+public class DefaultHostProvider extends MLog implements VirtualHostProvider {
 
+	
 	private File configDir = new File("etc/vhosts");
 	private HashMap<String,VirtualHost> hostMapping = new HashMap<>();
+	private HashMap<String,VirtualHost> hostMappingCache = new HashMap<>();
 	private ServiceTracker<VirtualApplication, VirtualApplication> applicationTracker;
 	private BundleContext cb;
 	
@@ -42,12 +47,14 @@ public class DefaultHostProvider implements VirtualHostProvider {
 	@Deactivate
 	public void doDeactivate(ComponentContext ctx) {
 		hostMapping.clear();
+		hostMappingCache.clear();
 		applicationTracker.close();
 	}
 	
 	private void updateConfiguration() {
 		synchronized (hostMapping) {
 			hostMapping.clear();
+			hostMappingCache.clear();
 			loadDirectory(configDir);
 		}
 	}
@@ -83,6 +90,7 @@ public class DefaultHostProvider implements VirtualHostProvider {
 			DefaultVirtualHost vhost = new DefaultVirtualHost(config);
 			for (String name : vhost.getHostNames()) {
 				hostMapping.put(name, vhost);
+				hostMappingCache.clear();
 			}
 		} catch (Throwable t) {
 			t.printStackTrace(); //TODO LOG!
@@ -98,16 +106,33 @@ public class DefaultHostProvider implements VirtualHostProvider {
 
 	@Override
 	public boolean existsHost(String host) {
+		return findHost(host) != null;
+	}
+
+	protected VirtualHost findHost(String host) {
 		synchronized (hostMapping) {
-			return hostMapping.containsKey(host);
+			VirtualHost out = hostMappingCache.get(host);
+			if (out == null) {
+				for (Map.Entry<String, VirtualHost> entry : hostMapping.entrySet()) {
+					if (host.matches(entry.getKey())) {
+						out = entry.getValue();
+						hostMappingCache.put(host, out);
+						log().d("found host",host,out,entry.getKey());
+						break;
+					}
+				}
+			}
+			if (out == null)
+				log().d("vhost not found",host);
+			
+			return out;
 		}
 	}
 
+
 	@Override
 	public VirtualHost getHost(String host) {
-		synchronized (hostMapping) {
-			return hostMapping.get(host);
-		}
+		return findHost(host);
 	}
 
 	private class MyCustomizer implements ServiceTrackerCustomizer<VirtualApplication, VirtualApplication> {
@@ -121,6 +146,7 @@ public class DefaultHostProvider implements VirtualHostProvider {
 			synchronized (hostMapping) {
 				HashSet<VirtualHost> vh = new HashSet<>();
 				vh.addAll(hostMapping.values());
+				hostMappingCache.clear();
 				for (VirtualHost host : vh)
 					((DefaultVirtualHost)host).doUpdateApplication(cb,reference,service);
 			}
@@ -135,6 +161,7 @@ public class DefaultHostProvider implements VirtualHostProvider {
 			synchronized (hostMapping) {
 				HashSet<VirtualHost> vh = new HashSet<>();
 				vh.addAll(hostMapping.values());
+				hostMappingCache.clear();
 				for (VirtualHost host : vh)
 					((DefaultVirtualHost)host).doUpdateApplication(cb,reference,service);
 			}
@@ -149,6 +176,7 @@ public class DefaultHostProvider implements VirtualHostProvider {
 			synchronized (hostMapping) {
 				HashSet<VirtualHost> vh = new HashSet<>();
 				vh.addAll(hostMapping.values());
+				hostMappingCache.clear();
 				for (VirtualHost host : vh)
 					((DefaultVirtualHost)host).doUpdateApplication(cb,reference,null);
 			}

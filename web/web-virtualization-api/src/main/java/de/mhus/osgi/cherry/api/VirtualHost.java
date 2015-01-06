@@ -14,6 +14,8 @@ public interface VirtualHost {
 	String CENTRAL_CONTEXT_KEY = "VirtualHost";
 
 	Log getLog();
+
+	String getName();
 	
 	void setAttribute(String key, Object value);
 	

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap 101 Template</title>
+    <title>Cherry Web Sample Application</title>
 
     <!-- Bootstrap -->
     <link href="/bootstrap-3.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -20,7 +20,7 @@
 <body>
 
 <div class="container">
-	<h1>Sample Application</h1>
+	<h1>Cherry Web Sample Application</h1>
 	
 <div class="panel panel-info">
 	<div class="panel-heading"><test:i18n key="addentry.topic"/></div>

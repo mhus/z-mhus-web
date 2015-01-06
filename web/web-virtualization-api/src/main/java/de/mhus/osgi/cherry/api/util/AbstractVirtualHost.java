@@ -17,6 +17,7 @@ public abstract class AbstractVirtualHost implements VirtualHost {
 	protected Log log;
 	protected ClassLoader classLoader = getClass().getClassLoader();
 	protected HashMap<String, ProcessorContext> processorContexts = new HashMap<>();
+	protected String name;
 	
 	@Override
 	public Log getLog() {
@@ -52,6 +53,11 @@ public abstract class AbstractVirtualHost implements VirtualHost {
 	@Override
 	public ProcessorContext getProcessorContext(String name) {
 		return processorContexts.get(name);
+	}
+	
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }

@@ -37,6 +37,7 @@ import de.mhus.osgi.cherry.api.MimeTypeFinder;
 import de.mhus.osgi.cherry.api.VirtualApplication;
 import de.mhus.osgi.cherry.api.central.CentralCallContext;
 import de.mhus.osgi.cherry.api.util.AbstractVirtualHost;
+import de.mhus.osgi.cherry.api.util.CherryUtil;
 import de.mhus.osgi.cherry.api.util.ExtendedServletResponse;
 
 public class DefaultVirtualHost extends AbstractVirtualHost {
@@ -51,7 +52,6 @@ public class DefaultVirtualHost extends AbstractVirtualHost {
 	private File serverRoot;
 	private File logRoot;
 	private ConsoleFactory logFactory;
-	private String name;
 	private FileResourceRoot documentRootRes;
 	private DefaultMimeTypeFinder mimeFinder;
 	private File configRoot;
@@ -61,10 +61,15 @@ public class DefaultVirtualHost extends AbstractVirtualHost {
 	
 	public DefaultVirtualHost(IConfig config) throws InstantiationException, MException, FileNotFoundException {
 		
+		name = config.getExtracted("name");
+		
 		for (ResourceNode name : config.getNodes("host")) {
 			names.add( name.getExtracted("name"));
 		}
-		name = names.getFirst();
+		
+		if (name == null)
+			name = names.getFirst();
+		name = MFile.normalize(name);
 		
 		ResourceNode app = config.getNode("application");
 		if (app != null) {
@@ -75,7 +80,13 @@ public class DefaultVirtualHost extends AbstractVirtualHost {
 		
 		ResourceNode dir = config.getNode("directories");
 		String serverRootStr = dir.getExtracted("serverRoot");
-		if (serverRootStr == null) throw new InstantiationException("host root not found");
+		if (serverRootStr == null) {
+			// default server root in tmp
+			File tmp = CherryUtil.getTempDir();
+			tmp = new File(new File(tmp, "vhosts"), getName());
+			tmp.mkdirs();
+			//throw new InstantiationException("host root not found");
+		}
 		serverRoot = new File(serverRootStr);
 		
 		documentRoot = new File(dir.getExtracted("docuemntRoot", serverRootStr + "/html"));
@@ -239,12 +250,18 @@ public class DefaultVirtualHost extends AbstractVirtualHost {
 		
 	}
 	
+	@Override
 	public MimeTypeFinder getMimeTypeFinder() {
 		return mimeFinder;
 	}
 
 	public File getTmpRoot() {
 		return tmpRoot;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
 	}
 	
 }
