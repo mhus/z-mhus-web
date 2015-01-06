@@ -15,6 +15,8 @@ install -s mvn:de.mhus.lib/mhu-lib-logging/3.2.8-SNAPSHOT
 install -s mvn:de.mhus.lib/mhu-lib-karaf/3.2.8-SNAPSHOT
 install -s mvn:de.mhus.lib/mhu-lib-j2ee/3.2.8-SNAPSHOT
 
+install -s mvn:de.mhus.osgi/mhus-commands/1.0.4-SNAPSHOT
+
 uninstall -f org.ops4j.pax.web.pax-web-jetty
 
 install -s mvn:org.ops4j.pax.web/pax-web-jsp/3.1.0
