@@ -1,9 +1,0 @@
-<hosts>
-  <virtualhost name="Sample">
-    <host name="localhost.*" />
-    <application id="sample" />
-
-    <directories />
-
-  </virtualhost>
-</hosts>
