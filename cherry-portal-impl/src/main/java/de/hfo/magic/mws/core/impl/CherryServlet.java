@@ -9,8 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import aQute.bnd.annotation.component.Component;
-import de.hfo.magic.mws.core.api.CherryNavigationProvider;
+import de.hfo.magic.mws.core.api.NavigationProvider;
 import de.hfo.magic.mws.core.api.CherryUtil;
+import de.hfo.magic.mws.core.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
 
 @Component(provide = Servlet.class, properties = "alias=/*", name="CherryServlet",servicefactory=true)
@@ -23,7 +24,8 @@ public class CherryServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		String host = req.getHeader("Host");
-		CherryNavigationProvider navProvider = CherryUtil.findNavigationProvider(host);
+		VirtualHost vHost = CherryUtil.findVirtualHost(host);
+		NavigationProvider navProvider = vHost.getNavigationProvider();
 		
 		if (navProvider == null) {
 			res.sendError(HttpServletResponse.SC_BAD_GATEWAY);
@@ -33,11 +35,11 @@ public class CherryServlet extends HttpServlet {
 		String path = req.getPathInfo();
 		CaoNode navResource = navProvider.getNode(path);
 		if (navResource == null) {
-			navProvider.sendError(res, path, HttpServletResponse.SC_NOT_FOUND);
+			vHost.sendError(res, path, HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
 		
-		navProvider.processRequest( req, res, navResource );
+		vHost.processRequest( req, res, navResource );
 		
 	}
 	

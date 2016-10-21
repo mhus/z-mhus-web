@@ -1,38 +1,33 @@
 package de.hfo.magic.mws.core.impl;
 
+import java.io.IOException;
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import de.hfo.magic.mws.core.api.CherryNavigationProvider;
+import de.hfo.magic.mws.core.api.NavigationProvider;
+import de.hfo.magic.mws.core.api.ResourceProvider;
+import de.hfo.magic.mws.core.api.CherryUtil;
 import de.mhus.lib.cao.CaoConnection;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.MString;
 
-public class NavigationProvider extends MLog implements CherryNavigationProvider {
+public class DefaultNavigationProvider extends MLog implements NavigationProvider {
 
 	private CaoConnection connection;
 	
-	public NavigationProvider() {
+	public DefaultNavigationProvider() {
 	}
 	
 	@Override
 	public CaoNode getNode(String path) {
 		
-		
+		if (MString.isIndex(path, '.'))
+			path = MString.beforeIndex(path, '.');
 		
 		return connection.getResourceByPath(path);
-	}
-
-	@Override
-	public void sendError(HttpServletResponse res, String path, int scNotFound) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void processRequest(HttpServletRequest req, HttpServletResponse res, CaoNode navResource) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public CaoConnection getConnection() {
