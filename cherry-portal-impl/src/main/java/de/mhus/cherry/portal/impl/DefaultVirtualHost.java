@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryUtil;
 import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.RendererResolver;
@@ -32,9 +33,9 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	}
 	
 	@Override
-	public void sendError(HttpServletResponse res, String path, int sc) {
+	public void sendError(CallContext call, int sc) {
 		try {
-			res.sendError(sc);
+			call.getHttpResponse().sendError(sc);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,15 +44,16 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	}
 
 	@Override
-	public void processRequest(HttpServletRequest req, HttpServletResponse res, CaoNode navResource) {
-
+	public void processRequest(CallContext iCall) {
+		CherryCallContext call = (CherryCallContext)iCall;
+		
 		try {
 			String subPath = "";
 			String control = "";
 			String subType = ""; // type of path after nav node, nav/.content/res/res/
 			String[] selectors;
 			String retType = "";
-			String path = req.getPathInfo();
+			String path = call.getHttpPath();
 			boolean isFolder = false;
 			if (MString.isIndex(path, '.')) {
 				control = MString.afterIndex(path, '.');
@@ -93,13 +95,20 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 				selectors = new String[0];
 			
 			
-			String resId = navResource.getString(NavigationProvider.RESOURCE_ID);
+			String resId = call.getNavigationResource().getString(NavigationProvider.RESOURCE_ID);
 			CaoNode resResource = getResourceResolver().getResourceById(this, resId);
 			if (resResource == null) {
-				sendError(res, path, HttpServletResponse.SC_NOT_FOUND);
+				sendError(call, HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
-
+//			call.setMainResource(resResource);
+			call.setReturnType(retType);
+			call.setSelectors(selectors);
+			
+			String resName = resResource.getName();
+			if (MString.isEmpty(retType) && resName != null && MString.isIndex(resName, '.') )
+				retType = MString.afterLastIndex(resName, '.');
+			
 			if (isFolder && MString.isSet(subType)) {
 				
 				if ("content".equals(subType)) {
@@ -108,7 +117,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 						if (MString.isSetTrim(part)) {
 							resResource = (CaoNode) resResource.getNode(part);
 							if (resResource == null) {
-								sendError(res, path, HttpServletResponse.SC_NOT_FOUND);
+								sendError(call, HttpServletResponse.SC_NOT_FOUND);
 								return;
 							}
 						}
@@ -117,16 +126,17 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 				}
 				
 			}
-			
-			getRendererResolver().getRenderer(this, resResource, req.getMethod(), selectors, retType).doRender(this, req, res, retType, navResource, resResource);
+			call.setResource(resResource);
+
+			getRendererResolver().getRenderer(iCall).doRender(iCall);
 			
 			
 		} catch (NotFoundException t) {
-			sendError(res, "", HttpServletResponse.SC_NOT_FOUND);
+			sendError(call, HttpServletResponse.SC_NOT_FOUND);
 		} catch (Throwable t) {
 			UUID id = UUID.randomUUID();
 			log().w(id,t);
-			sendError(res, id.toString(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			sendError(call, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 

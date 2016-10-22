@@ -1,5 +1,6 @@
 package de.mhus.cherry.portal.impl;
 
+import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.RendererResolver;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
@@ -9,34 +10,34 @@ import de.mhus.lib.errors.NotFoundException;
 public class DefaultRendererResolver implements RendererResolver {
 
 	@Override
-	public ResourceRenderer getRenderer(VirtualHost vHost, CaoNode resource, String httpMethod, String[] selectors, String retType) {
+	public ResourceRenderer getRenderer(CallContext call) {
 		
-		httpMethod = httpMethod.toLowerCase();
+		String httpMethod = call.getHttpMethod().toLowerCase();
 		
 		String renderReference = null;
 		ResourceRenderer renderer = null;
 		
-		renderReference = resource.getString("render_reference_" + httpMethod + "_" + retType, null);
+		renderReference = call.getResource().getString("render_reference_" + httpMethod + "_" + call.getReturnType(), null);
 		if (renderReference != null) {
-			renderer = vHost.getRenderer(renderReference);
+			renderer = call.getVirtualHost().getRenderer(renderReference);
 			if (renderer != null) 
 				return renderer;
 			else
 				throw new NotFoundException();
 		}
-		renderReference = resource.getString("render_reference_" + httpMethod, null);
+		renderReference = call.getResource().getString("render_reference_" + httpMethod, null);
 		if (renderReference != null) {
-			renderer = vHost.getRenderer(renderReference);
+			renderer = call.getVirtualHost().getRenderer(renderReference);
 			if (renderer != null) 
 				return renderer;
 			else
 				throw new NotFoundException();
 		}
 		
-		renderer = vHost.getRenderer(httpMethod + "_" + retType);
+		renderer = call.getVirtualHost().getRenderer(httpMethod + "_" + call.getReturnType());
 		if (renderer != null) return renderer;
 		
-		renderer = vHost.getRenderer(httpMethod);
+		renderer = call.getVirtualHost().getRenderer(httpMethod);
 		if (renderer != null) return renderer;
 		
 		return renderer;

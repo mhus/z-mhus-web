@@ -7,5 +7,5 @@ import de.mhus.lib.cao.CaoNode;
 
 public interface ResourceRenderer {
 
-	void doRender(VirtualHost vHost, HttpServletRequest req, HttpServletResponse res, String retType, CaoNode navResource, CaoNode resResource) throws Exception;
+	void doRender(CallContext call) throws Exception;
 }

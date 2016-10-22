@@ -13,9 +13,9 @@ public interface VirtualHost {
 
 	public NavigationProvider getNavigationProvider();
 
-	public void sendError(HttpServletResponse res, String path, int sc) throws IOException;
+	public void sendError(CallContext context, int sc) throws IOException;
 
-	public void processRequest(HttpServletRequest req, HttpServletResponse res, CaoNode navResource);
+	public void processRequest(CallContext context);
 
 	public ResourceResolver getResourceResolver();
 	

@@ -18,14 +18,11 @@ import de.mhus.lib.cao.CaoNode;
 public class CherryServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	public static CherryServlet instance;
 	
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
-	
-		instance = this; //TODO on startup
-		
+			
 		String host = req.getHeader("Host");
 		VirtualHost vHost = CherryUtil.findVirtualHost(host);
 		NavigationProvider navProvider = vHost.getNavigationProvider();
@@ -35,14 +32,21 @@ public class CherryServlet extends HttpServlet {
 			return;
 		}
 		
-		String path = req.getPathInfo();
+		CherryCallContext callContext = new CherryCallContext();
+		callContext.setHttpRequest(req);
+		callContext.setHttpResponse(res);
+		String path = callContext.getHttpPath();
+		
 		CaoNode navResource = navProvider.getNode(path);
+		
 		if (navResource == null) {
-			vHost.sendError(res, path, HttpServletResponse.SC_NOT_FOUND);
+			vHost.sendError(callContext, HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
-		
-		vHost.processRequest( req, res, navResource );
+		callContext.setNavigationResource(navResource);
+		callContext.setVirtualHost(vHost);
+		callContext.setHttpServlet(this);
+		vHost.processRequest( callContext );
 		
 	}
 	

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.impl.CherryServlet;
@@ -21,25 +22,25 @@ import de.mhus.lib.errors.MException;
 public class DefaultHeadRenderer extends MLog implements ResourceRenderer {
 
 	@Override
-	public void doRender(VirtualHost vHost, HttpServletRequest req, HttpServletResponse res, String retType, CaoNode navResource, CaoNode resResource) throws IOException {
-		doRenderHead(vHost, req, res, retType, navResource, resResource);
+	public void doRender(CallContext call) throws IOException {
+		doRenderHead(call);
 	}
 
-	public static void doRenderHead(VirtualHost vHost, HttpServletRequest req, HttpServletResponse res, String retType, CaoNode navResource, CaoNode resResource) throws IOException {
+	public static void doRenderHead(CallContext call) throws IOException {
 	
-		res.setDateHeader("Date", System.currentTimeMillis());
+		call.getHttpResponse().setDateHeader("Date", System.currentTimeMillis());
 		
-		Date modified = resResource.getDate("modified");
-		if (modified != null) res.setDateHeader("Last-Modified", modified.getTime());
+		Date modified = call.getResource().getDate("modified");
+		if (modified != null) call.getHttpResponse().setDateHeader("Last-Modified", modified.getTime());
 		
-		String contentType = resResource.getString("contentType", null);
-		if (contentType == null) contentType = CherryServlet.instance.getServletContext().getMimeType("a." + retType);
+		String contentType = call.getResource().getString("contentType", null);
+		if (contentType == null) contentType = call.getHttpServlet().getServletContext().getMimeType("a." + call.getReturnType());
 		if (contentType == null) 
 			try {
-				contentType = CherryServlet.instance.getServletContext().getMimeType(resResource.getName());
+				contentType = call.getHttpServlet().getServletContext().getMimeType(call.getResource().getName());
 			} catch (MException e) {}
-		if (contentType == null) contentType = vHost.getDefaultContentType();
-		if (contentType != null) res.setContentType(contentType);
+		if (contentType == null) contentType = call.getVirtualHost().getDefaultContentType();
+		if (contentType != null) call.getHttpResponse().setContentType(contentType);
 				
 	}
 }

@@ -7,7 +7,25 @@ feature:repo-add mvn:de.mhus.cherry/cherry-karaf-feature/1.0.0-SNAPSHOT/xml/feat
 
 feature:install cherry-portal
 
-
 bundle:persistentwatch add cherry-portal-api
 bundle:persistentwatch add cherry-portal-impl
+
+---
+
+To install demo:
+
+- go to karaf root
+
+mkdir cherry/demo
+cp -r {src}/examples/test/webcontent cherry/demo/
+cp {src}/examples/test/cherry-default-host.xml deploy/
+
+---
+
+Apache Configuration:
+
+ProxyPass /forum !
+ProxyPass / http://localhost:8080/tomcat-webapp/
+ProxyPassReverse / http://localhost:8080/tomcat-webapp/
+Alias /forum /var/www/forum
 
