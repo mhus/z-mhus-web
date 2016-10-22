@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.ResourceRenderer;
+import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
@@ -18,9 +19,9 @@ import de.mhus.lib.core.MLog;
 public class DefaultGetRenderer extends MLog implements ResourceRenderer {
 
 	@Override
-	public void doRender(HttpServletRequest req, HttpServletResponse res, String retType, CaoNode navResource, CaoNode resResource) throws IOException {
+	public void doRender(VirtualHost vHost, HttpServletRequest req, HttpServletResponse res, String retType, CaoNode navResource, CaoNode resResource) throws IOException {
 	
-		DefaultHeadRenderer.doRenderHead(req, res, retType, navResource, resResource);
+		DefaultHeadRenderer.doRenderHead(vHost, req, res, retType, navResource, resResource);
 
 		if (resResource.hasContent()) {
 			InputStream is = resResource.getInputStream();

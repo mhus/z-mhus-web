@@ -1,6 +1,7 @@
 package de.mhus.cherry.portal.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	private NavigationProvider navigationProvider;
 	private ResourceResolver resourceResolver;
 	private RendererResolver rendererResolver;
+	private HashMap<String, ResourceProvider> localResourceProvider = new HashMap<>();
 
 	public DefaultVirtualHost() {
 	}
@@ -116,7 +118,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 				
 			}
 			
-			getRendererResolver().getRenderer(this, resResource, req.getMethod(), selectors, retType).doRender(req, res, retType, navResource, resResource);
+			getRendererResolver().getRenderer(this, resResource, req.getMethod(), selectors, retType).doRender(this, req, res, retType, navResource, resResource);
 			
 			
 		} catch (NotFoundException t) {
@@ -145,7 +147,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	@Override
 	public ResourceProvider getResourceProvider(String name) {
 		name = name.toLowerCase();
-		ResourceProvider provider = MOsgi.getService(ResourceProvider.class, MOsgi.filterServiceName("cherry_resource_" + name));
+		ResourceProvider provider = localResourceProvider.get(name);
+		if (provider == null)
+			try {
+				provider = MOsgi.getService(ResourceProvider.class, MOsgi.filterServiceName("cherry_resource_" + name));
+			} catch (NotFoundException e) {}
 		return provider;
 	}
 
@@ -165,8 +171,20 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	@Override
 	public ResourceRenderer getRenderer(String name) {
 		name = name.toLowerCase();
-		ResourceRenderer renderer = MOsgi.getService(ResourceRenderer.class, MOsgi.filterServiceName("cherry_renderer_" + name));
+		ResourceRenderer renderer = null;
+		try {
+			renderer = MOsgi.getService(ResourceRenderer.class, MOsgi.filterServiceName("cherry_renderer_" + name));
+		} catch (NotFoundException e) {}
 		return renderer;
 	}
 
+	public void addResourceprovider(String name, ResourceProvider provider) {
+		localResourceProvider.put(name, provider);
+	}
+
+	@Override
+	public String getDefaultContentType() {
+		return "text/html";
+	}
+	
 }

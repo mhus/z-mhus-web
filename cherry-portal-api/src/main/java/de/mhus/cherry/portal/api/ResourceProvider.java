@@ -9,6 +9,6 @@ public interface ResourceProvider extends IResourceProvider {
 	CaoNode getResourceByPath(String path);
 	
 	@Override
-	CaoNode getResourceById(String path);
+	CaoNode getResourceById(String id);
 
 }

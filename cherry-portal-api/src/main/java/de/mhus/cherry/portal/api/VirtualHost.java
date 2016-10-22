@@ -24,5 +24,7 @@ public interface VirtualHost {
 	public RendererResolver getRendererResolver();
 
 	public ResourceRenderer getRenderer(String name);
+
+	public String getDefaultContentType();
 	
 }

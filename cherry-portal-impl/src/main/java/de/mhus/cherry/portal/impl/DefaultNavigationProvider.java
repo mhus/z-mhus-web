@@ -1,14 +1,6 @@
 package de.mhus.cherry.portal.impl;
 
-import java.io.IOException;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import de.mhus.cherry.portal.api.CherryUtil;
 import de.mhus.cherry.portal.api.NavigationProvider;
-import de.mhus.cherry.portal.api.ResourceProvider;
 import de.mhus.lib.cao.CaoConnection;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
