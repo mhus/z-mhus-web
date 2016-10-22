@@ -9,12 +9,12 @@ public class DemoVirtualHost extends DefaultVirtualHost {
 
 	public DemoVirtualHost() {
 		DefaultNavigationProvider nv = new DefaultNavigationProvider();
-		nv.setConnection(new FsConnection(new File("cherry/demo/nav"), true, false));
+		nv.setConnection(new FsConnection(new File("cherry/demo/webcontent/nav"), true, false));
 		setNavigationProvider(nv);
 		
 		setRendererResolver(new DefaultRendererResolver());
 		setResourceResolver(new DefaultResourceResolver());
 		
-		addResourceprovider("default", new DefaultResourceProvider(new FsConnection(new File("cherry/demo/res"), true, false) ) );
+		addResourceprovider("default", new DefaultResourceProvider(new FsConnection(new File("cherry/demo/webcontent/res"), true, false) ) );
 	}
 }
