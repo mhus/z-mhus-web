@@ -1,4 +1,4 @@
-package de.hfo.magic.mws.core.api;
+package de.mhus.cherry.portal.api;
 
 import de.mhus.lib.cao.CaoNode;
 

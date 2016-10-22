@@ -80,7 +80,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>de.hfo.magic.mws.core.impl.*;version=${project.version}</Export-Package>
+                        <Export-Package>de.mhus.cherry.portal.impl.*;version=${project.version}</Export-Package>
                         <Import-Package>*</Import-Package>
                         <Service-Component>*</Service-Component>
                     </instructions>

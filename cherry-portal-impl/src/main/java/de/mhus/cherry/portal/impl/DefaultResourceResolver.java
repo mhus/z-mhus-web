@@ -1,8 +1,8 @@
-package de.hfo.magic.mws.core.impl;
+package de.mhus.cherry.portal.impl;
 
-import de.hfo.magic.mws.core.api.ResourceProvider;
-import de.hfo.magic.mws.core.api.VirtualHost;
-import de.hfo.magic.mws.core.api.ResourceResolver;
+import de.mhus.cherry.portal.api.ResourceProvider;
+import de.mhus.cherry.portal.api.ResourceResolver;
+import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MString;
 

@@ -1,4 +1,4 @@
-package de.hfo.magic.mws.core.api;
+package de.mhus.cherry.portal.api;
 
 import java.io.IOException;
 
@@ -20,5 +20,9 @@ public interface VirtualHost {
 	public ResourceResolver getResourceResolver();
 	
 	public ResourceProvider getResourceProvider(String name);
+	
+	public RendererResolver getRendererResolver();
+
+	public ResourceRenderer getRenderer(String name);
 	
 }

@@ -113,6 +113,7 @@
   <modules>
     <module>cherry-portal-api</module>
     <module>cherry-portal-impl</module>
+    <module>cherry-karaf-feature</module>
   </modules>
 
 
