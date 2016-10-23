@@ -12,13 +12,12 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import de.mhus.osgi.cherry.impl.DefaultServletContext;
-import de.mhus.osgi.cherry.impl.DefaultVirtualHost;
+import de.mhus.cherry.portal.api.VirtualHost;
 
 public class JspDefaultServletContext extends DefaultServletContext {
 	
 	// http://www.e-pde.gr/docs/jasper-howto.html
-	public JspDefaultServletContext(DefaultVirtualHost host) {
+	public JspDefaultServletContext(VirtualHost host) {
 		super(host);
 		File tmp = new File( host.getTmpRoot(), "jsp");
 		tmp.mkdirs();

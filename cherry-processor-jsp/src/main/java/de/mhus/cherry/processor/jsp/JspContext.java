@@ -17,25 +17,20 @@ import org.ops4j.pax.web.jsp.JasperClassLoader;
 import org.ops4j.pax.web.jsp.JspServletWrapper;
 import org.osgi.framework.FrameworkUtil;
 
+import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.core.directory.ResourceNode;
-import de.mhus.osgi.cherry.api.ProcessorContext;
-import de.mhus.osgi.cherry.api.VirtualHost;
-import de.mhus.osgi.cherry.api.central.CentralCallContext;
-import de.mhus.osgi.cherry.api.util.ExtendedServletResponse;
-import de.mhus.osgi.cherry.impl.DefaultServletConfig;
-import de.mhus.osgi.cherry.impl.DefaultVirtualHost;
 
 public class JspContext implements ProcessorContext {
 
-	private DefaultVirtualHost host;
+	private VirtualHost host;
 	private ServletContext servletContext;
-	private DefaultServletConfig config;
+	private ServletConfig config;
 	private HashMap<String, JspServletWrapper> wrappers = new HashMap<>();
 	private JspServletWrapper servlet;
 	private ClassLoader hostClassLoader;
 	
 	public JspContext(VirtualHost host) throws ServletException {
-		this.host = (DefaultVirtualHost) host;
+		this.host = host;
 		init();
 	}
 
