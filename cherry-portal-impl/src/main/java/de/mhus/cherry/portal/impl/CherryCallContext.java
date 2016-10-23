@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.CallContext;
+import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
 
@@ -19,6 +20,8 @@ public class CherryCallContext implements CallContext {
 	private CherryServlet httpServlet;
 	private String returnType;
 	private String[] selectors;
+	private SessionContext sessionContext;
+	private CaoNode mainResource;
 
 	public void setHttpRequest(HttpServletRequest req) {
 		httpRequest = req;
@@ -101,6 +104,34 @@ public class CherryCallContext implements CallContext {
 	@Override
 	public String getHttpMethod() {
 		return httpRequest.getMethod();
+	}
+
+	@Override
+	public SessionContext getSessionContext() {
+		return sessionContext;
+	}
+
+	public void setSessionContext(SessionContext sessionContext) {
+		this.sessionContext = sessionContext;
+	}
+
+	@Override
+	public CaoNode getMainResource() {
+		return mainResource;
+	}
+
+	public void setMainResource(CaoNode mainResource) {
+		this.mainResource = mainResource;
+	}
+
+	@Override
+	public void setAttribute(String name, Object value) {
+		httpRequest.setAttribute(name, value);
+	}
+
+	@Override
+	public Object getAttribute(String name) {
+		return httpRequest.getAttribute(name);
 	}
 
 }

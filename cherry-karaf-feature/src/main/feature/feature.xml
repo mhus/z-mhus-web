@@ -14,7 +14,7 @@
 
 	<feature name='cherry-portal' description='cherry-portal' version='${project.version}'>
 		<details>${project.description}</details>
-		<feature>mhu-osgi-full</feature>
+		<feature>mhu-osgi-vaadin</feature>
 
 		<bundle>mvn:de.mhus.cherry/cherry-portal-api/${project.version}</bundle>
 		<bundle>mvn:de.mhus.cherry/cherry-portal-impl/${project.version}</bundle>

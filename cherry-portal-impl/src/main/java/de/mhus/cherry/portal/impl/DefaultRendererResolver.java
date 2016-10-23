@@ -3,8 +3,6 @@ package de.mhus.cherry.portal.impl;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.RendererResolver;
 import de.mhus.cherry.portal.api.ResourceRenderer;
-import de.mhus.cherry.portal.api.VirtualHost;
-import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.errors.NotFoundException;
 
 public class DefaultRendererResolver implements RendererResolver {

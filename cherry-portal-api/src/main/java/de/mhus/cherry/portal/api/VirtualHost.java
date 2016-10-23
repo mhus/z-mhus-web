@@ -2,11 +2,6 @@ package de.mhus.cherry.portal.api;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import de.mhus.lib.cao.CaoNode;
-
 public interface VirtualHost {
 
 	String RESOURCE_ID = "resource_id";
@@ -26,5 +21,7 @@ public interface VirtualHost {
 	public ResourceRenderer getRenderer(String name);
 
 	public String getDefaultContentType();
+	
+	public EditorFactory getFactory(String name);
 	
 }

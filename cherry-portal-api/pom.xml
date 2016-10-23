@@ -40,6 +40,31 @@
         	<type>bundle</type>
         	<scope>provided</scope>
         </dependency>
+        <dependency>
+        	<groupId>de.mhus.lib</groupId>
+        	<artifactId>mhu-lib-vaadin</artifactId>
+        	<version>${mhulib.version}</version>
+        	<type>bundle</type>
+        	<scope>provided</scope>
+        </dependency>
+
+    	<dependency>
+    		<groupId>com.vaadin</groupId>
+    		<artifactId>vaadin-server</artifactId>
+    		<version>${vaadin.version}</version>
+    	</dependency>
+    	<dependency>
+    		<groupId>com.vaadin</groupId>
+    		<artifactId>vaadin-shared</artifactId>
+    		<version>${vaadin.version}</version>
+    	</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet.version}</version>
+		</dependency>
+        
+        
     </dependencies>
 
     <build>

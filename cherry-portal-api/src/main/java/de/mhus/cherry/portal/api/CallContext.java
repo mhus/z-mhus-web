@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.lib.cao.CaoNode;
-import de.mhus.lib.core.MFile;
 
 public interface CallContext {
 
@@ -19,6 +18,8 @@ public interface CallContext {
 
 	CaoNode getResource();
 
+	CaoNode getMainResource();
+	
 	VirtualHost getVirtualHost();
 
 	HttpServlet getHttpServlet();
@@ -28,5 +29,11 @@ public interface CallContext {
 	String[] getSelectors();
 
 	String getHttpMethod();
+	
+	SessionContext getSessionContext();
 
+	void setAttribute(String name, Object value);
+	
+	Object getAttribute(String name);
+	
 }

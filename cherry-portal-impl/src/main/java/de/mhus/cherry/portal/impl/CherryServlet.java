@@ -7,10 +7,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CherryUtil;
 import de.mhus.cherry.portal.api.NavigationProvider;
+import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
 
@@ -36,6 +38,16 @@ public class CherryServlet extends HttpServlet {
 		callContext.setHttpRequest(req);
 		callContext.setHttpResponse(res);
 		String path = callContext.getHttpPath();
+		
+		HttpSession httpSession = req.getSession();
+		synchronized (httpSession) {
+			SessionContext cherrySession = (SessionContext) httpSession.getAttribute("__cherry_session");
+			if (cherrySession == null) {
+				cherrySession = new DefaultSessionContext(this, httpSession);
+				httpSession.setAttribute("__cherry_session", cherrySession);
+			}
+			callContext.setSessionContext(cherrySession);
+		}
 		
 		CaoNode navResource = navProvider.getNode(path);
 		

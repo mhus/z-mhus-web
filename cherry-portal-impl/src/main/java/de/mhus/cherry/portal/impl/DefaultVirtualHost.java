@@ -4,18 +4,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.CallContext;
-import de.mhus.cherry.portal.api.CherryUtil;
+import de.mhus.cherry.portal.api.EditorFactory;
 import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.RendererResolver;
 import de.mhus.cherry.portal.api.ResourceProvider;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ResourceResolver;
 import de.mhus.cherry.portal.api.VirtualHost;
-import de.mhus.lib.cao.CaoConnection;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
@@ -101,13 +99,13 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
-//			call.setMainResource(resResource);
-			call.setReturnType(retType);
+			call.setMainResource(resResource);
 			call.setSelectors(selectors);
 			
 			String resName = resResource.getName();
 			if (MString.isEmpty(retType) && resName != null && MString.isIndex(resName, '.') )
 				retType = MString.afterLastIndex(resName, '.');
+			call.setReturnType(retType);
 			
 			if (isFolder && MString.isSet(subType)) {
 				
@@ -135,7 +133,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 			sendError(call, HttpServletResponse.SC_NOT_FOUND);
 		} catch (Throwable t) {
 			UUID id = UUID.randomUUID();
-			log().w(id,t);
+			log().w(id,call,t);
 			sendError(call, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -195,6 +193,16 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	@Override
 	public String getDefaultContentType() {
 		return "text/html";
+	}
+
+	@Override
+	public EditorFactory getFactory(String name) {
+		name = name.toLowerCase();
+		EditorFactory factory = null;
+		try {
+			factory = MOsgi.getService(EditorFactory.class, MOsgi.filterServiceName("cherry_editor_" + name));
+		} catch (NotFoundException e) {}
+		return factory;
 	}
 	
 }
