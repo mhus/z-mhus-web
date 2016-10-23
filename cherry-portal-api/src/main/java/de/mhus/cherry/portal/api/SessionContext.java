@@ -1,9 +1,15 @@
 package de.mhus.cherry.portal.api;
 
+import javax.servlet.http.HttpServlet;
+
 public interface SessionContext {
 
-	public ProcessorContext getProcessorContext(String name);
+	VirtualHost getVirtualHost();
+
+	void setAttribute(String name, Object value);
 	
-	public void setProcessorContext(String name, ProcessorContext context);
+	Object getAttribute(String name);
+
+	HttpServlet getHttpServlet();
 
 }

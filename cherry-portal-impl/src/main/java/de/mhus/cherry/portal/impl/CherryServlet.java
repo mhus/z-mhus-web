@@ -43,7 +43,7 @@ public class CherryServlet extends HttpServlet {
 		synchronized (httpSession) {
 			SessionContext cherrySession = (SessionContext) httpSession.getAttribute("__cherry_session");
 			if (cherrySession == null) {
-				cherrySession = new DefaultSessionContext(this, httpSession);
+				cherrySession = new DefaultSessionContext(this, vHost, httpSession);
 				httpSession.setAttribute("__cherry_session", cherrySession);
 			}
 			callContext.setSessionContext(cherrySession);

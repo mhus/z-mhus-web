@@ -2,30 +2,43 @@ package de.mhus.cherry.portal.impl;
 
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpSession;
 
 import de.mhus.cherry.portal.api.ProcessorContext;
 import de.mhus.cherry.portal.api.SessionContext;
+import de.mhus.cherry.portal.api.VirtualHost;
 
 public class DefaultSessionContext implements SessionContext {
 
-	protected HashMap<String, ProcessorContext> processorContexts = new HashMap<>();
 	private CherryServlet servlet;
 	private HttpSession session;
+	private VirtualHost virtualHost;
 
-	public DefaultSessionContext(CherryServlet servlet, HttpSession session) {
+	public DefaultSessionContext(CherryServlet servlet, VirtualHost vHost, HttpSession session) {
 		this.servlet = servlet;
 		this.session = session;
+		this.virtualHost = vHost;
 	}
 
 	@Override
-	public ProcessorContext getProcessorContext(String name) {
-		return processorContexts.get(name);
+	public VirtualHost getVirtualHost() {
+		return virtualHost;
 	}
 
 	@Override
-	public void setProcessorContext(String name, ProcessorContext context) {
-		processorContexts.put(context.getName(), context);
+	public void setAttribute(String name, Object value) {
+		session.setAttribute(name, value);
+	}
+
+	@Override
+	public Object getAttribute(String name) {
+		return session.getAttribute(name);
+	}
+
+	@Override
+	public HttpServlet getHttpServlet() {
+		return servlet;
 	}
 
 }
