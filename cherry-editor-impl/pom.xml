@@ -8,8 +8,8 @@
   <artifactId>cherry-editor-impl</artifactId>
     <packaging>bundle</packaging>
 
-    <name>gui-core</name>
-    <description>GUI Core Impl</description>
+    <name>cherry-editor-impl</name>
+    <description>Cherry Editor Impl</description>
 
     <dependencies>
         
