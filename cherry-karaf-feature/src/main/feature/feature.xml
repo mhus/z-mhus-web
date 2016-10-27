@@ -18,6 +18,8 @@
 
 		<bundle>mvn:de.mhus.cherry/cherry-portal-api/${project.version}</bundle>
 		<bundle>mvn:de.mhus.cherry/cherry-portal-impl/${project.version}</bundle>
+		<bundle>mvn:de.mhus.cherry/cherry-editor-theme/${project.version}</bundle>
+		<bundle>mvn:de.mhus.cherry/cherry-editor-impl/${project.version}</bundle>
 
 	</feature>
 	
