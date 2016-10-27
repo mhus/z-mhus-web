@@ -44,7 +44,7 @@ $login-info-width: 300px !default;
 $login-info-opacity: 0.7 !default;
 $login-background-color: $editor-background-color !default;
 // Get more background images from unsplash.com (remember to optimize the filesize)
-$login-background-image: "img/ocean-331136_1920.jpg" !default;
+$login-background-image: "img/japanese-cherry-trees-324175_1920.jpg" !default;
 
 $editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
 $editor-embed-background-color: darken($editor-background-color, 5%) !default;
@@ -59,7 +59,7 @@ $v-layout-spacing-vertical: round($v-unit-size / 1.8) !default;
 $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
 $menubar-height: 33px;
-$desktop-background-image: "img/ocean-331136_1920.jpg" !default;
+$desktop-background-image: "img/cherry-blossom-1318258_1920.jpg" !default;
 
 @import "../valo/valo.scss";
 

@@ -29,7 +29,7 @@ import de.mhus.lib.vaadin.VaadinAccessControl;
 public class LoginScreen extends CssLayout {
 
 	private static final long serialVersionUID = 1L;
-	private static final String MAIN_USER_ROLE = "USER";
+//	private static final String MAIN_USER_ROLE = "USER";
 	private TextField username;
     private PasswordField password;
     private Button login;
@@ -112,7 +112,7 @@ public class LoginScreen extends CssLayout {
         CssLayout loginInformation = new CssLayout();
         loginInformation.setStyleName("login-information");
         Label loginInfoText = new Label(
-                "<h1>Magic Control Panel</h1>"
+                "<h1>Cherry Content Editor</h1>"
                         + "Bitte loggen Sie sich mit Ihrem Account ein.",
                 ContentMode.HTML);
         loginInformation.addComponent(loginInfoText);
@@ -128,12 +128,12 @@ public class LoginScreen extends CssLayout {
         	else
         		MLogUtil.log().i("Login",subject);
         	
-        	if (MSecurity.hasRole(subject,MAIN_USER_ROLE)) {
+//        	if (MSecurity.hasRole(subject,MAIN_USER_ROLE)) {
         		loginListener.loginSuccessful();
         		return;
-        	} else {
-        		accessControl.signOut();
-        	}
+//        	} else {
+//        		accessControl.signOut();
+//        	}
         }
         
         showNotification(new Notification("Login failed",

@@ -9,6 +9,8 @@ feature:install cherry-portal
 
 bundle:persistentwatch add cherry-portal-api
 bundle:persistentwatch add cherry-portal-impl
+bundle:persistentwatch add cherry-editor-theme
+bundle:persistentwatch add cherry-editor-impl
 
 ---
 
