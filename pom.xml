@@ -106,8 +106,33 @@
 	      	<failOnError>false</failOnError>
 	      </configuration>
 	    </plugin>		
+
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-services-maven-plugin</artifactId>
+            </plugin>
 		
     </plugins>
+    
+    	<pluginManagement>
+			<plugins>
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-services-maven-plugin</artifactId>
+                    <version>${karaf.version}</version>
+                    <executions>
+                        <execution>
+                            <id>service-metadata-generate</id>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>service-metadata-generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+			</plugins>    	
+    	</pluginManagement>
+            
   </build>
 
   <modules>
@@ -115,6 +140,8 @@
     <module>cherry-portal-impl</module>
     <module>cherry-editor-theme</module>
     <module>cherry-editor-impl</module>
+    <module>cherry-content-base</module>
+    <module>cherry-portal-demo</module>
     <module>cherry-karaf-feature</module>
   </modules>
 

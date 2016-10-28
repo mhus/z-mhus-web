@@ -33,7 +33,12 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	@Override
 	public void sendError(CallContext call, int sc) {
 		try {
-			call.getHttpResponse().sendError(sc);
+			if (!call.getHttpResponse().isCommitted())
+				call.getHttpResponse().sendError(sc);
+			else {
+				//TODO send error in content ...
+				call.getHttpResponse().getOutputStream().print("An Error Occured !" );
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -94,8 +99,13 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 			
 			
 			String resId = call.getNavigationResource().getString(NavigationProvider.RESOURCE_ID);
+			if (resId == null) {
+				log().d("resource id not found", call);
+				sendError(call, HttpServletResponse.SC_NOT_FOUND);
+			}
 			CaoNode resResource = getResourceResolver().getResourceById(this, resId);
 			if (resResource == null) {
+				log().d("resource not found", call, resId);
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
@@ -115,6 +125,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 						if (MString.isSetTrim(part)) {
 							resResource = (CaoNode) resResource.getNode(part);
 							if (resResource == null) {
+								log().d("sub resource not found", call, subPath);
 								sendError(call, HttpServletResponse.SC_NOT_FOUND);
 								return;
 							}
@@ -130,10 +141,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 			
 			
 		} catch (NotFoundException t) {
+			log().d("not found",call,t);
 			sendError(call, HttpServletResponse.SC_NOT_FOUND);
 		} catch (Throwable t) {
 			UUID id = UUID.randomUUID();
-			log().w(id,call,t);
+			log().w("internal error", id,call,t);
 			sendError(call, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}

@@ -6,11 +6,17 @@ feature:repo-add mvn:de.mhus.osgi/mhu-karaf-feature/1.3.1-SNAPSHOT/xml/features
 feature:repo-add mvn:de.mhus.cherry/cherry-karaf-feature/1.0.0-SNAPSHOT/xml/features
 
 feature:install cherry-portal
+bundle:install -s mvn:de.mhus.cherry/cherry-content-base
+bundle:install -s mvn:de.mhus.cherry/cherry-portal-demo
 
 bundle:persistentwatch add cherry-portal-api
 bundle:persistentwatch add cherry-portal-impl
 bundle:persistentwatch add cherry-editor-theme
 bundle:persistentwatch add cherry-editor-impl
+
+bundle:persistentwatch add cherry-content-base
+bundle:persistentwatch add cherry-portal-demo
+
 
 ---
 
@@ -30,4 +36,13 @@ ProxyPass /forum !
 ProxyPass / http://localhost:8080/tomcat-webapp/
 ProxyPassReverse / http://localhost:8080/tomcat-webapp/
 Alias /forum /var/www/forum
+
+
+
+Images CC0:
+
+https://pixabay.com/en/cherry-fruits-cherries-fruit-food-35288/
+
+https://pixabay.com/en/japanese-cherry-trees-flowers-spring-324175/
+https://pixabay.com/en/cherry-blossom-japanese-cherry-smell-1318258/
 

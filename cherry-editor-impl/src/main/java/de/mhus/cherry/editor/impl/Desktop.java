@@ -18,6 +18,7 @@ import de.mhus.cherry.portal.api.editor.GuiSpaceService;
 import de.mhus.cherry.portal.api.editor.GuiUtil;
 import de.mhus.cherry.portal.api.editor.Navigatable;
 import de.mhus.lib.core.MString;
+import de.mhus.lib.core.MXml;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
 
@@ -203,6 +204,14 @@ public class Desktop extends CssLayout {
 		menuCurrent.setText("Übersicht");
 		currentSpace = null;
 		contentScreen.addComponent(overView);
+		
+		//UI.getCurrent().getPage().setUriFragment("moin",false);
+		String nav = UI.getCurrent().getPage().getUriFragment();
+		Label l = new Label();
+		l.setCaptionAsHtml(true);
+		l.setCaption("<a href=''>" + MXml.encode(nav) + "</a>" );
+		
+		contentScreen.addComponent(l);
 	}
 
 }

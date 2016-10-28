@@ -8,6 +8,7 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MSystem;
 
 public class CherryCallContext implements CallContext {
 
@@ -132,6 +133,11 @@ public class CherryCallContext implements CallContext {
 	@Override
 	public Object getAttribute(String name) {
 		return httpRequest.getAttribute(name);
+	}
+	
+	@Override
+	public String toString() {
+		return MSystem.toString(this, httpPath);
 	}
 
 }

@@ -47,6 +47,11 @@
         	<type>bundle</type>
         	<scope>provided</scope>
         </dependency>
+	    <dependency>
+	    	<groupId>de.mhus.osgi</groupId>
+	    	<artifactId>mhu-osgi-sop-api</artifactId>
+	    	<version>${osgitools.version}</version>
+	    </dependency>
 
     	<dependency>
     		<groupId>com.vaadin</groupId>
