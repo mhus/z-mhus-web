@@ -21,6 +21,7 @@ import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MXml;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
+import de.mhus.lib.core.util.Rfc1738;
 
 public class Desktop extends CssLayout {
 
@@ -207,9 +208,11 @@ public class Desktop extends CssLayout {
 		
 		//UI.getCurrent().getPage().setUriFragment("moin",false);
 		String nav = UI.getCurrent().getPage().getUriFragment();
+		String lnk = nav;
+		if (MString.isIndex(lnk, ':')) lnk = MString.beforeIndex(lnk, ':');
 		Label l = new Label();
 		l.setCaptionAsHtml(true);
-		l.setCaption("<a href=''>" + MXml.encode(nav) + "</a>" );
+		l.setCaption("<a href='" + lnk + "'>" + MXml.encode(nav) + "</a>" );
 		
 		contentScreen.addComponent(l);
 	}
