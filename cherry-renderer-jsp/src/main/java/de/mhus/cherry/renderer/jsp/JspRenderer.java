@@ -16,19 +16,19 @@ import de.mhus.lib.core.MLog;
 @Component(provide = ScriptRenderer.class, name="cherry_script_renderer_jsp")
 public class JspRenderer extends MLog implements ScriptRenderer {
 
-	public static final String NAME = "processor_jsp_context";
+	public static final String NAME = "processor_jsp_context_";
 
 	@Override
 	public void doRender(CallContext call, File root, File file) throws Exception {
 		JspRendererContext ctx = null;
 		try {
-			ctx = (JspRendererContext) call.getSessionContext().getAttribute(NAME);
+			ctx = (JspRendererContext) call.getSessionContext().getAttribute(NAME + root.getName());
 		} catch (ClassCastException e) {}
 		if (ctx == null) {
 			try {
-				log().i("Create JSP Context",call);
+				log().i("Create JSP Context",call, root.getName());
 				ctx = new JspRendererContext(root);
-				call.getSessionContext().setAttribute(NAME, ctx);
+				call.getSessionContext().setAttribute(NAME + root.getName(), ctx);
 			} catch (ServletException e) {
 				e.printStackTrace();
 			}

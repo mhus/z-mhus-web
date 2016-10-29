@@ -1,31 +1,21 @@
-<%@page import="de.mhus.lib.core.logging.MLogUtil"%>
-<%@page import="de.mhus.lib.core.MLog"%>
-<%@page import="de.mhus.lib.core.directory.ResourceNode"%>
-<%@page import="de.mhus.cherry.portal.api.WidgetApi"%>
-<%@page import="de.mhus.osgi.sop.api.Sop"%>
-<%@page import="de.mhus.lib.cao.CaoNode"%>
-<%@page import="de.mhus.cherry.portal.api.CallContext"%>
-<%
-CallContext call = (CallContext)request.getAttribute(CallContext.REQUEST_ATTRIBUTE_NAME);
-CaoNode res = Sop.getApi(WidgetApi.class).getResource(call);
-%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="x" uri="http://java.sun.com/jstl/xml" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="sql" uri="http://java.sun.com/jstl/sql" %>
+<%@ taglib prefix="ch" uri="http://mhus.org/jsp/cherry/core_1" %>
+<ch:load />
 <html>
 <head>
-<title><%=res.getString("title")%></title>
+<title><%=resource.getString("title")%></title>
 </head>
 <body>
-<h1>This is a Page</h1>
-<%
-for (ResourceNode sub : res.getNodes()) {
-	%><div><%
- try {
-	 out.flush();
-	Sop.getApi(WidgetApi.class).doRender(call, sub);
-  } catch (Throwable t) {
-	  MLogUtil.log().w(t);
-  }
-	%></div><%
-}
-%>
+<a href="<ch:editor_link/>">E</a>
+<h1>This is the Page: <%=resource.getString("title")%></h1>
+
+<ch:children resource="<%=resource%>" iterator="child">
+<div>
+  <ch:render resource="<%=child%>"/>
+</div>
+</ch:children>
 </body>
 </html>

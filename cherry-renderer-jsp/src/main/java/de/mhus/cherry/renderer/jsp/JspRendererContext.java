@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -14,24 +15,35 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jasper.Constants;
-import org.apache.jasper.servlet.JspServlet;
-import org.ops4j.pax.web.jsp.JasperClassLoader;
+import org.apache.jasper.compiler.TldCache;
+import org.apache.tomcat.util.descriptor.tld.TldResourcePath;
 import org.ops4j.pax.web.jsp.JspServletWrapper;
+import org.ops4j.pax.web.jsp.TldScanner;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.wiring.BundleWiring;
+import org.xml.sax.SAXException;
 
 import de.mhus.cherry.portal.api.CallContext;
+import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.ProcessorContext;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.directory.ClassLoaderResourceProvider;
 import de.mhus.lib.core.directory.ResourceNode;
+import de.mhus.lib.core.lang.DelegateClassLoader;
+import de.mhus.lib.core.lang.DynamicClassLoader;
+import de.mhus.osgi.sop.api.Sop;
 
-public class JspRendererContext implements ProcessorContext {
+public class JspRendererContext extends MLog implements ProcessorContext {
 
 	private VirtualHost host;
 	private ServletContext servletContext;
 	private ServletConfig config;
 	private HashMap<String, JspServletWrapper> wrappers = new HashMap<>();
 	private JspServletWrapper servlet;
-	private ClassLoader hostClassLoader;
+	private DelegateClassLoader hostClassLoader;
 	private File root;
 	
 	public JspRendererContext(File root) throws ServletException {
@@ -42,9 +54,41 @@ public class JspRendererContext implements ProcessorContext {
 	private void init() throws ServletException {
 		servletContext = new JspDefaultServletContext( root );
 		config = new DefaultServletConfig(servletContext);
-		hostClassLoader = getClass().getClassLoader();
-		// TODO collect all bundles
-		
+		hostClassLoader = new DelegateClassLoader();
+		// first of all my own classloader
+		hostClassLoader.register(this.getClass().getClassLoader());
+		// from classpath
+		File classes = new File (root,"WEB-INF/classes");
+		try {
+			if (classes.exists() && classes.isDirectory()) {
+				log().d("add classes to classpath",classes);
+				hostClassLoader.register( new URLClassLoader(new URL[] {classes.toURL()}) );
+			}
+		} catch (Throwable t) {}
+		// from libs
+		File lib = new File (root,"WEB-INF/lib");
+		try {
+			if (lib.exists() && lib.isDirectory()) {
+				LinkedList<URL> libs = new LinkedList<>();
+				for (File f : lib.listFiles())
+					if (f.isFile() && f.getName().endsWith(".jar")) {
+						log().d("add lib to classpath",f);
+						libs.add(f.toURL());
+					}
+				if (libs.size() > 0)
+					hostClassLoader.register( new URLClassLoader(libs.toArray(new URL[libs.size()]) ) );
+			}
+		} catch (Throwable t) {}
+
+		// all bundles
+		Bundle bundle = FrameworkUtil.getBundle(getClass());
+		for (Bundle b : bundle.getBundleContext().getBundles()) {
+			if (b.getSymbolicName().equals(bundle.getSymbolicName())) continue;
+			log().d("add bundle to classpath",b.getSymbolicName());
+			ClassLoader bundleLoader = b.adapt(BundleWiring.class).getClassLoader();
+//			hostClassLoader.add(new ClassLoaderResourceProvider(bundleLoader) );
+			hostClassLoader.register(bundleLoader );
+		}
 		servlet = new JspServletWrapper(null,new MyJasperClassLoader( FrameworkUtil.getBundle(getClass()), hostClassLoader));
 		servlet.init(config);
 	}
@@ -62,6 +106,29 @@ public class JspRendererContext implements ProcessorContext {
 		
 		if (javax.servlet.jsp.JspFactory.getDefaultFactory() == null) {
 			javax.servlet.jsp.JspFactory.setDefaultFactory( new org.apache.jasper.runtime.JspFactoryImpl() );
+		}
+		
+		if (TldCache.getInstance(servletContext) == null) {
+	        TldScanner scanner = new TldScanner(servletContext, true, false, false) {
+	            @Override
+				protected void scanPlatform() {
+	            	try {
+	            		URL url = JspRendererContext.class.getClassLoader().getResource("/WEB-INF/cherry-1.tld");
+	            		TldResourcePath tldResourcePath = new TldResourcePath(url, null, null);
+	            		parseTld(tldResourcePath);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+	            }
+	        };
+	        scanner.setClassLoader( hostClassLoader );
+	        try {
+				scanner.scan();
+			} catch (IOException | SAXException e) {
+				log().e(e);
+			}
+			servletContext.setAttribute(TldCache.SERVLET_CONTEXT_ATTRIBUTE_NAME, new TldCache(servletContext, scanner.getUriTldResourcePathMap(),
+                    scanner.getTldResourcePathTaglibXmlMap()));
 		}
 		
 		HttpServletRequest req = context.getHttpRequest();
