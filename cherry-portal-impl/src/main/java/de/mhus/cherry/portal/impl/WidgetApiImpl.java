@@ -21,7 +21,7 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 			log().d("renderer not set", call, widget);
 			return;
 		}
-		ResourceRenderer renderer = call.getVirtualHost().getRenderer(rendererName);
+		ResourceRenderer renderer = call.getVirtualHost().getResourceRenderer(rendererName);
 		if (renderer == null) {
 			log().d("rednerer not found", call, rendererName, widget);
 			return;

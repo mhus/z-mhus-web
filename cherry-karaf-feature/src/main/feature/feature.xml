@@ -21,6 +21,14 @@
 		<bundle>mvn:de.mhus.cherry/cherry-editor-theme/${project.version}</bundle>
 		<bundle>mvn:de.mhus.cherry/cherry-editor-impl/${project.version}</bundle>
 
+		<bundle>mvn:de.mhus.cherry/cherry-renderer-jsp/${project.version}</bundle>
+
+	</feature>
+	
+	<feature name='cherry-demo' description='cherry-demo' version='${project.version}'>
+		<feature>cherry-portal</feature>
+		<bundle>mvn:de.mhus.cherry/cherry-content-base/${project.version}</bundle>
+		<bundle>mvn:de.mhus.cherry/cherry-portal-demo/${project.version}</bundle>
 	</feature>
 	
 </features>

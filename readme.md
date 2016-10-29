@@ -5,9 +5,12 @@ feature:repo-add cxf 3.1.5
 feature:repo-add mvn:de.mhus.osgi/mhu-karaf-feature/1.3.1-SNAPSHOT/xml/features
 feature:repo-add mvn:de.mhus.cherry/cherry-karaf-feature/1.0.0-SNAPSHOT/xml/features
 
+feature:install cherry-demo
+
+
 feature:install cherry-portal
-bundle:install -s mvn:de.mhus.cherry/cherry-content-base
-bundle:install -s mvn:de.mhus.cherry/cherry-portal-demo
+
+
 
 bundle:persistentwatch add cherry-portal-api
 bundle:persistentwatch add cherry-portal-impl
@@ -17,6 +20,11 @@ bundle:persistentwatch add cherry-editor-impl
 bundle:persistentwatch add cherry-content-base
 bundle:persistentwatch add cherry-portal-demo
 
+
+---
+
+bundle:install -s mvn:de.mhus.cherry/cherry-renderer-jsp/1.0.0-SNAPSHOT
+bundle:persistentwatch add cherry-renderer-jsp
 
 ---
 

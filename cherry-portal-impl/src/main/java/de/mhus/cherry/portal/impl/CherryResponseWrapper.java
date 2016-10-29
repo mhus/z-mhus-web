@@ -1,0 +1,187 @@
+package de.mhus.cherry.portal.impl;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Locale;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+public class CherryResponseWrapper implements HttpServletResponse {
+
+	private HttpServletResponse instance;
+	private CherryServletOutputStream stream;
+	private CherryServletPrintWriter writer;
+	
+	public CherryResponseWrapper(HttpServletResponse res) {
+		instance = res;
+	}
+
+	@Override
+	public String getCharacterEncoding() {
+		return instance.getCharacterEncoding();
+	}
+
+	@Override
+	public String getContentType() {
+		return instance.getContentType();
+	}
+
+	@Override
+	public ServletOutputStream getOutputStream() throws IOException {
+		if (stream == null) {
+			stream = new CherryServletOutputStream(instance.getOutputStream());
+		}
+		return stream;
+	}
+
+	@Override
+	public PrintWriter getWriter() throws IOException {
+		if (writer == null) {
+			writer = new CherryServletPrintWriter(instance.getOutputStream());
+		}
+		return writer;
+	}
+
+	@Override
+	public void setCharacterEncoding(String charset) {
+		instance.setCharacterEncoding(charset);
+	}
+
+	@Override
+	public void setContentLength(int len) {
+		instance.setContentLength(len);
+	}
+
+	@Override
+	public void setContentType(String type) {
+		instance.setContentType(type);
+	}
+
+	@Override
+	public void setBufferSize(int size) {
+		instance.setBufferSize(size);
+	}
+
+	@Override
+	public int getBufferSize() {
+		return instance.getBufferSize();
+	}
+
+	@Override
+	public void flushBuffer() throws IOException {
+		instance.flushBuffer();
+	}
+
+	@Override
+	public void resetBuffer() {
+		instance.resetBuffer();
+	}
+
+	@Override
+	public boolean isCommitted() {
+		return instance.isCommitted();
+	}
+
+	@Override
+	public void reset() {
+		instance.reset();
+	}
+
+	@Override
+	public void setLocale(Locale loc) {
+		instance.setLocale(loc);
+	}
+
+	@Override
+	public Locale getLocale() {
+		return instance.getLocale();
+	}
+
+	@Override
+	public void addCookie(Cookie cookie) {
+		instance.addCookie(cookie);
+	}
+
+	@Override
+	public boolean containsHeader(String name) {
+		return instance.containsHeader(name);
+	}
+
+	@Override
+	public String encodeURL(String url) {
+		return instance.encodeURL(url);
+	}
+
+	@Override
+	public String encodeRedirectURL(String url) {
+		return instance.encodeRedirectURL(url);
+	}
+
+	@Override
+	public String encodeUrl(String url) {
+		return instance.encodeUrl(url);
+	}
+
+	@Override
+	public String encodeRedirectUrl(String url) {
+		return instance.encodeRedirectUrl(url);
+	}
+
+	@Override
+	public void sendError(int sc, String msg) throws IOException {
+		instance.sendError(sc,msg);
+	}
+
+	@Override
+	public void sendError(int sc) throws IOException {
+		instance.sendError(sc);
+	}
+
+	@Override
+	public void sendRedirect(String location) throws IOException {
+		instance.sendRedirect(location);
+	}
+
+	@Override
+	public void setDateHeader(String name, long date) {
+		instance.setDateHeader(name, date);
+	}
+
+	@Override
+	public void addDateHeader(String name, long date) {
+		instance.addDateHeader(name, date);
+	}
+
+	@Override
+	public void setHeader(String name, String value) {
+		instance.setHeader(name, value);
+	}
+
+	@Override
+	public void addHeader(String name, String value) {
+		instance.addHeader(name, value);
+	}
+
+	@Override
+	public void setIntHeader(String name, int value) {
+		instance.setIntHeader(name, value);
+	}
+
+	@Override
+	public void addIntHeader(String name, int value) {
+		instance.addIntHeader(name, value);
+	}
+
+	@Override
+	public void setStatus(int sc) {
+		instance.setStatus(sc);
+	}
+
+	@Override
+	public void setStatus(int sc, String sm) {
+		instance.setStatus(sc, sm);
+	}
+
+}

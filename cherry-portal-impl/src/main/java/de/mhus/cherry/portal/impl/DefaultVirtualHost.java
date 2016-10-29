@@ -13,6 +13,7 @@ import de.mhus.cherry.portal.api.RendererResolver;
 import de.mhus.cherry.portal.api.ResourceProvider;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ResourceResolver;
+import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
@@ -189,7 +190,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	}
 
 	@Override
-	public ResourceRenderer getRenderer(String name) {
+	public ResourceRenderer getResourceRenderer(String name) {
 		name = name.toLowerCase();
 		ResourceRenderer renderer = null;
 		try {
@@ -215,6 +216,16 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 			factory = MOsgi.getService(EditorFactory.class, MOsgi.filterServiceName("cherry_editor_" + name));
 		} catch (NotFoundException e) {}
 		return factory;
+	}
+
+	@Override
+	public ScriptRenderer getScriptRenderer(String name) {
+		name = name.toLowerCase();
+		ScriptRenderer renderer = null;
+		try {
+			renderer = MOsgi.getService(ScriptRenderer.class, MOsgi.filterServiceName("cherry_script_renderer_" + name));
+		} catch (NotFoundException e) {}
+		return renderer;
 	}
 	
 }

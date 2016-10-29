@@ -18,10 +18,14 @@ public class SimplePage extends MLog implements ResourceRenderer {
 	public void doRender(CallContext call) throws Exception {
 		CaoNode res = Sop.getApi(WidgetApi.class).getResource(call);
 		String title = res.getString("title");
-		call.getHttpResponse().getWriter().println("<h1>" + title + "</h1>");
+		call.getHttpResponse().getOutputStream().println("<h1>" + title + "</h1>");
 		
 		for (ResourceNode sub : res.getNodes()) {
-			Sop.getApi(WidgetApi.class).doRender(call, sub);
+			try {
+				Sop.getApi(WidgetApi.class).doRender(call, sub);
+			} catch (Throwable t) {
+				log().w(t);
+			}
 		}
 		
 		

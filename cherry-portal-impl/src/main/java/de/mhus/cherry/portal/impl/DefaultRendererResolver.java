@@ -17,7 +17,7 @@ public class DefaultRendererResolver implements RendererResolver {
 		
 		renderReference = call.getResource().getString("render_reference_" + httpMethod + "_" + call.getReturnType(), null);
 		if (renderReference != null) {
-			renderer = call.getVirtualHost().getRenderer(renderReference);
+			renderer = call.getVirtualHost().getResourceRenderer(renderReference);
 			if (renderer != null) 
 				return renderer;
 			else
@@ -25,17 +25,17 @@ public class DefaultRendererResolver implements RendererResolver {
 		}
 		renderReference = call.getResource().getString("render_reference_" + httpMethod, null);
 		if (renderReference != null) {
-			renderer = call.getVirtualHost().getRenderer(renderReference);
+			renderer = call.getVirtualHost().getResourceRenderer(renderReference);
 			if (renderer != null) 
 				return renderer;
 			else
 				throw new NotFoundException();
 		}
 		
-		renderer = call.getVirtualHost().getRenderer(httpMethod + "_" + call.getReturnType());
+		renderer = call.getVirtualHost().getResourceRenderer(httpMethod + "_" + call.getReturnType());
 		if (renderer != null) return renderer;
 		
-		renderer = call.getVirtualHost().getRenderer(httpMethod);
+		renderer = call.getVirtualHost().getResourceRenderer(httpMethod);
 		if (renderer != null) return renderer;
 		
 		return renderer;

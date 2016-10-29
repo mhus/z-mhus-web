@@ -18,10 +18,12 @@ public interface VirtualHost {
 	
 	public RendererResolver getRendererResolver();
 
-	public ResourceRenderer getRenderer(String name);
+	public ResourceRenderer getResourceRenderer(String name);
 
 	public String getDefaultContentType();
 	
 	public EditorFactory getFactory(String name);
+	
+	public ScriptRenderer getScriptRenderer(String name);
 	
 }

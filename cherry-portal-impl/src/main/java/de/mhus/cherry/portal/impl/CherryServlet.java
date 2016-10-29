@@ -37,7 +37,7 @@ public class CherryServlet extends HttpServlet {
 		
 		CherryCallContext callContext = new CherryCallContext();
 		callContext.setHttpRequest(req);
-		callContext.setHttpResponse(res);
+		callContext.setHttpResponse(new CherryResponseWrapper(res));
 		String path = callContext.getHttpPath();
 		
 		HttpSession httpSession = req.getSession();

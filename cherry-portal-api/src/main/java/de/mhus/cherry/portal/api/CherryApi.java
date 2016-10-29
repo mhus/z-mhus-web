@@ -8,4 +8,8 @@ public interface CherryApi extends SApi {
 	
 	FileDeployer findFileDeployer(String suffix);
 
+	String getMimeType(String file);
+
+	DeployDescriptor getDeployDescritor(String symbolicName);
+
 }
