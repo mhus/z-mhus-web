@@ -24,7 +24,7 @@ import de.mhus.cherry.portal.api.ProcessorContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.core.directory.ResourceNode;
 
-public class JspContext implements ProcessorContext {
+public class JspRendererContext implements ProcessorContext {
 
 	private VirtualHost host;
 	private ServletContext servletContext;
@@ -32,18 +32,20 @@ public class JspContext implements ProcessorContext {
 	private HashMap<String, JspServletWrapper> wrappers = new HashMap<>();
 	private JspServletWrapper servlet;
 	private ClassLoader hostClassLoader;
-	private File file;
+	private File root;
 	
-	public JspContext(File file) throws ServletException {
-		this.file = file;
+	public JspRendererContext(File root) throws ServletException {
+		this.root = root;
 		init();
 	}
 
 	private void init() throws ServletException {
-		servletContext = new JspDefaultServletContext( file );
+		servletContext = new JspDefaultServletContext( root );
 		config = new DefaultServletConfig(servletContext);
 		hostClassLoader = getClass().getClassLoader();
-		servlet = new JspServletWrapper(file.getAbsolutePath(),new MyJasperClassLoader( FrameworkUtil.getBundle(getClass()), hostClassLoader));
+		// TODO collect all bundles
+		
+		servlet = new JspServletWrapper(null,new MyJasperClassLoader( FrameworkUtil.getBundle(getClass()), hostClassLoader));
 		servlet.init(config);
 	}
 
@@ -58,13 +60,20 @@ public class JspContext implements ProcessorContext {
 //				e1.printStackTrace();
 //			}
 		
+		if (javax.servlet.jsp.JspFactory.getDefaultFactory() == null) {
+			javax.servlet.jsp.JspFactory.setDefaultFactory( new org.apache.jasper.runtime.JspFactoryImpl() );
+		}
+		
 		HttpServletRequest req = context.getHttpRequest();
-		ExtendedServletResponse.inject(context);
-		ExtendedServletResponse resp = ExtendedServletResponse.getExtendedResponse(context);
+//		ExtendedServletResponse.inject(context);
+//		ExtendedServletResponse resp = ExtendedServletResponse.getExtendedResponse(context);
+		HttpServletResponse resp = context.getHttpResponse();
+		
 		try {
-			resp.setStatus(200);
-			resp.setContentType("text/plain");
-			req.setAttribute(Constants.JSP_FILE, file.getAbsolutePath() );
+//			resp.setStatus(200);
+//			resp.setContentType("text/plain");
+			String fileRelativ = file.getAbsolutePath().substring( root.getAbsolutePath().length() );
+			req.setAttribute(Constants.JSP_FILE, fileRelativ );
 			servlet.service(req, resp);
 			resp.flushBuffer();
 		} catch (ServletException | IOException e) {

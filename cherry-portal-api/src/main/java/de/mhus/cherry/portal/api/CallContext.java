@@ -8,6 +8,8 @@ import de.mhus.lib.cao.CaoNode;
 
 public interface CallContext {
 
+	String REQUEST_ATTRIBUTE_NAME = "__cherry_call_context";
+
 	HttpServletRequest getHttpRequest();
 
 	HttpServletResponse getHttpResponse();

@@ -16,6 +16,7 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 
 	@Override
 	public void doRender(CallContext call, ResourceNode widget) throws Exception {
+		call.getHttpResponse().flushBuffer();
 		String rendererName = widget.getString(RENDERER);
 		if (rendererName == null) {
 			log().d("renderer not set", call, widget);
@@ -23,13 +24,14 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 		}
 		ResourceRenderer renderer = call.getVirtualHost().getResourceRenderer(rendererName);
 		if (renderer == null) {
-			log().d("rednerer not found", call, rendererName, widget);
+			log().d("renderer not found", call, rendererName, widget);
 			return;
 		}
 		Object saved = call.getAttribute(CURRENT_WIDGET_NODE);
 		call.setAttribute(CURRENT_WIDGET_NODE, widget);
 		renderer.doRender(call);
 		call.setAttribute(CURRENT_WIDGET_NODE, saved);
+		call.getHttpResponse().flushBuffer();
 	}
 
 	@Override

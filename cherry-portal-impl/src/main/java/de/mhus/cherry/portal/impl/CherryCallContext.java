@@ -27,6 +27,7 @@ public class CherryCallContext implements CallContext {
 	public void setHttpRequest(HttpServletRequest req) {
 		httpRequest = req;
 		httpPath = req.getPathInfo();
+		req.setAttribute(CallContext.REQUEST_ATTRIBUTE_NAME, this);
 	}
 
 	public void setHttpResponse(HttpServletResponse res) {

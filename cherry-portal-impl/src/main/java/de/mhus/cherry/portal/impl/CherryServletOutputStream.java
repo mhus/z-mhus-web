@@ -3,6 +3,7 @@ package de.mhus.cherry.portal.impl;
 import java.io.IOException;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 
 public class CherryServletOutputStream extends ServletOutputStream {
 
@@ -35,6 +36,16 @@ public class CherryServletOutputStream extends ServletOutputStream {
 	@Override
 	public void close() throws IOException {
 		flush();
+	}
+
+	@Override
+	public boolean isReady() {
+		return instance.isReady();
+	}
+
+	@Override
+	public void setWriteListener(WriteListener writeListener) {
+		instance.setWriteListener(writeListener);
 	}
 	
 

@@ -107,8 +107,17 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>de.mhus.cherry.renderer.jsp.*;version=${project.version}</Export-Package>
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>
+							com.sun.java_cup.internal*;resolution:=optional,                        
+							sun.misc*;resolution:=optional,
+							org.apache.catalina.loader*;resolution:=optional,
+							org.apache.tomcat.util.descriptor.web*;resolution:=optional,
+                            *
+                        </Import-Package>
+                        <DynamicImport-Package>de.mhus.*</DynamicImport-Package>
                         <Service-Component>*</Service-Component>
+                        <Embed-Dependency>pax-web-jsp,jaxp-ri</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>

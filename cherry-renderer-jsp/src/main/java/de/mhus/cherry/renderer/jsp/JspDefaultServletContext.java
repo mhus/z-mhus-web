@@ -21,10 +21,9 @@ public class JspDefaultServletContext extends DefaultServletContext {
 		super(root);
 //		File tmp = new File( host.getTmpRoot(), "jsp");
 //		tmp.mkdirs();
-//		param.put("scratchdir", tmp.getAbsolutePath() );
+		param.put("scratchdir", "/tmp" );
 		param.put("keepgenerated", "true");
 		param.put("enablePooling", "false");
 	}
-	
 	
 }

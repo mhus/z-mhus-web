@@ -15,7 +15,12 @@ public class MyJasperClassLoader extends JasperClassLoader {
 	public Class<?> loadClass(final String name) throws ClassNotFoundException {
 //		if (name.startsWith("javax.servelt.jsp."))
 //			return getParent().loadClass(name);
-		return super.loadClass(name);
+		try {
+			Class<?> ret = super.loadClass(name);
+			return ret;
+		} catch (ClassNotFoundException e) {
+			throw e;
+		}
 	}
 
 }

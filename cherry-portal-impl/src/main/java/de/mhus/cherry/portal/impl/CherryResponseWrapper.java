@@ -2,6 +2,7 @@ package de.mhus.cherry.portal.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
@@ -71,6 +72,8 @@ public class CherryResponseWrapper implements HttpServletResponse {
 
 	@Override
 	public void flushBuffer() throws IOException {
+		if (writer != null) writer.flush();
+		if (stream != null) stream.flush();
 		instance.flushBuffer();
 	}
 
@@ -182,6 +185,31 @@ public class CherryResponseWrapper implements HttpServletResponse {
 	@Override
 	public void setStatus(int sc, String sm) {
 		instance.setStatus(sc, sm);
+	}
+
+	@Override
+	public void setContentLengthLong(long len) {
+		instance.setContentLengthLong(len);
+	}
+
+	@Override
+	public int getStatus() {
+		return instance.getStatus();
+	}
+
+	@Override
+	public String getHeader(String name) {
+		return instance.getHeader(name);
+	}
+
+	@Override
+	public Collection<String> getHeaders(String name) {
+		return instance.getHeaders(name);
+	}
+
+	@Override
+	public Collection<String> getHeaderNames() {
+		return instance.getHeaderNames();
 	}
 
 }

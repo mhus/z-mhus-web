@@ -22,15 +22,14 @@ public class SimpleWidget extends MLog implements ResourceRenderer {
 	@Override
 	public void doRender(CallContext call) throws Exception {
 		CaoNode res = Sop.getApi(WidgetApi.class).getResource(call);
-		String title = res.getString("title");
-		//call.getHttpResponse().getWriter().println("<h2>Widget:"+title+"</h2>");
-		call.getHttpResponse().getOutputStream().println("<h2>Widget:"+title+"</h2>");
+//		String title = res.getString("title");
+//		call.getHttpResponse().getOutputStream().println("<h2>Widget:"+title+"</h2>");
 		
 		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(FrameworkUtil.getBundle(SimpleWidget.class).getSymbolicName());
 		File root = descriptor.getPath(SPACE.PRIVATE);
-		File file = new File(root, "script/test.jsp");
+		File file = new File(root, "script/widget.jsp");
 		ScriptRenderer renderer = call.getVirtualHost().getScriptRenderer("jsp");
-		renderer.doRender(call, file);
+		renderer.doRender(call, root, file);
 	}
 
 }
