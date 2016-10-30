@@ -28,18 +28,12 @@ public class CherryServlet extends HttpServlet {
 			
 		String host = req.getHeader("Host");
 		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
-		NavigationProvider navProvider = vHost.getNavigationProvider();
-		
-		if (navProvider == null) {
-			res.sendError(HttpServletResponse.SC_BAD_GATEWAY);
-			return;
-		}
 		
 		CherryCallContext callContext = new CherryCallContext();
 		callContext.setHttpRequest(req);
 		callContext.setHttpResponse(new CherryResponseWrapper(res));
-		String path = callContext.getHttpPath();
-		
+		callContext.setVirtualHost(vHost);
+		callContext.setHttpServlet(this);
 		HttpSession httpSession = req.getSession();
 		synchronized (httpSession) {
 			SessionContext cherrySession = (SessionContext) httpSession.getAttribute("__cherry_session");
@@ -49,17 +43,7 @@ public class CherryServlet extends HttpServlet {
 			}
 			callContext.setSessionContext(cherrySession);
 		}
-		
-		CaoNode navResource = navProvider.getNode(path);
-		
-		if (navResource == null) {
-			vHost.sendError(callContext, HttpServletResponse.SC_NOT_FOUND);
-			return;
-		}
-		callContext.setNavigationResource(navResource);
-		callContext.setVirtualHost(vHost);
-		callContext.setHttpServlet(this);
-		vHost.processRequest( callContext );
+		vHost.processRequest(callContext);
 		
 	}
 	

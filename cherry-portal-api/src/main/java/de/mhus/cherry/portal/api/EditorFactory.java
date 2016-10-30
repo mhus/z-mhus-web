@@ -1,9 +1,9 @@
 package de.mhus.cherry.portal.api;
 
-import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.CaoWritableElement;
 
 public interface EditorFactory {
 
-	public Editor createEditor(CaoNode data);
+	public Editor createEditor(CaoWritableElement data);
 	
 }

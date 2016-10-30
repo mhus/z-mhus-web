@@ -19,9 +19,9 @@ import com.vaadin.ui.UI;
 import aQute.bnd.annotation.component.Activate;
 import aQute.bnd.annotation.component.Component;
 
-@Component(provide = Servlet.class, properties = { "alias=/.contenteditor" }, name="CHERRYGUI",servicefactory=true)
-@VaadinServletConfiguration(ui=CherryUi.class, productionMode=true)
-public class CherryServlet extends VaadinServlet {
+@Component(provide = Servlet.class, properties = { "alias=/.control" }, name="CHERRYGUI",servicefactory=true)
+@VaadinServletConfiguration(ui=ControlUi.class, productionMode=true)
+public class ControlServlet extends VaadinServlet {
 
 	private static final long serialVersionUID = 1L;
 	private BundleContext context;
@@ -46,8 +46,8 @@ public class CherryServlet extends VaadinServlet {
 				VaadinSession vaadinSession = (VaadinSession) request.getAttribute("__vs");
 				if (vaadinSession != null) {
 		    		for (UI ui : vaadinSession.getUIs()) {
-		    			if (ui instanceof CherryUi)
-		    				((CherryUi)ui).requestEnd();
+		    			if (ui instanceof ControlUi)
+		    				((ControlUi)ui).requestEnd();
 		    		}
 				}
     		} catch (Throwable t) {
@@ -67,8 +67,8 @@ public class CherryServlet extends VaadinServlet {
 	    		VaadinSession vaadinSession = getService().findVaadinSession(vs);
 	    		request.setAttribute("__vs", vaadinSession);
 	    		for (UI ui : vaadinSession.getUIs()) {
-	    			if (ui instanceof CherryUi)
-	    				((CherryUi)ui).requestBegin();
+	    			if (ui instanceof ControlUi)
+	    				((ControlUi)ui).requestBegin();
 	    		}
     		} catch (Throwable t) {
     			

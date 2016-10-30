@@ -31,4 +31,9 @@ public class DefaultResourceProvider implements ResourceProvider {
 		this.con = con;
 	}
 
+	@Override
+	public String getName() {
+		return con.getName();
+	}
+
 }

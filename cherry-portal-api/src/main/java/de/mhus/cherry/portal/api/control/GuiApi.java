@@ -1,4 +1,4 @@
-package de.mhus.cherry.portal.api.editor;
+package de.mhus.cherry.portal.api.control;
 
 import javax.security.auth.Subject;
 
@@ -13,4 +13,6 @@ public interface GuiApi {
 	boolean openSpace(String spaceId, String subSpace, String search);
 	
 	Subject getCurrentUser();
+	
+	String getHost();
 }

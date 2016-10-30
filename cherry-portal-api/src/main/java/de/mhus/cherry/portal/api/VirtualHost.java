@@ -2,6 +2,8 @@ package de.mhus.cherry.portal.api;
 
 import java.io.IOException;
 
+import de.mhus.lib.cao.CaoNode;
+
 public interface VirtualHost {
 
 	String RESOURCE_ID = "resource_id";
@@ -22,8 +24,16 @@ public interface VirtualHost {
 
 	public String getDefaultContentType();
 	
-	public EditorFactory getFactory(String name);
-	
 	public ScriptRenderer getScriptRenderer(String name);
+
+	public EditorFactory getControlEditorFactory(String name);
+
+	/**
+	 * Insert the path like using in the browser and get the specified resource (not navigation node)
+	 * 
+	 * @param navPath The path to search for
+	 * @return The referenced resource
+	 */
+	public CaoNode getNavigationResource(String navPath);
 	
 }

@@ -10,4 +10,8 @@ public interface WidgetApi extends SApi {
 
 	CaoNode getResource(CallContext call);
 
+	EditorFactory getControlEditorFactory(VirtualHost vHost, CaoNode resource);
+
+	String getEditorLink(CallContext call, CaoNode res);
+
 }

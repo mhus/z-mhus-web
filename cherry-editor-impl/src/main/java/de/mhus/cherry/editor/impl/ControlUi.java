@@ -22,12 +22,14 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.mhus.cherry.portal.api.editor.GuiApi;
-import de.mhus.cherry.portal.api.editor.GuiLifecycle;
-import de.mhus.cherry.portal.api.editor.GuiSpaceService;
+import de.mhus.cherry.portal.api.control.GuiApi;
+import de.mhus.cherry.portal.api.control.GuiLifecycle;
+import de.mhus.cherry.portal.api.control.GuiSpaceService;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
+import de.mhus.lib.core.MString;
+import de.mhus.lib.core.cfg.CfgString;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.AccessControl;
@@ -35,9 +37,9 @@ import de.mhus.lib.vaadin.VaadinAccessControl;
 
 @Theme("cherrytheme")
 @Widgetset("de.mhus.cherry.editor.theme.CherryWidgetset")
-public class CherryUi extends UI implements GuiApi {
+public class ControlUi extends UI implements GuiApi {
 
-	private static Log log = Log.getLog(CherryUi.class);
+	private static Log log = Log.getLog(ControlUi.class);
 	private MenuBar menuBar;
 	private AccessControl accessControl;
 	private Desktop desktop;
@@ -46,6 +48,9 @@ public class CherryUi extends UI implements GuiApi {
 	private HashMap<String, AbstractComponent> spaceInstanceList = new HashMap<String, AbstractComponent>(); 
 	private BundleContext context;
 	private String trailConfig = null;
+	private String initPath;
+	private String host;
+    private static final CfgString realm = new CfgString(ControlUi.class, "realm", "karaf");
 
 	@Override
 	protected void init(VaadinRequest request) {
@@ -56,8 +61,15 @@ public class CherryUi extends UI implements GuiApi {
         content.setMargin(true);
         content.setSpacing(true);
 
-        accessControl = new VaadinAccessControl("karaf");
+        accessControl = new VaadinAccessControl(realm.value());
 
+        context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+		spaceTracker = new ServiceTracker<>(context, GuiSpaceService.class, new GuiSpaceServiceTrackerCustomizer() );
+		spaceTracker.open();
+
+        initPath = request.getPathInfo();
+        host = request.getHeader("Host");
+        
         if (!accessControl.isUserSignedIn()) {
             setContent(new LoginScreen(accessControl, new LoginScreen.LoginListener() {
                 @Override
@@ -68,10 +80,7 @@ public class CherryUi extends UI implements GuiApi {
         } else {
             showMainView();
         }
-
-        context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-		spaceTracker = new ServiceTracker<>(context, GuiSpaceService.class, new GuiSpaceServiceTrackerCustomizer() );
-		spaceTracker.open();
+		
 
 	}
 
@@ -82,6 +91,24 @@ public class CherryUi extends UI implements GuiApi {
 		synchronized (this) {
 			desktop.refreshSpaceList(spaceList);
 		}
+		
+		if (initPath != null && initPath.startsWith("/")) initPath = initPath.substring(1);
+		if (MString.isSet(initPath)) {
+			String spaceName = initPath;
+			String subSpace = null;
+			String search = null;
+			if (MString.isIndex(spaceName, '/')) {
+				subSpace  = MString.afterIndex(spaceName, '/');
+				spaceName = MString.beforeIndex(spaceName, '/');
+				if (MString.isIndex(subSpace, '/')) {
+					search = MString.afterIndex(subSpace, '/');
+					subSpace = MString.beforeIndex(subSpace, '/');
+				}
+			}
+			openSpace(spaceName, subSpace, search);
+			initPath = null; // do not show again
+		}
+		
 	}
 
 	@Override
@@ -232,11 +259,12 @@ public class CherryUi extends UI implements GuiApi {
 	public boolean openSpace(String spaceId, String subSpace, String search) {
 		GuiSpaceService space = getSpace(spaceId);
 		if (space == null) return false;
-		desktop.showSpace(space, subSpace, search);
-		
-		return true;
+		if (!hasAccess(space.getName()) || !space.hasAccess(getAccessControl())) return false;
+
+		return desktop.showSpace(space, subSpace, search);
 	}
 
+	
 	@Override
 	public Subject getCurrentUser() {
 		return (Subject)getSession().getAttribute(VaadinAccessControl.SUBJECT_ATTR);
@@ -265,6 +293,11 @@ public class CherryUi extends UI implements GuiApi {
 			MLogUtil.setTrailConfig(trailConfig);
 			this.trailConfig = MLogUtil.getTrailConfig();
 		}
+	}
+
+	@Override
+	public String getHost() {
+		return host;
 	}
 	
 }

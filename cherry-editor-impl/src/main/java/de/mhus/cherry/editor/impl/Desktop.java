@@ -14,9 +14,9 @@ import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import de.mhus.cherry.portal.api.editor.GuiSpaceService;
-import de.mhus.cherry.portal.api.editor.GuiUtil;
-import de.mhus.cherry.portal.api.editor.Navigatable;
+import de.mhus.cherry.portal.api.control.GuiSpaceService;
+import de.mhus.cherry.portal.api.control.GuiUtil;
+import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MXml;
 import de.mhus.lib.core.logging.Log;
@@ -25,11 +25,11 @@ import de.mhus.lib.core.util.Rfc1738;
 
 public class Desktop extends CssLayout {
 
-	private CherryUi ui;
+	private ControlUi ui;
 	private MenuBar menuBar;
 	private MenuItem menuSpaces;
 	private VerticalLayout contentScreen;
-	private MenuItem menuCurrent;
+	private MenuItem[] menuCurrent = new MenuItem[4];
 	private MenuItem menuLeave;
 	private MenuItem menuUser;
 	private MenuItem menuLogout;
@@ -39,7 +39,7 @@ public class Desktop extends CssLayout {
 	private MenuItem menuTrace;
 	private static Log log = Log.getLog(Desktop.class);
 
-	public Desktop(CherryUi cherryUi) {
+	public Desktop(ControlUi cherryUi) {
 		ui = cherryUi;
 		initGui();
 	}
@@ -55,7 +55,10 @@ public class Desktop extends CssLayout {
 		menuBar = new MenuBar();
 		menuSpaces = menuBar.addItem("Bereiche", null);
 
-		menuCurrent = menuBar.addItem("", null);
+		menuCurrent[0] = menuBar.addItem("", null);
+		menuCurrent[1] = menuBar.addItem("", null);
+		menuCurrent[2] = menuBar.addItem("", null);
+		menuCurrent[3] = menuBar.addItem("", null);
 		
 		menuUser = menuBar.addItem( ui.getAccessControl().getPrincipalName(), null);
 		menuUser.setStyleName("right");
@@ -122,7 +125,7 @@ public class Desktop extends CssLayout {
 		LinkedList<GuiSpaceService> componentList = new LinkedList<>();
 		for (GuiSpaceService space : spaceList.values()) {
 			
-			if (!hasAccess(space) || !space.hasAccess(ui.getAccessControl())) continue;
+			if (space.isHiddenSpace() || !hasAccess(space) || !space.hasAccess(ui.getAccessControl())) continue;
 			componentList.add(space);
 		}
 		
@@ -175,46 +178,48 @@ public class Desktop extends CssLayout {
 		return GuiUtil.getApi().hasAccess(space.getName());
 	}
 
-	protected void showSpace(GuiSpaceService space, String subSpace, String search) {
+	protected boolean showSpace(GuiSpaceService space, String subSpace, String search) {
 		AbstractComponent component = ui.getSpaceComponent(space.getName());
 		
 		contentScreen.removeAllComponents();
-		menuCurrent.removeChildren();
-		
+		cleanupMenu();
 		if (component == null) {
 			contentScreen.addComponent(new Label("Der Space ist aktuell nicht erreichbar " + space.getName()));
 			addComponent(contentScreen);
-			return;
+			return false;
 		}
 		
 		component.setSizeFull();
 		contentScreen.addComponent(component);
 		
-		menuCurrent.setText(space.getDisplayName());
+		menuCurrent[0].setText(space.getDisplayName());
 		menuLeave.setEnabled(true);
 		currentSpace = space;
-		space.createMenu(menuCurrent);
+		space.createMenu(component,menuCurrent);
 		
-		if (component instanceof Navigatable && (MString.isSet(subSpace) || MString.isSet(search)))
-			((Navigatable)component).navigateTo(subSpace, search);
+		if (component instanceof Navigable && (MString.isSet(subSpace) || MString.isSet(search)))
+			return ((Navigable)component).navigateTo(subSpace, search);
+		
+		return true;
 	}
 
 	protected void showOverview() {
 		if (menuLeave != null) menuLeave.setEnabled(false);
 		contentScreen.removeAllComponents();
-		menuCurrent.setText("Übersicht");
+		cleanupMenu();
 		currentSpace = null;
 		contentScreen.addComponent(overView);
-		
-		//UI.getCurrent().getPage().setUriFragment("moin",false);
-		String nav = UI.getCurrent().getPage().getUriFragment();
-		String lnk = nav;
-		if (MString.isIndex(lnk, ':')) lnk = MString.beforeIndex(lnk, ':');
-		Label l = new Label();
-		l.setCaptionAsHtml(true);
-		l.setCaption("<a href='" + lnk + "'>" + MXml.encode(nav) + "</a>" );
-		
-		contentScreen.addComponent(l);
+	}
+
+	private void cleanupMenu() {
+		for (int i=0; i < menuCurrent.length; i++) {
+			menuCurrent[i].removeChildren();
+			menuCurrent[i].setText("");
+			if (i > 0) {
+				//menuCurrent[i].setEnabled(false);
+				menuCurrent[i].setVisible(false);
+			}
+		}
 	}
 
 }

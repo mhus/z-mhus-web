@@ -1,2 +1,3 @@
 renderer=de.mhus.cherry.portal.impl.page.SimplePage
 title=Page
+editor=simpleeditor

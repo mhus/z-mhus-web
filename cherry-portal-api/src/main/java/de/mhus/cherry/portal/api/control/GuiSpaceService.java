@@ -1,4 +1,4 @@
-package de.mhus.cherry.portal.api.editor;
+package de.mhus.cherry.portal.api.control;
 
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -11,6 +11,7 @@ public interface GuiSpaceService {
 	String getDisplayName();
 	AbstractComponent createSpace();
 	boolean hasAccess(AccessControl control);
-	void createMenu(MenuItem menu);
-	
+	void createMenu(AbstractComponent space, MenuItem[] menu);
+	boolean isHiddenSpace();
+	AbstractComponent createTile();
 }

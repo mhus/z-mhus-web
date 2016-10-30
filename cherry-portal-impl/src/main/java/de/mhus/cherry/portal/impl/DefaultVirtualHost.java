@@ -48,16 +48,108 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	}
 
 	@Override
+	public CaoNode getNavigationResource(String path) {
+		
+		NavigationProvider navProvider = getNavigationProvider();
+		if (navProvider == null)
+			return null;
+		
+		CaoNode navResource = navProvider.getNode(path);
+		if (navResource == null)
+			return null;
+		
+		String subPath = "";
+		String control = "";
+		String subType = ""; // type of path after nav node, nav/.content/res/res/
+		boolean isFolder = false;
+		if (MString.isIndex(path, '.')) {
+			control = MString.afterIndex(path, '.');
+			path = MString.beforeIndex(path, '.');
+		}
+		
+		if (path.endsWith("/")) {
+			isFolder = true;
+			path = path.substring(0, path.length()-1);
+		}
+		
+		if (MString.isIndex(control, '/')) {
+			subPath = MString.afterIndex(control, '/');
+			control = MString.beforeIndex(control, '/');
+		}
+		
+		// if folder, the first part is the type of sub resource
+		if (isFolder) {
+			if (MString.isIndex(control, '.')) {
+				subType = MString.beforeIndex(control, '.');
+				control = MString.afterIndex(control, '.');
+			} else {
+				subType = control;
+				control = "";
+			}
+		}
+		// last one is return type
+		if (MString.isIndex(control, '.')) {
+			control = MString.beforeLastIndex(control, '.');
+		} else {
+			control = "";
+		}
+		
+		String resId = navResource.getString(NavigationProvider.RESOURCE_ID, null);
+		if (resId == null)
+			return null;
+		
+		CaoNode resResource = getResourceResolver().getResourceById(this, resId);
+		if (resResource == null)
+			return null;
+
+		if (isFolder && MString.isSet(subType)) {
+			
+			if ("content".equals(subType)) {
+				
+				for (String part : subPath.split("/")) {
+					if (MString.isSetTrim(part)) {
+						resResource = (CaoNode) resResource.getNode(part);
+						if (resResource == null)
+							return null;
+					}
+				}
+				
+			}
+			
+		}
+
+		return resResource;
+	}
+
+	@Override
 	public void processRequest(CallContext iCall) {
 		CherryCallContext call = (CherryCallContext)iCall;
 		
+		NavigationProvider navProvider = getNavigationProvider();
+		
 		try {
+			if (navProvider == null) {
+				call.getHttpResponse().sendError(HttpServletResponse.SC_BAD_GATEWAY);
+				return;
+			}
+			
+			
+			String path = call.getHttpPath();
+			
+			
+			CaoNode navResource = navProvider.getNode(path);
+			
+			if (navResource == null) {
+				sendError(call, HttpServletResponse.SC_NOT_FOUND);
+				return;
+			}
+			call.setNavigationResource(navResource);
+
 			String subPath = "";
 			String control = "";
 			String subType = ""; // type of path after nav node, nav/.content/res/res/
 			String[] selectors;
 			String retType = "";
-			String path = call.getHttpPath();
 			boolean isFolder = false;
 			if (MString.isIndex(path, '.')) {
 				control = MString.afterIndex(path, '.');
@@ -99,7 +191,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 				selectors = new String[0];
 			
 			
-			String resId = call.getNavigationResource().getString(NavigationProvider.RESOURCE_ID);
+			String resId = call.getNavigationResource().getString(NavigationProvider.RESOURCE_ID, null);
 			if (resId == null) {
 				log().d("resource id not found", call);
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);
@@ -199,17 +291,20 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 		return renderer;
 	}
 
+	public void addResourceprovider(ResourceProvider provider) {
+		localResourceProvider.put(provider.getName(), provider);
+	}
+
 	public void addResourceprovider(String name, ResourceProvider provider) {
 		localResourceProvider.put(name, provider);
 	}
-
+	
 	@Override
 	public String getDefaultContentType() {
 		return "text/html";
 	}
 
-	@Override
-	public EditorFactory getFactory(String name) {
+	public EditorFactory getControlEditorFactory(String name) {
 		name = name.toLowerCase();
 		EditorFactory factory = null;
 		try {

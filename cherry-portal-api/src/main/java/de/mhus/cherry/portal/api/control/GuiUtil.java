@@ -1,4 +1,4 @@
-package de.mhus.cherry.portal.api.editor;
+package de.mhus.cherry.portal.api.control;
 
 import com.vaadin.ui.UI;
 
