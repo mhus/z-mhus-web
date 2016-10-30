@@ -113,7 +113,7 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 	            @Override
 				protected void scanPlatform() {
 	            	try {
-	            		URL url = JspRendererContext.class.getClassLoader().getResource("/WEB-INF/cherry-1.tld");
+	            		URL url = JspRendererContext.class.getClassLoader().getResource("/META-INF/cherry-1.tld");
 	            		TldResourcePath tldResourcePath = new TldResourcePath(url, null, null);
 	            		parseTld(tldResourcePath);
 					} catch (Exception e) {

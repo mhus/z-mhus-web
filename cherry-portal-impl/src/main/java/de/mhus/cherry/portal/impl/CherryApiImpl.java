@@ -1,6 +1,7 @@
 package de.mhus.cherry.portal.impl;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.CacheApi;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.FileDeployer;
@@ -10,6 +11,7 @@ import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.errors.NotFoundException;
 import de.mhus.lib.karaf.MOsgi;
+import de.mhus.osgi.sop.api.Sop;
 
 @Component
 public class CherryApiImpl extends MLog implements CherryApi {
@@ -52,12 +54,19 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
 	@Override
 	public String getRecursiveString(CaoNode resource, String name) {
-		// TODO implement weak cache to fasten the search
+		CacheApi cache = Sop.getApi(CacheApi.class);
+		String val = cache.getString(resource, "cherry_recursice_string_" + name);
+		if (val != null) return val;
+		
+		CaoNode r = resource;
 		while (true) {
-			if (resource == null) return null;
-			String value = resource.getString(name, null);
-			if (value != null) return value;
-			resource = resource.getParent();
+			if (r == null) return null;
+			String value = r.getString(name, null);
+			if (value != null) {
+				cache.put(resource, "cherry_recursice_string_" + name, value);
+				return value;
+			}
+			r = r.getParent();
 		}
 	}
 

@@ -81,6 +81,32 @@
 
     <tag>
         <description>
+        	Iterate all elements of a path, inclusive first and last node
+        </description>
+        <name>path</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.PathTagHandler</tag-class>
+        <tei-class>de.mhus.cherry.renderer.jsp.tagext.PathTagTei</tei-class>
+        <body-content>JSP</body-content>
+		<attribute>
+            <description>
+                Last resource
+            </description>
+            <name>resource</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Iterator name
+            </description>
+            <name>iterator</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>
         	Render body if editor mode is set.
         </description>
         <name>editor</name>

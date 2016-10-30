@@ -4,9 +4,11 @@
 <%@ taglib prefix="sql" uri="http://java.sun.com/jstl/sql" %>
 <%@ taglib prefix="ch" uri="http://mhus.org/jsp/cherry/core_1" %>
 <ch:load />
-<a href="<ch:editorLink/>">E</a>
-<h1>This is the Page: <%=resource.getString("title")%></h1>
-
+<div class="page-header">
+<h1><%=resource.getString("title","")%></h1>
+<button type="button" class="btn btn-default"><a href="<ch:editorLink/>"><span class="glyphicon glyphicon glyphicon-edit" aria-hidden="true"></span></a></button>
+<%=resource.getString("text","")%>
+</div>
 <ch:children resource="<%=resource%>" iterator="child">
 <div>
   <ch:render resource="<%=child%>"/>

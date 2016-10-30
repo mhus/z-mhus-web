@@ -1,4 +1,4 @@
-package de.mhus.cherry.portal.impl;
+package de.mhus.cherry.portal.impl.page;
 
 import java.io.File;
 import java.util.HashSet;
@@ -7,6 +7,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.CacheApi;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
@@ -69,10 +70,13 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 	@Override
 	public String getHtmlHead(CallContext call, CaoNode res) {
 		
+		CacheApi cache = Sop.getApi(CacheApi.class);
+		String val = cache.getString(res, "widget_html_head");
+		if (val != null) return val;
+
 		CherryApi api = Sop.getApi(CherryApi.class);
 		
 		
-		// TODO cache ? and optimize
 		HashSet<String> cssList = new HashSet<>();
 		HashSet<String> jsList = new HashSet<>();
 		
@@ -94,6 +98,9 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 		for (String item : jsList)
 			out.append("<script src=\"").append(item).append("\"></script>");
 
+		val = out.toString();
+		cache.put(res, "widget_html_head", val);
+		
 		return out.toString();
 	}
 
