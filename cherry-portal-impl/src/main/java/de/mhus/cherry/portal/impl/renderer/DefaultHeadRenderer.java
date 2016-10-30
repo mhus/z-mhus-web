@@ -2,6 +2,7 @@ package de.mhus.cherry.portal.impl.renderer;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Set;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
@@ -33,5 +34,10 @@ public class DefaultHeadRenderer extends MLog implements ResourceRenderer {
 		if (contentType == null) contentType = call.getVirtualHost().getDefaultContentType();
 		if (contentType != null) call.getHttpResponse().setContentType(contentType);
 				
+	}
+
+	@Override
+	public void doCollectResourceLinks(String name, Set<String> list) {
+		
 	}
 }

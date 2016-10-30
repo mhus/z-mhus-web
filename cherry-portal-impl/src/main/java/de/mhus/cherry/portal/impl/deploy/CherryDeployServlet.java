@@ -309,6 +309,13 @@ public class CherryDeployServlet extends HttpServlet implements BundleListener {
 		public MProperties getConfiguration(SPACE space) {
 			return configs[space.ordinal()];
 		}
+
+		@Override
+		public String getWebPath(SPACE space) {
+			File f = pathes[space.ordinal()];
+			if (f == null) return null;
+			return "/.pub/" + f.getName();
+		}
 		
 	}
 

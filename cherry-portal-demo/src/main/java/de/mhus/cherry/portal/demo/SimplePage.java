@@ -3,6 +3,7 @@ package de.mhus.cherry.portal.demo;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.osgi.framework.FrameworkUtil;
 
@@ -16,6 +17,7 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.MString;
 import de.mhus.lib.core.directory.ResourceNode;
 import de.mhus.osgi.sop.api.Sop;
 
@@ -37,13 +39,28 @@ public class SimplePage extends MLog implements ResourceRenderer {
 //			}
 //		}
 		
-		
+		String themeName = Sop.getApi(CherryApi.class).getRecursiveString(call.getNavigationResource(), WidgetApi.THEME );
+		ResourceRenderer theme = null;
+		if (MString.isSet(themeName)) {
+			theme = call.getVirtualHost().getResourceRenderer(themeName);
+			call.setAttribute(WidgetApi.CURRENT_THEME_SCOPE, WidgetApi.THEME_SCOPE_HEADER);
+			theme.doRender(call);
+		}
 		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(FrameworkUtil.getBundle(SimpleWidget.class).getSymbolicName());
 		File root = descriptor.getPath(SPACE.PRIVATE);
 		File file = new File(root, "script/page.jsp");
 		ScriptRenderer renderer = call.getVirtualHost().getScriptRenderer("jsp");
 		renderer.doRender(call, root, file);
 
+		if (theme != null) {
+			call.setAttribute(WidgetApi.CURRENT_THEME_SCOPE, WidgetApi.THEME_SCOPE_FOOTER);
+			theme.doRender(call);
+		}
+		
+	}
+
+	@Override
+	public void doCollectResourceLinks(String name, Set<String> list) {
 		
 	}
 

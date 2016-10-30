@@ -2,6 +2,7 @@ package de.mhus.cherry.portal.impl.renderer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 
@@ -27,6 +28,11 @@ public class DefaultGetRenderer extends MLog implements ResourceRenderer {
 				is.close();
 			} // TODO else?
 		}
+		
+	}
+
+	@Override
+	public void doCollectResourceLinks(String name, Set<String> list) {
 		
 	}
 

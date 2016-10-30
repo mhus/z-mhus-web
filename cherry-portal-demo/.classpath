@@ -27,5 +27,12 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="src/main/resources/CHERRY/private/WEB-INF/lib/serializer-2.7.1.jar"/>
+	<classpathentry kind="lib" path="src/main/resources/CHERRY/private/WEB-INF/lib/taglibs-standard-impl-1.2.5.jar"/>
+	<classpathentry kind="lib" path="src/main/resources/CHERRY/private/WEB-INF/lib/taglibs-standard-jstlel-1.2.5.jar"/>
+	<classpathentry kind="lib" path="src/main/resources/CHERRY/private/WEB-INF/lib/taglibs-standard-spec-1.2.5.jar"/>
+	<classpathentry kind="lib" path="src/main/resources/CHERRY/private/WEB-INF/lib/xalan-2.7.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cherry-renderer-jsp"/>
+	<classpathentry kind="lib" path="/cherry-renderer-jsp/src/main/resources/WEB-INF"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

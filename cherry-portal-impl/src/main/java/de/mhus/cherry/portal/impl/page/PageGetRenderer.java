@@ -1,5 +1,7 @@
 package de.mhus.cherry.portal.impl.page;
 
+import java.util.Set;
+
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.ResourceRenderer;
@@ -25,6 +27,11 @@ public class PageGetRenderer extends MLog implements ResourceRenderer {
 		call.getHttpResponse().setContentType("text/html");
 		
 		Sop.getApi(WidgetApi.class).doRender(call, content);
+	}
+
+	@Override
+	public void doCollectResourceLinks(String name, Set<String> list) {
+		
 	}
 
 

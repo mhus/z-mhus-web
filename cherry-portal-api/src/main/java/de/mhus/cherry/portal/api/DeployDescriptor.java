@@ -11,5 +11,6 @@ public interface DeployDescriptor {
 	String getName();
 	File getPath(SPACE space);
 	MProperties getConfiguration(SPACE space);
+	String getWebPath(SPACE space);
 	
 }

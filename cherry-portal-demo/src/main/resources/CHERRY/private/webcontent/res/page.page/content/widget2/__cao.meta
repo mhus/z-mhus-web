@@ -1,3 +1,3 @@
 renderer=de.mhus.cherry.portal.impl.page.simplewidget
 title=And The Universe!
-
+editor=de.mhus.cherry.portal.demo.simpleeditorfactory

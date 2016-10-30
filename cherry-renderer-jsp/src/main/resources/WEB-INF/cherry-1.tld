@@ -92,8 +92,17 @@
         <description>
         	Render link to editor
         </description>
-        <name>editor_link</name>
+        <name>editorLink</name>
         <tag-class>de.mhus.cherry.renderer.jsp.tagext.EditorLinkTagHandler</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+    
+    <tag>
+        <description>
+        	Render needed html head content
+        </description>
+        <name>htmlHead</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.HtmlHeadTagHandler</tag-class>
         <body-content>JSP</body-content>
     </tag>
     

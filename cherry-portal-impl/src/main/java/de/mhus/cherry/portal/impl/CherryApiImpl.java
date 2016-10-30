@@ -6,6 +6,7 @@ import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.FileDeployer;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.impl.deploy.CherryDeployServlet;
+import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.errors.NotFoundException;
 import de.mhus.lib.karaf.MOsgi;
@@ -47,6 +48,17 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	@Override
 	public DeployDescriptor getDeployDescritor(String symbolicName) {
 		return CherryDeployServlet.instance.getDescriptor(symbolicName);
+	}
+
+	@Override
+	public String getRecursiveString(CaoNode resource, String name) {
+		// TODO implement weak cache to fasten the search
+		while (true) {
+			if (resource == null) return null;
+			String value = resource.getString(name, null);
+			if (value != null) return value;
+			resource = resource.getParent();
+		}
 	}
 
 }
