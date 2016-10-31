@@ -21,10 +21,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.mhus.lib.core.cfg.CfgString;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.AccessControl;
-import de.mhus.lib.core.security.MSecurity;
 import de.mhus.lib.vaadin.VaadinAccessControl;
 
 public class LoginScreen extends CssLayout {

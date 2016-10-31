@@ -1,11 +1,8 @@
 package de.mhus.cherry.portal.impl;
 
-import java.util.HashMap;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpSession;
 
-import de.mhus.cherry.portal.api.ProcessorContext;
 import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 

@@ -11,7 +11,6 @@ import de.mhus.cherry.portal.api.CacheApi;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MTimeInterval;
-import de.mhus.lib.core.directory.ResourceNode;
 import de.mhus.lib.errors.MException;
 
 @Component

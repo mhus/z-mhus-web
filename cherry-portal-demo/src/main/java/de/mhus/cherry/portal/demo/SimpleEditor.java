@@ -1,6 +1,6 @@
 package de.mhus.cherry.portal.demo;
 
-import com.vaadin.ui.Label;
+import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextField;
 
 import de.mhus.cherry.portal.api.Editor;
@@ -13,6 +13,7 @@ public class SimpleEditor extends Editor {
 	private static Log log = Log.getLog(SimpleEditor.class);
 	private static final long serialVersionUID = 1L;
 	private TextField title;
+	private RichTextArea text;
 
 	public SimpleEditor(CaoWritableElement data) {
 		super(data);
@@ -23,12 +24,11 @@ public class SimpleEditor extends Editor {
 		
 		title = new TextField("Title");
 		title.setValue(data.getString("title", ""));
-		
 		addComponent(title);
 		
-		Label dummy = new Label("");
-		addComponent(dummy);
-		setExpandRatio(dummy, 1f);
+		text = new RichTextArea();
+		text.setValue(data.getString("text", ""));
+		addComponent(text);
 	}
 	
 	@Override
@@ -39,6 +39,7 @@ public class SimpleEditor extends Editor {
 	@Override
 	public String doSave() {
 		data.setString("title", title.getValue());
+		data.setString("text", text.getValue());
 		try {
 			data.getUpdateOperation().execute();
 		} catch (MException e) {

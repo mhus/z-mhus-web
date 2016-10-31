@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
-import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.lib.core.MLog;
 

@@ -1,16 +1,11 @@
 package de.mhus.cherry.portal.impl.page;
 
-import java.io.File;
 import java.util.HashSet;
-
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CacheApi;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.EditorFactory;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
@@ -18,7 +13,6 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
-import de.mhus.lib.core.directory.ResourceNode;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.sop.api.Sop;
 
@@ -26,7 +20,7 @@ import de.mhus.osgi.sop.api.Sop;
 public class WidgetApiImpl extends MLog implements WidgetApi {
 
 	@Override
-	public void doRender(CallContext call, ResourceNode widget) throws Exception {
+	public void doRender(CallContext call, CaoNode widget) throws Exception {
 		call.getHttpResponse().flushBuffer();
 		String rendererName = widget.getString(RENDERER);
 		if (rendererName == null) {
@@ -104,7 +98,7 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 		return out.toString();
 	}
 
-	private void collectHtmlResources(CallContext call,ResourceNode res, HashSet<String> cssList, HashSet<String> jsList, int level) {
+	private void collectHtmlResources(CallContext call,CaoNode res, HashSet<String> cssList, HashSet<String> jsList, int level) {
 		if (level > MAX_SEARCH_LEVEL) return;
 		
 		String rendererName = res.getString(WidgetApi.RENDERER, null);
@@ -115,7 +109,7 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 				renderer.doCollectResourceLinks(ResourceRenderer.RESOURCE_CSS, cssList);
 			}
 		}
-		for (ResourceNode child : res.getNodes())
+		for (CaoNode child : res.getNodes())
 			collectHtmlResources(call, child, cssList, jsList, level+1);
 	}
 

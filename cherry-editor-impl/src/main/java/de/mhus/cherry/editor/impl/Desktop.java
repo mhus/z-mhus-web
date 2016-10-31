@@ -4,11 +4,11 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.UI;
@@ -18,10 +18,8 @@ import de.mhus.cherry.portal.api.control.GuiSpaceService;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.lib.core.MString;
-import de.mhus.lib.core.MXml;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
-import de.mhus.lib.core.util.Rfc1738;
 
 public class Desktop extends CssLayout {
 

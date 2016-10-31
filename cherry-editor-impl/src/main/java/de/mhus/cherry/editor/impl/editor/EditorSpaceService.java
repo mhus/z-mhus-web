@@ -1,9 +1,8 @@
 package de.mhus.cherry.editor.impl.editor;
 
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UI;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.control.GuiSpaceService;

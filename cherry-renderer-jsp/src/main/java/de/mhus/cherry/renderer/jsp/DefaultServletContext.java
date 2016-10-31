@@ -6,27 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.EventListener;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRegistration.Dynamic;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.descriptor.JspConfigDescriptor;
-
 import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.util.AbstractServletContext;
-import de.mhus.lib.core.directory.ResourceNode;
-import de.mhus.lib.core.directory.fs.FileResource;
 import de.mhus.osgi.sop.api.Sop;
 
 public class DefaultServletContext extends AbstractServletContext {

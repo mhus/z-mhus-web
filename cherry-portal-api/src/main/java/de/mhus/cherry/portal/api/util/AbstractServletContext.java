@@ -1,8 +1,5 @@
 package de.mhus.cherry.portal.api.util;
 
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -17,9 +14,9 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
-import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.descriptor.JspConfigDescriptor;
 
 import de.mhus.lib.core.MProperties;

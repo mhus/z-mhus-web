@@ -1,12 +1,12 @@
 package de.mhus.cherry.editor.impl.editor;
 
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.Editor;
@@ -18,7 +18,6 @@ import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MString;
-import de.mhus.lib.core.MXml;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.sop.api.Sop;

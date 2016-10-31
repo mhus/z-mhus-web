@@ -1,7 +1,5 @@
 package de.mhus.cherry.portal.impl.cache;
 
-import de.mhus.lib.core.MTimeInterval;
-
 public class Container {
 
 ;

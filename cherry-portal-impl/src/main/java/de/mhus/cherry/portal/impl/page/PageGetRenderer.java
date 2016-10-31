@@ -9,7 +9,6 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.impl.renderer.DefaultHeadRenderer;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
-import de.mhus.lib.core.directory.ResourceNode;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_get_page")
@@ -18,7 +17,7 @@ public class PageGetRenderer extends MLog implements ResourceRenderer {
 	@Override
 	public void doRender(CallContext call) throws Exception {
 		CaoNode res = call.getMainResource();
-		ResourceNode content = res.getNode("content");
+		CaoNode content = res.getNode("content");
 		if (content == null) {
 			//TODO
 			return;

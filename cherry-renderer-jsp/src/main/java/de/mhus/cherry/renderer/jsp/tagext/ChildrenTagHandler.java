@@ -1,18 +1,20 @@
 package de.mhus.cherry.renderer.jsp.tagext;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import de.mhus.lib.cao.CaoNode;
-import de.mhus.lib.core.directory.ResourceNode;
 
 public class ChildrenTagHandler extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	private CaoNode res;
-	private ResourceNode[] nodes;
-	  private int counter = 0;
+	private Collection<CaoNode> nodes;
 	private String iteratorName;
+	private Iterator<CaoNode> iterator;
 
 	public void setResource(CaoNode res) {
 		this.res = res;
@@ -25,6 +27,8 @@ public class ChildrenTagHandler extends TagSupport {
 	@Override
 	public int doStartTag() throws JspException {
 		nodes = res.getNodes();
+		iterator = nodes.iterator();
+
 	    if(iterate()) {
 	    	return EVAL_BODY_INCLUDE;
 	    }
@@ -32,13 +36,12 @@ public class ChildrenTagHandler extends TagSupport {
 	}
 	
 	private boolean iterate() throws JspException {
-		if (counter >= nodes.length) return false;
+		if (!iterator.hasNext()) return false;
 	    try{
-	    	pageContext.setAttribute(iteratorName, nodes[counter] );
+	    	pageContext.setAttribute(iteratorName, iterator.next() );
 	    } catch(Exception e){
 	      throw new JspException(e.toString());
 	    }
-	    counter++;
 	    return true;
 	}
 

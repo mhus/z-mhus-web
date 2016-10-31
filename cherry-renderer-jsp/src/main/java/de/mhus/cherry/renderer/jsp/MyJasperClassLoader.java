@@ -1,7 +1,5 @@
 package de.mhus.cherry.renderer.jsp;
 
-import java.net.URLClassLoader;
-
 import org.ops4j.pax.web.jsp.JasperClassLoader;
 import org.osgi.framework.Bundle;
 

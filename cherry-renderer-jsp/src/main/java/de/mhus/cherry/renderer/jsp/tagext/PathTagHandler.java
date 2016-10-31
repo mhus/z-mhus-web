@@ -6,7 +6,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import de.mhus.lib.cao.CaoNode;
-import de.mhus.lib.core.directory.ResourceNode;
 
 public class PathTagHandler extends TagSupport {
 

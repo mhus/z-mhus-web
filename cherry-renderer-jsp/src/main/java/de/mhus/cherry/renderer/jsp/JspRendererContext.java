@@ -1,7 +1,6 @@
 package de.mhus.cherry.renderer.jsp;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -25,16 +24,10 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.xml.sax.SAXException;
 
 import de.mhus.cherry.portal.api.CallContext;
-import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.ProcessorContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.core.MLog;
-import de.mhus.lib.core.directory.ClassLoaderResourceProvider;
-import de.mhus.lib.core.directory.ResourceNode;
 import de.mhus.lib.core.lang.DelegateClassLoader;
-import de.mhus.lib.core.lang.DynamicClassLoader;
-import de.mhus.osgi.sop.api.Sop;
 
 public class JspRendererContext extends MLog implements ProcessorContext {
 

@@ -11,10 +11,8 @@ import javax.servlet.http.HttpSession;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
-import de.mhus.lib.cao.CaoNode;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = Servlet.class, properties = "alias=/*", name="CherryServlet",servicefactory=true)
