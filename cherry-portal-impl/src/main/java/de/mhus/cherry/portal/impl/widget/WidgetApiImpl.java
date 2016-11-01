@@ -1,4 +1,4 @@
-package de.mhus.cherry.portal.impl.page;
+package de.mhus.cherry.portal.impl.widget;
 
 import java.util.HashSet;
 
@@ -47,8 +47,12 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 	@Override
 	public EditorFactory getControlEditorFactory(VirtualHost vHost, CaoNode resource) {
 		String editorName = resource.getString(EDITOR, null);
-		if (editorName == null) return null;
-		return vHost.getControlEditorFactory(editorName);
+		if (editorName != null)
+			return vHost.getControlEditorFactory(editorName);
+		editorName = resource.getString(RENDERER, null);
+		if (editorName != null)
+			return vHost.getControlEditorFactory(editorName);
+		return null;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package de.mhus.cherry.portal.impl.page;
+package de.mhus.cherry.portal.impl.widget;
 
 import java.util.Set;
 
