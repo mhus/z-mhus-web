@@ -24,10 +24,13 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.xml.sax.SAXException;
 
 import de.mhus.cherry.portal.api.CallContext;
+import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.ProcessorContext;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.lang.DelegateClassLoader;
+import de.mhus.osgi.sop.api.Sop;
 
 public class JspRendererContext extends MLog implements ProcessorContext {
 
@@ -38,14 +41,16 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 	private JspServletWrapper servlet;
 	private DelegateClassLoader hostClassLoader;
 	private File root;
+	private File tmp;
 	
-	public JspRendererContext(File root) throws ServletException {
+	public JspRendererContext(File root, File tmp) throws ServletException {
 		this.root = root;
+		this.tmp = tmp;
 		init();
 	}
 
 	private void init() throws ServletException {
-		servletContext = new JspDefaultServletContext( root );
+		servletContext = new JspDefaultServletContext( root, tmp );
 		config = new DefaultServletConfig(servletContext);
 		hostClassLoader = new DelegateClassLoader();
 		// first of all my own classloader
@@ -59,20 +64,39 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 			}
 		} catch (Throwable t) {}
 		// from libs
-		File lib = new File (root,"WEB-INF/lib");
-		try {
-			if (lib.exists() && lib.isDirectory()) {
-				LinkedList<URL> libs = new LinkedList<>();
-				for (File f : lib.listFiles())
-					if (f.isFile() && f.getName().endsWith(".jar")) {
-						log().d("add lib to classpath",f);
-						libs.add(f.toURL());
-					}
-				if (libs.size() > 0)
-					hostClassLoader.register( new URLClassLoader(libs.toArray(new URL[libs.size()]) ) );
-			}
-		} catch (Throwable t) {}
-
+		{
+			File lib = new File (root,"WEB-INF/lib");
+			try {
+				if (lib.exists() && lib.isDirectory()) {
+					LinkedList<URL> libs = new LinkedList<>();
+					for (File f : lib.listFiles())
+						if (f.isFile() && f.getName().endsWith(".jar")) {
+							log().d("add lib to classpath",f);
+							libs.add(f.toURL());
+						}
+					if (libs.size() > 0)
+						hostClassLoader.register( new URLClassLoader(libs.toArray(new URL[libs.size()]) ) );
+				}
+			} catch (Throwable t) {}
+		}	
+		// libs coming with renderer (default libs)
+		{
+			File renderRoot = Sop.getApi(CherryApi.class).getDeployDescritor(FrameworkUtil.getBundle(JspRenderer.class).getSymbolicName()).getPath(SPACE.PRIVATE);
+			File lib = new File (renderRoot,"WEB-INF/lib");
+			try {
+				if (lib.exists() && lib.isDirectory()) {
+					LinkedList<URL> libs = new LinkedList<>();
+					for (File f : lib.listFiles())
+						if (f.isFile() && f.getName().endsWith(".jar")) {
+							log().d("add lib to classpath",f);
+							libs.add(f.toURL());
+						}
+					if (libs.size() > 0)
+						hostClassLoader.register( new URLClassLoader(libs.toArray(new URL[libs.size()]) ) );
+				}
+			} catch (Throwable t) {}
+		}		
+		
 		// all bundles
 		Bundle bundle = FrameworkUtil.getBundle(getClass());
 		for (Bundle b : bundle.getBundleContext().getBundles()) {

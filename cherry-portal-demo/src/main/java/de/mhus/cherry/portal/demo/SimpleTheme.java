@@ -37,7 +37,7 @@ public class SimpleTheme implements ResourceRenderer {
 		}
 		if (file == null || !file.exists()) return;
 		ScriptRenderer renderer = call.getVirtualHost().getScriptRenderer("jsp");
-		renderer.doRender(call, root, file);
+		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class).getSymbolicName(), file);
 		call.getHttpResponse().flushBuffer(); // really needed?
 	}
 

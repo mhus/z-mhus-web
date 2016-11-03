@@ -68,7 +68,7 @@ public class ControlServlet extends VaadinServlet {
 	    		request.setAttribute("__vs", vaadinSession);
 	    		for (UI ui : vaadinSession.getUIs()) {
 	    			if (ui instanceof ControlUi)
-	    				((ControlUi)ui).requestBegin();
+	    				((ControlUi)ui).requestBegin(request);
 	    		}
     		} catch (Throwable t) {
     			

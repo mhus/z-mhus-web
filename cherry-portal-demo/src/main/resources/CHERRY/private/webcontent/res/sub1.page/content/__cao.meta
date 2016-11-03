@@ -1,3 +1,4 @@
 renderer=de.mhus.cherry.portal.impl.page.SimplePage
 title=Page
 editor=de.mhus.cherry.portal.demo.simpleeditorfactory
+text=Hello World!

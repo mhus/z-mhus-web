@@ -58,7 +58,7 @@ public class Desktop extends CssLayout {
 		menuCurrent[2] = menuBar.addItem("", null);
 		menuCurrent[3] = menuBar.addItem("", null);
 		
-		menuUser = menuBar.addItem( ui.getAccessControl().getPrincipalName(), null);
+		menuUser = menuBar.addItem( ui.getAccessControl().getName(), null);
 		menuUser.setStyleName("right");
 		menuLogout = menuUser.addItem("Logout", new MenuBar.Command() {
 			

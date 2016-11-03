@@ -2,7 +2,11 @@ package de.mhus.cherry.portal.api;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequestWrapper;
+
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.servlet.RequestWrapper;
+import de.mhus.osgi.sop.api.aaa.AaaContext;
 
 public interface VirtualHost {
 
@@ -35,5 +39,7 @@ public interface VirtualHost {
 	 * @return The referenced resource
 	 */
 	public CaoNode getNavigationResource(String navPath);
+
+	public AaaContext doLogin(RequestWrapper request);
 	
 }

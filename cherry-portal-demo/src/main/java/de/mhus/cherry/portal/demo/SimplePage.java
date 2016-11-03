@@ -47,7 +47,7 @@ public class SimplePage extends MLog implements ResourceRenderer {
 		File root = descriptor.getPath(SPACE.PRIVATE);
 		File file = new File(root, "script/page.jsp");
 		ScriptRenderer renderer = call.getVirtualHost().getScriptRenderer("jsp");
-		renderer.doRender(call, root, file);
+		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class).getSymbolicName(), file);
 
 		if (theme != null) {
 			call.setAttribute(WidgetApi.CURRENT_THEME_SCOPE, WidgetApi.THEME_SCOPE_FOOTER);

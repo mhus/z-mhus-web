@@ -5,15 +5,20 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 
+import de.mhus.cherry.portal.impl.CherryApiImpl;
+
 @Command(scope = "cherry", name = "cache", description = "Deploy management")
 @Service
 public class CmdCache implements Action {
 
-	@Argument(index=0, name="cmd", required=true, description="Command: clear,enable,disable,info", multiValued=false)
+	@Argument(index=0, name="cmd", required=true, description="Command: clearsessions,clear,enable,disable,info", multiValued=false)
     String cmd;
 
 	@Override
 	public Object execute() throws Exception {
+		if (cmd.equals("clearsessions")) {
+			CherryApiImpl.instance.globalSession.clear();
+		} else
 		if (cmd.equals("clear")) {
 			CacheApiImpl.instance.clear();
 		} else

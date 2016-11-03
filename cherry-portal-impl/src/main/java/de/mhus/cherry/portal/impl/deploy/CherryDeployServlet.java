@@ -56,6 +56,12 @@ public class CherryDeployServlet extends HttpServlet implements BundleListener {
 			newValue.mkdirs();
 		}
 	};
+	private static final CfgFile tempStore = new CfgFile(CherryDeployServlet.class,"tempStore", new File("cherry/temp")) {
+		@Override
+		protected void onPostUpdate(File newValue) {
+			newValue.mkdirs();
+		}
+	};
 	private BundleContext context;
 	public static CherryDeployServlet instance;
 	private HashMap<String, MyDeployDescriptor> descriptors = new HashMap<>();
@@ -138,6 +144,10 @@ public class CherryDeployServlet extends HttpServlet implements BundleListener {
 				doExport(bundle,bundle.getEntry(path), privateStore.value(), sensivity, SPACE.PRIVATE);
 			}
 		}
+		File temp = new File( tempStore.value(), bundle.getSymbolicName() );
+		temp.mkdirs();
+		updateDeployDescriptor(bundle.getSymbolicName(), temp, null, SPACE.TEMP);
+	
 	}
 
 	private void doCleanup(File root) {

@@ -6,7 +6,7 @@ import de.mhus.lib.core.MProperties;
 
 public interface DeployDescriptor {
 
-	public enum SPACE {PUBLIC,PRIVATE}
+	public enum SPACE {PUBLIC,PRIVATE, TEMP}
 
 	String getName();
 	File getPath(SPACE space);

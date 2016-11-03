@@ -2,12 +2,14 @@ package de.mhus.cherry.portal.impl;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.EditorFactory;
+import de.mhus.cherry.portal.api.LoginHandler;
 import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.RendererResolver;
 import de.mhus.cherry.portal.api.ResourceProvider;
@@ -20,6 +22,8 @@ import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.errors.NotFoundException;
 import de.mhus.lib.karaf.MOsgi;
+import de.mhus.lib.servlet.RequestWrapper;
+import de.mhus.osgi.sop.api.aaa.AaaContext;
 
 public class DefaultVirtualHost extends MLog implements VirtualHost {
 
@@ -27,6 +31,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	private ResourceResolver resourceResolver;
 	private RendererResolver rendererResolver;
 	private HashMap<String, ResourceProvider> localResourceProvider = new HashMap<>();
+	private LinkedList<LoginHandler> loginHandlers = new LinkedList<>();
 
 	public DefaultVirtualHost() {
 	}
@@ -321,6 +326,20 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 			renderer = MOsgi.getService(ScriptRenderer.class, MOsgi.filterServiceName("cherry_script_renderer_" + name));
 		} catch (NotFoundException e) {}
 		return renderer;
+	}
+
+	@Override
+	public AaaContext doLogin(RequestWrapper request) {
+		AaaContext out = null;
+		for (LoginHandler handler : loginHandlers) {
+			out = handler.doLogin(request);
+			if (out != null) return out;
+		}
+		return null;
+	}
+	
+	public void addLoginHandler(LoginHandler handler) {
+		loginHandlers.add(handler);
 	}
 	
 }

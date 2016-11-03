@@ -5,10 +5,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.CallContext;
+import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MSystem;
+import de.mhus.osgi.sop.api.Sop;
 
 public class CherryCallContext implements CallContext {
 
@@ -21,13 +24,14 @@ public class CherryCallContext implements CallContext {
 	private CherryServlet httpServlet;
 	private String returnType;
 	private String[] selectors;
-	private SessionContext sessionContext;
+	private IProperties sessionContext;
 	private CaoNode mainResource;
 
 	public void setHttpRequest(HttpServletRequest req) {
 		httpRequest = req;
 		httpPath = req.getPathInfo();
 		req.setAttribute(CallContext.REQUEST_ATTRIBUTE_NAME, this);
+		sessionContext = Sop.getApi(CherryApi.class).getCherrySession(req.getSession().getId());
 	}
 
 	public void setHttpResponse(HttpServletResponse res) {
@@ -109,12 +113,8 @@ public class CherryCallContext implements CallContext {
 	}
 
 	@Override
-	public SessionContext getSessionContext() {
+	public IProperties getSessionContext() {
 		return sessionContext;
-	}
-
-	public void setSessionContext(SessionContext sessionContext) {
-		this.sessionContext = sessionContext;
 	}
 
 	@Override

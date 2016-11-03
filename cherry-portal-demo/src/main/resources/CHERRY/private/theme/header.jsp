@@ -16,9 +16,18 @@
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
+<script src="https://unpkg.com/vue@2.0.3/dist/vue.js"></script>
+
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="-1">
+
 </head>
-<body><div class="container">
+<body>
 <!-- Navigation -->
+
+<div class="navbar ">
+  <div class="navbar-inner">
+    <div class="container">
 <ul class="nav nav-pills">
 <ch:children resource="<%=call.getNavigationResource().getConnection().getRoot() %>" iterator="nav1" >
 	<li role="presentation" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"  role="button" aria-haspopup="true" aria-expanded="false" href="/<%=nav1.getName()%>"><%=nav1.getString("title","?")%> <span class="caret"></span></a>
@@ -27,9 +36,55 @@
 			<li><a href="/<%=nav1.getName()%>/<%=nav2.getName()%>"><%=nav2.getString("title","?")%></a></li>
 		</ch:children>
 		</ul>
-	</li>	
+	</li>
 </ch:children>
 </ul>
+<!-- Current User -->
+<ch:guest>
+
+ <ul class="nav pull-right">
+   <li class="dropdown" id="menuLogin">
+     <a class="dropdown-toggle" href="#" data-toggle="dropdown" id="navLogin">Login</a>
+     <div class="dropdown-menu" style="padding:17px;">
+       <form class="form" id="formLogin"> 
+         <input v-model="username" name="username" id="username" type="text" placeholder="Username"> 
+         <input v-model="password" name="password" id="password" type="password" placeholder="Password"><br>
+         <button v-on:click="login" type="button" id="btnLogin" class="btn">Login</button>
+       </form>
+     </div>
+   </li>
+ </ul>
+ <script>
+ var loginVue = new Vue({
+  el: '#menuLogin',
+  data: {
+    username: '',
+    password: ''
+  },
+  methods: {
+	  login: function() {
+		  sendPostRequest("");
+	  }
+  }
+});
+ </script>
+</ch:guest>
+<ch:guest switch="true">
+ <ul class="nav pull-right">
+   <li class="dropdown" id="menuUser">
+     <a class="dropdown-toggle" href="#" data-toggle="dropdown" id="navUser"><ch:currentUser/></a>
+	<ul class="dropdown-menu">
+		<li>Profil</li>
+		<li>Abmelden</li>
+	</ul>
+   </li>
+ </ul>
+</ch:guest>
+</div>
+</div>
+</div>
+
+<div class="container">
 <!-- Breadcrumb -->
 <ol class="breadcrumb">
 <ch:path resource="<%=call.getNavigationResource()%>" iterator="step">

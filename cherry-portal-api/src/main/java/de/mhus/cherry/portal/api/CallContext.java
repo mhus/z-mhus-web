@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.IProperties;
 
 public interface CallContext {
 
@@ -32,7 +33,7 @@ public interface CallContext {
 
 	String getHttpMethod();
 	
-	SessionContext getSessionContext();
+	IProperties getSessionContext();
 
 	void setAttribute(String name, Object value);
 	

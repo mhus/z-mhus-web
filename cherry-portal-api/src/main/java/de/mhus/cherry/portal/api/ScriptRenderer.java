@@ -4,6 +4,6 @@ import java.io.File;
 
 public interface ScriptRenderer {
 
-	void doRender(CallContext call, File root, File file) throws Exception;
+	void doRender(CallContext call, String bundleName, File file) throws Exception;
 
 }

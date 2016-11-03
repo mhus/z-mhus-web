@@ -6,7 +6,9 @@
 <ch:load />
 <div class="page-header">
 <h1><%=resource.getString("title","")%></h1>
+<ch:editor>
 <button type="button" class="btn btn-default"><a href="<ch:editorLink/>"><span class="glyphicon glyphicon glyphicon-edit" aria-hidden="true"></span></a></button>
+</ch:editor>
 <%=resource.getString("text","")%>
 </div>
 <ch:children resource="<%=resource%>" iterator="child">

@@ -14,6 +14,8 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.osgi.sop.api.Sop;
+import de.mhus.osgi.sop.api.aaa.AaaContext;
+import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 @Component(provide = Servlet.class, properties = "alias=/*", name="CherryServlet",servicefactory=true)
 public class CherryServlet extends HttpServlet {
@@ -24,25 +26,28 @@ public class CherryServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 			
+		CherryApi cherry = Sop.getApi(CherryApi.class);
 		String host = req.getHeader("Host");
-		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
+		VirtualHost vHost = cherry.findVirtualHost(host);
 		
-		CherryCallContext callContext = new CherryCallContext();
-		callContext.setHttpRequest(req);
-		callContext.setHttpResponse(new CherryResponseWrapper(res));
-		callContext.setVirtualHost(vHost);
-		callContext.setHttpServlet(this);
-		HttpSession httpSession = req.getSession();
-		synchronized (httpSession) {
-			SessionContext cherrySession = (SessionContext) httpSession.getAttribute("__cherry_session");
-			if (cherrySession == null) {
-				cherrySession = new DefaultSessionContext(this, vHost, httpSession);
-				httpSession.setAttribute("__cherry_session", cherrySession);
-			}
-			callContext.setSessionContext(cherrySession);
-		}
-		vHost.processRequest(callContext);
 		
+        AccessApi access = Sop.getApi(AccessApi.class);
+        AaaContext context = cherry.getContext( req.getSession().getId() );
+        if (context == null) context = vHost.doLogin(new de.mhus.lib.servlet.HttpServletRequestWrapper(req));
+        access.process(context);
+        
+        try {
+						
+			CherryCallContext callContext = new CherryCallContext();
+			callContext.setHttpRequest(req);
+			callContext.setHttpResponse(new CherryResponseWrapper(res));
+			callContext.setVirtualHost(vHost);
+			callContext.setHttpServlet(this);
+			vHost.processRequest(callContext);
+			
+        } finally {
+        	access.release(context);
+        }
 	}
 	
 }

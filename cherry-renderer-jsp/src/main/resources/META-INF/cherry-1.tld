@@ -77,6 +77,22 @@
             <required>true</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
+		<attribute>
+            <description>
+                Show also hidden nodes
+            </description>
+            <name>showHidden</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Order by this attribute
+            </description>
+            <name>order</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
 
     <tag>
@@ -130,6 +146,41 @@
         <name>htmlHead</name>
         <tag-class>de.mhus.cherry.renderer.jsp.tagext.HtmlHeadTagHandler</tag-class>
         <body-content>JSP</body-content>
+    </tag>
+    
+    <tag>
+        <description>
+        	Render Current User Information
+        </description>
+        <name>currentUser</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.CurrentUserTagHandler</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+    
+    <tag>
+        <description>
+        	Render my current node name (last name in the path)
+        </description>
+        <name>me</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.MeTagHandler</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+    
+    <tag>
+        <description>
+        	Render body if not logged in
+        </description>
+        <name>guest</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.GuestTagHandler</tag-class>
+        <body-content>JSP</body-content>
+		<attribute>
+            <description>
+                Switch functionality
+            </description>
+            <name>switch</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
     
 </taglib>

@@ -8,8 +8,6 @@ public interface GuiApi {
 
 	boolean hasAccess(String role);
 	
-	IProperties getCurrentUserAccess();
-
 	boolean openSpace(String spaceId, String subSpace, String search);
 	
 	Subject getCurrentUser();

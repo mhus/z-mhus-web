@@ -30,7 +30,7 @@ public class SimpleWidget extends MLog implements ResourceRenderer {
 		File root = descriptor.getPath(SPACE.PRIVATE);
 		File file = new File(root, "script/widget.jsp");
 		ScriptRenderer renderer = call.getVirtualHost().getScriptRenderer("jsp");
-		renderer.doRender(call, root, file);
+		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class).getSymbolicName(), file);
 	}
 
 	@Override

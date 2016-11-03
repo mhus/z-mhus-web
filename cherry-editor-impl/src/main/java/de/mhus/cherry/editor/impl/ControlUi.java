@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -22,6 +23,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.control.GuiApi;
 import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiSpaceService;
@@ -33,12 +35,17 @@ import de.mhus.lib.core.cfg.CfgString;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.AccessControl;
+import de.mhus.lib.core.security.Account;
 import de.mhus.lib.vaadin.VaadinAccessControl;
+import de.mhus.lib.vaadin.servlet.VaadinRequestWrapper;
+import de.mhus.osgi.sop.api.Sop;
+import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 @Theme("cherrytheme")
 @Widgetset("de.mhus.cherry.editor.theme.CherryWidgetset")
 public class ControlUi extends UI implements GuiApi {
 
+	private static final long serialVersionUID = 1L;
 	private static Log log = Log.getLog(ControlUi.class);
 	private MenuBar menuBar;
 	private AccessControl accessControl;
@@ -50,7 +57,7 @@ public class ControlUi extends UI implements GuiApi {
 	private String trailConfig = null;
 	private String initPath;
 	private String host;
-    private static final CfgString realm = new CfgString(ControlUi.class, "realm", "karaf");
+	private HttpServletRequest httpRequest;
 
 	@Override
 	protected void init(VaadinRequest request) {
@@ -61,8 +68,6 @@ public class ControlUi extends UI implements GuiApi {
         content.setMargin(true);
         content.setSpacing(true);
 
-        accessControl = new VaadinAccessControl(realm.value());
-
         context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 		spaceTracker = new ServiceTracker<>(context, GuiSpaceService.class, new GuiSpaceServiceTrackerCustomizer() );
 		spaceTracker.open();
@@ -70,6 +75,8 @@ public class ControlUi extends UI implements GuiApi {
         initPath = request.getPathInfo();
         host = request.getHeader("Host");
         
+        // get User
+        accessControl = new UiAccessControl(request);
         if (!accessControl.isUserSignedIn()) {
             setContent(new LoginScreen(accessControl, new LoginScreen.LoginListener() {
                 @Override
@@ -197,62 +204,8 @@ public class ControlUi extends UI implements GuiApi {
 		if (role == null || accessControl == null || !accessControl.isUserSignedIn())
 			return false;
 
-		try {
-			File file = new File( "aaa/groupmapping/" + MFile.normalize(role.trim()).toLowerCase() + ".txt" );
-			if (!file.exists()) {
-				log.w("file not found",file);
-				return false;
-			}
-			List<String> lines = MFile.readLines(file, true);
-			for (String line : lines) {
-				if (line.startsWith("not:")) {
-					line = line.substring(4);
-					if (accessControl.isUserInRole(line)) return false;
-				} else
-				if (line.startsWith("notuser:")) {
-					line = line.substring(8);
-					if (accessControl.getPrincipalName().equals(line)) return false;
-				} else
-				if (line.startsWith("user:")) {
-					line = line.substring(5);
-					if (accessControl.getPrincipalName().equals(line)) return true;
-				} else
-				if (line.equals("*") || accessControl.isUserInRole(line)) return true;
-			}
-		} catch (Throwable t) {
-			log.d(role,t);
-		}
-		return false;
+		return Sop.getApi(AccessApi.class).hasGroupAccess(accessControl.getAccount(), role, null);
 		
-	}
-
-	@Override
-	public IProperties getCurrentUserAccess() {
-		MProperties accessRights = new MProperties();
-		if (accessControl == null || !accessControl.isUserSignedIn())
-			return accessRights;
-		
-		try {
-			File file = new File("aaa/guiusers/" + MFile.normalize(accessControl.getPrincipalName().trim()).toLowerCase() + ".txt"); 
-			if (!file.exists()) {
-				log.w("file not found",file);
-				return accessRights;
-			}
-			List<String> lines = MFile.readLines(file, true);
-			if (lines == null)
-				return new MProperties();
-			
-			if (lines.size() == 1 && "*".equals(lines.get(0)) || "admin".equalsIgnoreCase(lines.get(0))) {
-				accessRights.setString("read", "*");
-				accessRights.setString("write", "*");
-			} else {
-				accessRights = MProperties.load(file.getAbsolutePath());
-			}
-		} catch (Throwable t) {
-			log.d(t);
-		}
-		
-		return accessRights;
 	}
 	
 	@Override
@@ -270,11 +223,15 @@ public class ControlUi extends UI implements GuiApi {
 		return (Subject)getSession().getAttribute(VaadinAccessControl.SUBJECT_ATTR);
 	}
 
-	public void requestBegin() {
+	public void requestBegin(HttpServletRequest request) {
+		this.httpRequest = request;
 		if (trailConfig != null)
 			MLogUtil.setTrailConfig(trailConfig);
 		else
 			MLogUtil.releaseTrailConfig();
+		
+		// touch session to avoid timeout
+		Sop.getApi(CherryApi.class).getCherrySession(request.getSession().getId());
 	}
 
 	public void requestEnd() {

@@ -47,6 +47,13 @@
         	<type>bundle</type>
         	<scope>provided</scope>
         </dependency>
+        <dependency>
+        	<groupId>de.mhus.lib</groupId>
+        	<artifactId>mhu-lib-j2ee</artifactId>
+        	<version>${mhulib.version}</version>
+        	<type>bundle</type>
+        	<scope>provided</scope>
+        </dependency>
 	    <dependency>
 	    	<groupId>de.mhus.osgi</groupId>
 	    	<artifactId>mhu-osgi-sop-api</artifactId>
