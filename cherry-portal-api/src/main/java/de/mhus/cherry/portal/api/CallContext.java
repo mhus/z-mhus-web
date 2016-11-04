@@ -39,4 +39,8 @@ public interface CallContext {
 	
 	Object getAttribute(String name);
 	
+	void resetPath();
+	
+	String consumePath();
+	
 }

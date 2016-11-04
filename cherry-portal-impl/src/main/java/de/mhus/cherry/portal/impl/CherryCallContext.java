@@ -21,11 +21,13 @@ public class CherryCallContext implements CallContext {
 	private CaoNode navigationResource;
 	private CaoNode resource;
 	private VirtualHost virtualHost;
-	private CherryServlet httpServlet;
+	private HttpServlet httpServlet;
 	private String returnType;
 	private String[] selectors;
 	private IProperties sessionContext;
 	private CaoNode mainResource;
+	private String[] path;
+	private int pathCnt;
 
 	public void setHttpRequest(HttpServletRequest req) {
 		httpRequest = req;
@@ -75,7 +77,7 @@ public class CherryCallContext implements CallContext {
 		virtualHost = vHost;
 	}
 
-	public void setHttpServlet(CherryServlet servlet) {
+	public void setHttpServlet(HttpServlet servlet) {
 		httpServlet = servlet;
 	}
 
@@ -139,6 +141,21 @@ public class CherryCallContext implements CallContext {
 	@Override
 	public String toString() {
 		return MSystem.toString(this, httpPath);
+	}
+
+	@Override
+	public void resetPath() {
+		if (httpPath == null) return;
+		path = httpPath.split("/");
+		pathCnt = 1; // ignore element 0
+	}
+
+	@Override
+	public String consumePath() {
+		if (path == null || path.length < pathCnt)
+			return null;
+		pathCnt++;
+		return path[pathCnt-1];
 	}
 
 }

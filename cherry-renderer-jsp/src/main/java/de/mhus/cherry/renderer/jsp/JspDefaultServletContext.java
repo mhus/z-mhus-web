@@ -15,6 +15,7 @@ public class JspDefaultServletContext extends DefaultServletContext {
 		param.put("scratchdir",  tmp.getAbsolutePath() );
 		param.put("keepgenerated", "true");
 		param.put("enablePooling", "false");
+		param.put("cachingAllowed","false");
+		param.put("antiResourceLocking","false");
 	}
-	
 }

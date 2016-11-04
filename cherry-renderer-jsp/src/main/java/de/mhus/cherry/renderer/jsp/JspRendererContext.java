@@ -156,6 +156,11 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 		try {
 //			resp.setStatus(200);
 //			resp.setContentType("text/plain");
+			
+			resp.setHeader("Pragma", "No-cache");
+		    resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+		    resp.setDateHeader("Expires", -1);
+		    
 			String fileRelativ = file.getAbsolutePath().substring( root.getAbsolutePath().length() );
 			req.setAttribute(Constants.JSP_FILE, fileRelativ );
 			servlet.service(req, resp);

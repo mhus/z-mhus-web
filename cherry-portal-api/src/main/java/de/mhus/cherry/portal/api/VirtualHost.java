@@ -41,5 +41,7 @@ public interface VirtualHost {
 	public CaoNode getNavigationResource(String navPath);
 
 	public AaaContext doLogin(RequestWrapper request);
+
+	public void processApiRequest(CallContext context);
 	
 }

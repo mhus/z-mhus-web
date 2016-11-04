@@ -63,7 +63,12 @@
   },
   methods: {
 	  login: function() {
-		  sendPostRequest("");
+		  var result = sendPostRequest("/.api/base/login", {'username': this.username, 'password' : this.password });
+		  if (result && result.successful && result.successful === true) {
+			  window.location.reload();
+		  } else {
+			  alert("Login failed!");
+		  }
 	  }
   }
 });
@@ -74,11 +79,28 @@
    <li class="dropdown" id="menuUser">
      <a class="dropdown-toggle" href="#" data-toggle="dropdown" id="navUser"><ch:currentUser/></a>
 	<ul class="dropdown-menu">
-		<li>Profil</li>
-		<li>Abmelden</li>
+		<li><a v-on:click="logout" href="#">Abmelden</a></li>
 	</ul>
    </li>
  </ul>
+ <script>
+ var logoutVue = new Vue({
+  el: '#menuUser',
+  data: {
+  },
+  methods: {
+	  logout: function() {
+		  var result = sendPostRequest("/.api/base/logout");
+		  if (result && result.successful && result.successful === true) {
+			  window.location.assign("/");
+		  } else {
+			  alert("Logout failed!");
+		  }
+	  }
+  }
+});
+ </script>
+ 
 </ch:guest>
 </div>
 </div>

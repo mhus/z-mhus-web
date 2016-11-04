@@ -10,6 +10,7 @@ import de.mhus.cherry.portal.impl.DefaultRendererResolver;
 import de.mhus.cherry.portal.impl.DefaultResourceProvider;
 import de.mhus.cherry.portal.impl.DefaultResourceResolver;
 import de.mhus.cherry.portal.impl.DefaultVirtualHost;
+import de.mhus.cherry.portal.impl.api.DefaultBaseApi;
 import de.mhus.lib.cao.auth.AuthConnection;
 import de.mhus.lib.cao.fs.FsConnection;
 import de.mhus.osgi.sop.api.Sop;
@@ -31,6 +32,9 @@ public class DemoVirtualHost extends DefaultVirtualHost {
 			setResourceResolver(new DefaultResourceResolver());
 			
 			addResourceprovider(new DefaultResourceProvider(new AuthConnection( new FsConnection("default", new File(priv, "webcontent/res"), true, false), new DemoAuth() ) ) );
+			
+			addApiProvider("base", new DefaultBaseApi());
+			
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

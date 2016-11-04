@@ -87,7 +87,7 @@ function sendPostRequest(_path,_params) {
     }
     $.ajax({
         type: "POST",
-        url: _path + _id,
+        url: _path,
         data: _params,
         async: false,
         cache: false,

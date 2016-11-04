@@ -32,6 +32,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	private RendererResolver rendererResolver;
 	private HashMap<String, ResourceProvider> localResourceProvider = new HashMap<>();
 	private LinkedList<LoginHandler> loginHandlers = new LinkedList<>();
+	private HashMap<String, ResourceRenderer> apiProvider = new HashMap<>();
 
 	public DefaultVirtualHost() {
 	}
@@ -340,6 +341,35 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	
 	public void addLoginHandler(LoginHandler handler) {
 		loginHandlers.add(handler);
+	}
+	
+	public void addApiProvider(String name, ResourceRenderer renderer) {
+		apiProvider.put(name, renderer);
+	}
+
+	@Override
+	public void processApiRequest(CallContext call) {
+		
+		call.resetPath();
+		String path = call.consumePath();
+		if (path == null) {
+			sendError(call, HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+		
+		ResourceRenderer provider = apiProvider.get(path);
+		if (provider == null) {
+			sendError(call, HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+		
+		try {
+			provider.doRender(call);
+		} catch (Throwable e) {
+			log().d(path,e);
+			sendError(call, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		
 	}
 	
 }

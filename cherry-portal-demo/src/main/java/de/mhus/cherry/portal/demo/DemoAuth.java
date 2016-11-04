@@ -23,7 +23,7 @@ public class DemoAuth implements Authorizator {
 			if (acl == null) return true;
 			AccessApi aaa = Sop.getApi(AccessApi.class);
 			AaaContext context = aaa.getCurrentOrGuest();
-			List<String> list = MCollection.toList(acl.split("\\|"));
+			String[] list = acl.split("\\|");
 			return AaaUtil.hasAccess(context.getAccount(), list);
 		} catch (Throwable e) {
 			e.printStackTrace();
