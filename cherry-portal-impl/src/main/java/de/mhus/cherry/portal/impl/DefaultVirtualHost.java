@@ -30,7 +30,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	private NavigationProvider navigationProvider;
 	private ResourceResolver resourceResolver;
 	private RendererResolver rendererResolver;
-	private HashMap<String, ResourceProvider> localResourceProvider = new HashMap<>();
+	private HashMap<String, ResourceProvider> resourceProvider = new HashMap<>();
 	private LinkedList<LoginHandler> loginHandlers = new LinkedList<>();
 	private HashMap<String, ResourceRenderer> apiProvider = new HashMap<>();
 
@@ -231,6 +231,41 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 						}
 					}
 					
+				} else
+				if ("data".equals(subType)) {
+					String[] subParts = subPath.split("/");
+					CaoNode subNode = null;
+					if (subParts.length > 0) {
+						String linkName = subParts[0];
+						String dataName = resResource.getString("data:" + linkName, null);
+						if (MString.isSet(dataName)) {
+							String dataProviderName = MString.beforeIndex(dataName, ':');
+							String dataPath = MString.afterIndex(dataName, ':');
+							ResourceProvider subProvider = getResourceProvider(dataProviderName);
+							if (subProvider != null) {
+								subNode = subProvider.getResourceByPath(dataPath);
+								if (subNode != null) {
+									subParts[0] = "";
+									for (String part : subParts) {
+										if (MString.isSetTrim(part)) {
+											subNode = subNode.getNode(part);
+											if (subNode == null) break;
+										}
+									}
+								}
+							}
+							
+						}
+						
+					}
+					
+					if (subNode != null) {
+						resResource = subNode;
+					} else {
+						sendError(call, HttpServletResponse.SC_NOT_FOUND);
+						return;
+					}
+					
 				}
 				
 			}
@@ -266,11 +301,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	@Override
 	public ResourceProvider getResourceProvider(String name) {
 		name = name.toLowerCase();
-		ResourceProvider provider = localResourceProvider.get(name);
-		if (provider == null)
-			try {
-				provider = MOsgi.getService(ResourceProvider.class, MOsgi.filterServiceName("cherry_resource_" + name));
-			} catch (NotFoundException e) {}
+		ResourceProvider provider = resourceProvider.get(name);
+//		if (provider == null)
+//			try {
+//				provider = MOsgi.getService(ResourceProvider.class, MOsgi.filterServiceName("cherry_resource_" + name));
+//			} catch (NotFoundException e) {}
 		return provider;
 	}
 
@@ -297,12 +332,12 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 		return renderer;
 	}
 
-	public void addResourceprovider(ResourceProvider provider) {
-		localResourceProvider.put(provider.getName(), provider);
+	public void addResourceProvider(ResourceProvider provider) {
+		resourceProvider.put(provider.getName(), provider);
 	}
 
-	public void addResourceprovider(String name, ResourceProvider provider) {
-		localResourceProvider.put(name, provider);
+	public void addResourceProvider(String name, ResourceProvider provider) {
+		resourceProvider.put(name, provider);
 	}
 	
 	@Override

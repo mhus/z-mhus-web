@@ -15,13 +15,19 @@ import de.mhus.lib.core.MLog;
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_get")
 public class DefaultGetRenderer extends MLog implements ResourceRenderer {
 
+	// Read   = GET
+	
 	@Override
 	public void doRender(CallContext call) throws IOException {
 	
 		DefaultHeadRenderer.doRenderHead(call);
 
 		if (call.getResource().hasContent()) {
-			InputStream is = call.getResource().getInputStream();
+			String rendition = null;
+			String[] s = call.getSelectors();
+			if (s != null && s.length > 0)
+				rendition = s[0];
+			InputStream is = call.getResource().getInputStream(rendition);
 			if (is != null) {
 				ServletOutputStream os = call.getHttpResponse().getOutputStream();
 				MFile.copyFile(is, os);

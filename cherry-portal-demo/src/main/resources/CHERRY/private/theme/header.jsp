@@ -30,6 +30,7 @@
     <div class="container">
 <ul class="nav nav-pills">
 <ch:children resource="<%=call.getNavigationResource().getConnection().getRoot() %>" iterator="nav1" >
+
 	<li role="presentation" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"  role="button" aria-haspopup="true" aria-expanded="false" href="/<%=nav1.getName()%>"><%=nav1.getString("title","?")%> <span class="caret"></span></a>
 		<ul class="dropdown-menu">
 		<ch:children resource="<%=nav1%>" iterator="nav2" >
@@ -37,6 +38,7 @@
 		</ch:children>
 		</ul>
 	</li>
+
 </ch:children>
 </ul>
 <!-- Current User -->

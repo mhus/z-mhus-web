@@ -31,7 +31,8 @@ public class DemoVirtualHost extends DefaultVirtualHost {
 			setRendererResolver(new DefaultRendererResolver());
 			setResourceResolver(new DefaultResourceResolver());
 			
-			addResourceprovider(new DefaultResourceProvider(new AuthConnection( new FsConnection("default", new File(priv, "webcontent/res"), true, false), new DemoAuth() ) ) );
+			addResourceProvider(new DefaultResourceProvider(new AuthConnection( new FsConnection("default", new File(priv, "webcontent/res"), true, false), new DemoAuth() ) ) );
+			addResourceProvider(new DefaultResourceProvider(new AuthConnection( new FsConnection("pub", new File(priv, "webcontent/pub"), true, false), null ) ) );
 			
 			addApiProvider("base", new DefaultBaseApi());
 			
