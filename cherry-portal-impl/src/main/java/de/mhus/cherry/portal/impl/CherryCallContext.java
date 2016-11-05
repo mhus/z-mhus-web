@@ -111,7 +111,8 @@ public class CherryCallContext implements CallContext {
 
 	@Override
 	public String getHttpMethod() {
-		return httpRequest.getMethod();
+		if (httpRequest.getParameter("_method") != null) return httpRequest.getParameter("_method").toLowerCase();
+		return httpRequest.getMethod().toLowerCase();
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public interface CallContext {
 
 	String[] getSelectors();
 
-	String getHttpMethod();
+	String getHttpMethod(); // returns the current http method in lower case !!!
 	
 	IProperties getSessionContext();
 

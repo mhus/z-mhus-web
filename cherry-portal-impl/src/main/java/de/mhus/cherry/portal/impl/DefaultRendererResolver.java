@@ -10,7 +10,7 @@ public class DefaultRendererResolver implements RendererResolver {
 	@Override
 	public ResourceRenderer getRenderer(CallContext call) {
 		
-		String httpMethod = call.getHttpMethod().toLowerCase();
+		String httpMethod = call.getHttpMethod(); // already lower case
 		
 		String renderReference = null;
 		ResourceRenderer renderer = null;

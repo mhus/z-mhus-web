@@ -4,7 +4,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tools.ant.util.XMLFragment.Child;
 import org.codehaus.jackson.node.ObjectNode;
 
 import aQute.bnd.annotation.component.Component;
