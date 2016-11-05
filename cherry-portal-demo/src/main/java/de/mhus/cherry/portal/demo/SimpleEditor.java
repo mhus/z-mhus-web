@@ -41,7 +41,7 @@ public class SimpleEditor extends Editor {
 		data.setString("title", title.getValue());
 		data.setString("text", text.getValue());
 		try {
-			data.getUpdateOperation().execute();
+			data.getUpdateOperation().doExecute();
 		} catch (MException e) {
 			log.e(e);
 			return e.toString();
