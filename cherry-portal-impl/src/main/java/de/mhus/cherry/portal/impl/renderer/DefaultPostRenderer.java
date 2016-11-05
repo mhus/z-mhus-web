@@ -27,6 +27,9 @@ public class DefaultPostRenderer extends AbstractActionRenderer implements Resou
 	public OperationResult doAction(CallContext call) throws IOException, CaoException {
 	
 		CaoNode res = call.getResource();
+		String[] s = call.getSelectors();
+		if (s != null && s.length > 0 && "nav".equals(s[0]))
+			res = call.getNavigationResource();
 		
 		CaoAction action = res.getConnection().getActions().getAction(CaoAction.CREATE);
 		CaoList list = new CaoList(null);

@@ -21,7 +21,10 @@ public class DefaultPutRenderer extends AbstractActionRenderer implements Resour
 	protected OperationResult doAction(CallContext call) throws Exception {
 
 		CaoNode res = call.getResource();
-		
+		String[] s = call.getSelectors();
+		if (s != null && s.length > 0 && "nav".equals(s[0]))
+			res = call.getNavigationResource();
+
 		CaoWritableElement wRes = res.getWritableNode();
 		
 		HttpServletRequest req = call.getHttpRequest();
