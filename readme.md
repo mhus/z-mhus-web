@@ -38,6 +38,13 @@ cp {src}/examples/test/cherry-default-host.xml deploy/
 
 ---
 
+http://localhost:8181/page/sub1/.data.infinity.json/pub
+http://localhost:8181/page/sub1/.data.infinity.json/pub/de/mhus/cherry?_method=PUT&bla=blub
+
+http://localhost:8181/page.infinity.nav.json
+
+---
+
 Apache Configuration:
 
 ProxyPass /forum !

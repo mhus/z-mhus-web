@@ -10,6 +10,7 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.WidgetApi;
@@ -36,7 +37,7 @@ public class SimpleTheme implements ResourceRenderer {
 		break;
 		}
 		if (file == null || !file.exists()) return;
-		ScriptRenderer renderer = call.getVirtualHost().getScriptRenderer("jsp");
+		ScriptRenderer renderer = CherryUtil.getScriptRenderer(call, file);
 		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class).getSymbolicName(), file);
 		call.getHttpResponse().flushBuffer(); // really needed?
 	}

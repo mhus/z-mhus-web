@@ -13,12 +13,13 @@ import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MCast;
 import de.mhus.lib.core.MJson;
 import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.cfg.CfgInt;
 import de.mhus.osgi.sop.api.rest.JsonResult;
 
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_get_json")
 public class DefaultGetJsonRenderer extends MLog implements ResourceRenderer {
 
-	private static final int MAX = 100;
+	private static final CfgInt maxLevel = new CfgInt(DefaultGetJsonRenderer.class, "maxLevel", 100);
 
 	@Override
 	public void doRender(CallContext call) throws Exception {
@@ -32,9 +33,9 @@ public class DefaultGetJsonRenderer extends MLog implements ResourceRenderer {
 			if (s != null && s.length > 0 && s[0] != null) {
 				
 				if ("infinity".equals(s[0]))
-					level = MAX;
+					level = maxLevel.value();
 				else
-					level = Math.min( MCast.toint(s[0], 0), MAX);
+					level = Math.min( MCast.toint(s[0], 0), maxLevel.value());
 				
 				if (s.length > 1 && "nav".equals(s[1]))
 					node = call.getNavigationResource();

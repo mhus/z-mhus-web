@@ -33,7 +33,8 @@ public class EditorSpaceService implements GuiSpaceService {
 
 	@Override
 	public void createMenu(final AbstractComponent space, MenuItem[] menu) {
-		
+		menu[0].setVisible(true);
+		menu[0].setText("File");
 		menu[0].addItem("Save", new MenuBar.Command() {
 			
 			@Override

@@ -13,6 +13,7 @@ import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.WidgetApi;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
@@ -46,7 +47,7 @@ public class SimplePage extends MLog implements ResourceRenderer {
 		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(FrameworkUtil.getBundle(SimpleWidget.class).getSymbolicName());
 		File root = descriptor.getPath(SPACE.PRIVATE);
 		File file = new File(root, "script/page.jsp");
-		ScriptRenderer renderer = call.getVirtualHost().getScriptRenderer("jsp");
+		ScriptRenderer renderer =  CherryUtil.getScriptRenderer(call, file);
 		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class).getSymbolicName(), file);
 
 		if (theme != null) {

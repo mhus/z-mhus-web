@@ -27,7 +27,7 @@ public class Desktop extends CssLayout {
 	private MenuBar menuBar;
 	private MenuItem menuSpaces;
 	private VerticalLayout contentScreen;
-	private MenuItem[] menuCurrent = new MenuItem[4];
+	private MenuItem[] menuSpace = new MenuItem[4];
 	private MenuItem menuLeave;
 	private MenuItem menuUser;
 	private MenuItem menuLogout;
@@ -35,6 +35,9 @@ public class Desktop extends CssLayout {
 	private MenuItem menuOverview;
 	private GridLayout overView;
 	private MenuItem menuTrace;
+	private MenuItem menuHistory;
+	private MenuItem menuBack;
+	private MenuItem menuForward;
 	private static Log log = Log.getLog(Desktop.class);
 
 	public Desktop(ControlUi cherryUi) {
@@ -53,10 +56,29 @@ public class Desktop extends CssLayout {
 		menuBar = new MenuBar();
 		menuSpaces = menuBar.addItem("Bereiche", null);
 
-		menuCurrent[0] = menuBar.addItem("", null);
-		menuCurrent[1] = menuBar.addItem("", null);
-		menuCurrent[2] = menuBar.addItem("", null);
-		menuCurrent[3] = menuBar.addItem("", null);
+		menuHistory = menuBar.addItem("", null);
+		menuBack = menuHistory.addItem("Back", new MenuBar.Command() {
+
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+				doNavigateBack();
+			}
+			
+		});
+		menuForward = menuHistory.addItem("Forward", new MenuBar.Command() {
+
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+				doNavigateForward();
+			}
+			
+		});
+		menuHistory.addSeparator();
+		
+		menuSpace[0] = menuBar.addItem("", null);
+		menuSpace[1] = menuBar.addItem("", null);
+		menuSpace[2] = menuBar.addItem("", null);
+		menuSpace[3] = menuBar.addItem("", null);
 		
 		menuUser = menuBar.addItem( ui.getAccessControl().getName(), null);
 		menuUser.setStyleName("right");
@@ -104,6 +126,16 @@ public class Desktop extends CssLayout {
 		setSizeFull();
 		
 		showOverview();
+	}
+
+	protected void doNavigateBack() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void doNavigateForward() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void refreshSpaceList(Map<String, GuiSpaceService> spaceList) {
@@ -190,10 +222,10 @@ public class Desktop extends CssLayout {
 		component.setSizeFull();
 		contentScreen.addComponent(component);
 		
-		menuCurrent[0].setText(space.getDisplayName());
+		menuHistory.setText(space.getDisplayName());
 		menuLeave.setEnabled(true);
 		currentSpace = space;
-		space.createMenu(component,menuCurrent);
+		space.createMenu(component,menuSpace);
 		
 		if (component instanceof Navigable && (MString.isSet(subSpace) || MString.isSet(search)))
 			return ((Navigable)component).navigateTo(subSpace, search);
@@ -210,13 +242,11 @@ public class Desktop extends CssLayout {
 	}
 
 	private void cleanupMenu() {
-		for (int i=0; i < menuCurrent.length; i++) {
-			menuCurrent[i].removeChildren();
-			menuCurrent[i].setText("");
-			if (i > 0) {
-				//menuCurrent[i].setEnabled(false);
-				menuCurrent[i].setVisible(false);
-			}
+		
+		for (int i=0; i < menuSpace.length; i++) {
+			menuSpace[i].removeChildren();
+			menuSpace[i].setText("");
+			menuSpace[i].setVisible(false);
 		}
 	}
 
