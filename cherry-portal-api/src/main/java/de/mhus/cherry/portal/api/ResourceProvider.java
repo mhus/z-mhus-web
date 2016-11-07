@@ -3,12 +3,10 @@ package de.mhus.cherry.portal.api;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.directory.IResourceProvider;
 
-public interface ResourceProvider extends IResourceProvider<CaoNode> {
+public interface ResourceProvider {
 
-//	@Override
-//	CaoNode getResourceByPath(String path);
-//	
-//	@Override
-//	CaoNode getResourceById(String id);
+	public CaoNode getResource(String id);
+
+	String getName();
 
 }

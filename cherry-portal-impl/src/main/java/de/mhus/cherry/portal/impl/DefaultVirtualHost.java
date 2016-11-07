@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.CallContext;
+import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.EditorFactory;
 import de.mhus.cherry.portal.api.LoginHandler;
 import de.mhus.cherry.portal.api.NavigationProvider;
@@ -17,20 +18,24 @@ import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ResourceResolver;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.lib.cao.CaoDataSource;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.errors.NotFoundException;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.lib.servlet.RequestWrapper;
+import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 
 public class DefaultVirtualHost extends MLog implements VirtualHost {
 
+	private static final String SESSION_RESOURCE_PROVIDER = "_cherry_resource_provider_";
+	
 	private NavigationProvider navigationProvider;
 	private ResourceResolver resourceResolver;
 	private RendererResolver rendererResolver;
-	private HashMap<String, ResourceProvider> resourceProvider = new HashMap<>();
+	private HashMap<String, CaoDataSource> resourceProvider = new HashMap<>();
 	private LinkedList<LoginHandler> loginHandlers = new LinkedList<>();
 	private HashMap<String, ResourceRenderer> apiProvider = new HashMap<>();
 
@@ -104,7 +109,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 		if (resId == null)
 			return null;
 		
-		CaoNode resResource = getResourceResolver().getResourceById(this, resId);
+		CaoNode resResource = getResourceResolver().getResource(this, resId);
 		if (resResource == null)
 			return null;
 
@@ -202,7 +207,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 				log().d("resource id not found", call);
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);
 			}
-			CaoNode resResource = getResourceResolver().getResourceById(this, resId);
+			CaoNode resResource = getResourceResolver().getResource(this, resId);
 			if (resResource == null) {
 				log().d("resource not found", call, resId);
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);
@@ -243,7 +248,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 							String dataPath = MString.afterIndex(dataName, ':');
 							ResourceProvider subProvider = getResourceProvider(dataProviderName);
 							if (subProvider != null) {
-								subNode = subProvider.getResourceByPath(dataPath);
+								subNode = subProvider.getResource(dataPath);
 								if (subNode != null) {
 									subParts[0] = "";
 									for (String part : subParts) {
@@ -300,8 +305,17 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 
 	@Override
 	public ResourceProvider getResourceProvider(String name) {
+		CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
 		name = name.toLowerCase();
-		ResourceProvider provider = resourceProvider.get(name);
+		
+		ResourceProvider provider = null;
+		synchronized (this) {
+			provider = (ResourceProvider) call.getSession().get(SESSION_RESOURCE_PROVIDER + name );
+			if (provider == null) {
+				provider = new DefaultResourceProvider( resourceProvider.get(name).getConnection() );
+				call.getSession().put(SESSION_RESOURCE_PROVIDER + name, provider );
+			}
+		}
 //		if (provider == null)
 //			try {
 //				provider = MOsgi.getService(ResourceProvider.class, MOsgi.filterServiceName("cherry_resource_" + name));
@@ -332,11 +346,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 		return renderer;
 	}
 
-	public void addResourceProvider(ResourceProvider provider) {
+	public void addResourceDataSource(CaoDataSource provider) {
 		resourceProvider.put(provider.getName(), provider);
 	}
 
-	public void addResourceProvider(String name, ResourceProvider provider) {
+	public void addResourceDataSource(String name, CaoDataSource provider) {
 		resourceProvider.put(name, provider);
 	}
 	

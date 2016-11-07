@@ -6,12 +6,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MSystem;
 import de.mhus.osgi.sop.api.Sop;
+import de.mhus.osgi.sop.api.aaa.AaaContext;
 
 public class CherryCallContext implements CallContext {
 
@@ -28,12 +30,13 @@ public class CherryCallContext implements CallContext {
 	private CaoNode mainResource;
 	private String[] path;
 	private int pathCnt;
+	private AaaContext aaaContext;
 
 	public void setHttpRequest(HttpServletRequest req) {
 		httpRequest = req;
 		httpPath = req.getPathInfo();
 		req.setAttribute(CallContext.REQUEST_ATTRIBUTE_NAME, this);
-		sessionContext = Sop.getApi(CherryApi.class).getCherrySession(req.getSession().getId());
+		sessionContext = Sop.getApi(InternalCherryApi.class).getCherrySession(req.getSession().getId());
 	}
 
 	public void setHttpResponse(HttpServletResponse res) {
@@ -116,7 +119,7 @@ public class CherryCallContext implements CallContext {
 	}
 
 	@Override
-	public IProperties getSessionContext() {
+	public IProperties getSession() {
 		return sessionContext;
 	}
 
@@ -157,6 +160,15 @@ public class CherryCallContext implements CallContext {
 			return null;
 		pathCnt++;
 		return path[pathCnt-1];
+	}
+
+	public void setCurrentAaaContext(AaaContext context) {
+		this.aaaContext = context;
+	}
+
+	@Override
+	public AaaContext getAaaContext() {
+		return aaaContext;
 	}
 
 }

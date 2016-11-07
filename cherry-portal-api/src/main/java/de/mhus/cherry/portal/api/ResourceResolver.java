@@ -4,8 +4,6 @@ import de.mhus.lib.cao.CaoNode;
 
 public interface ResourceResolver {
 
-	CaoNode getResourceById(VirtualHost vHost, String resId);
-
-	CaoNode getResourceByPath(VirtualHost vHost, String path);
+	CaoNode getResource(VirtualHost vHost, String resId);
 	
 }

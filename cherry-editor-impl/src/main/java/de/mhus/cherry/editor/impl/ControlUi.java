@@ -1,11 +1,13 @@
 package de.mhus.cherry.editor.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.framework.BundleContext;
@@ -23,7 +25,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.control.GuiApi;
 import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiSpaceService;
@@ -58,6 +62,7 @@ public class ControlUi extends UI implements GuiApi {
 	private String initPath;
 	private String host;
 	private HttpServletRequest httpRequest;
+	private CallContext currentCall;
 
 	@Override
 	protected void init(VaadinRequest request) {
@@ -231,7 +236,7 @@ public class ControlUi extends UI implements GuiApi {
 			MLogUtil.releaseTrailConfig();
 		
 		// touch session to avoid timeout
-		Sop.getApi(CherryApi.class).getCherrySession(request.getSession().getId());
+		
 	}
 
 	public void requestEnd() {

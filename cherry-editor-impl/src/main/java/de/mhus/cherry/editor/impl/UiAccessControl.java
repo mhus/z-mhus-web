@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.vaadin.server.VaadinRequest;
 
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MLog;
@@ -30,8 +31,8 @@ public class UiAccessControl extends MLog implements AccessControl {
 			VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
 			AaaContext context = vHost.doLogin(new VaadinRequestWrapper(request));
 			if (context != null) {
-				IProperties session = Sop.getApi(CherryApi.class).getCherrySession(sessionId);
-				session.put(CherryApi.SESSION_ACCESS_NAME, context);
+				IProperties session = Sop.getApi(InternalCherryApi.class).getCherrySession(sessionId);
+				session.put(InternalCherryApi.SESSION_ACCESS_NAME, context);
 			}
 		}
 	}
@@ -39,17 +40,9 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public boolean signIn(String username, String password) {
 		try {
-			IProperties session = Sop.getApi(CherryApi.class).getCherrySession(sessionId);
-			AaaContext current = (AaaContext)session.get(CherryApi.SESSION_ACCESS_NAME);
-			AccessApi api = Sop.getApi(AccessApi.class);
-			if (current != null) {
-				api.release(current);
-			}
-			
-			AaaContext context = api.process(api.createUserTicket(username,password));
-			if (context == null) return false;
-			session.put(CherryApi.SESSION_ACCESS_NAME, context);
-			return true;
+			InternalCherryApi internal = Sop.getApi(InternalCherryApi.class);
+			String ret = internal.doLogin(username, password);
+			return ret == null;
 		} catch (Throwable t) {
 			log().d(username,t);
 			return false;
@@ -59,8 +52,8 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public boolean isUserSignedIn() {
 		try {
-			IProperties session = Sop.getApi(CherryApi.class).getCherrySession(sessionId);
-			return session.get(CherryApi.SESSION_ACCESS_NAME) != null;
+			InternalCherryApi internal = Sop.getApi(InternalCherryApi.class);
+			return internal.isLoggedIn();
 		} catch (Throwable t) {
 			log().d(t);
 			return false;
@@ -70,8 +63,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public boolean hasGroup(String role) {
 		try {
-			IProperties session = Sop.getApi(CherryApi.class).getCherrySession(sessionId);
-			AaaContext current = (AaaContext)session.get(CherryApi.SESSION_ACCESS_NAME);
+			AaaContext current = Sop.getApi(CherryApi.class).getCurrentCall().getAaaContext();
 			return current.getAccount().hasGroup(role);
 		} catch (Throwable t) {
 			log().d(t);
@@ -82,8 +74,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public String getName() {
 		try {
-			IProperties session = Sop.getApi(CherryApi.class).getCherrySession(sessionId);
-			AaaContext current = (AaaContext)session.get(CherryApi.SESSION_ACCESS_NAME);
+			AaaContext current = Sop.getApi(CherryApi.class).getCurrentCall().getAaaContext();
 			return current.getAccount().getName();
 		} catch (Throwable t) {
 			log().d(t);
@@ -94,8 +85,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public void signOut() {
 		try {
-			IProperties session = Sop.getApi(CherryApi.class).getCherrySession(sessionId);
-			session.remove(CherryApi.SESSION_ACCESS_NAME);
+			Sop.getApi(InternalCherryApi.class).doLogout();
 		} catch (Throwable t) {
 			log().d(t);
 		}
@@ -104,8 +94,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public Account getAccount() {
 		try {
-			IProperties session = Sop.getApi(CherryApi.class).getCherrySession(sessionId);
-			AaaContext current = (AaaContext)session.get(CherryApi.SESSION_ACCESS_NAME);
+			AaaContext current = Sop.getApi(CherryApi.class).getCurrentCall().getAaaContext();
 			return current.getAccount();
 		} catch (Throwable t) {
 			log().d(t);

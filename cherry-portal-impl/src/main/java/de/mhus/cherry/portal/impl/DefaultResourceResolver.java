@@ -9,7 +9,7 @@ import de.mhus.lib.core.MString;
 public class DefaultResourceResolver implements ResourceResolver {
 
 	@Override
-	public CaoNode getResourceById(VirtualHost vHost, String resId) {
+	public CaoNode getResource(VirtualHost vHost, String resId) {
 		String provName = "default";
 		if (MString.isIndex(resId, ':')) {
 			provName = MString.beforeIndex(resId, ':');
@@ -17,20 +17,7 @@ public class DefaultResourceResolver implements ResourceResolver {
 		}
 		ResourceProvider resProvider = vHost.getResourceProvider(provName);
 		if (resProvider == null) return null; //TODO throw exception?
-		CaoNode res = resProvider.getResourceById(resId);
-		return res;
-	}
-
-	@Override
-	public CaoNode getResourceByPath(VirtualHost vHost, String path) {
-		String provName = "default";
-		if (MString.isIndex(path, ':')) {
-			provName = MString.beforeIndex(path, ':');
-			path = MString.afterIndex(path, ':');
-		}
-		ResourceProvider resProvider = vHost.getResourceProvider(provName);
-		if (resProvider == null) return null; //TODO throw exception?
-		CaoNode res = resProvider.getResourceByPath(path);
+		CaoNode res = resProvider.getResource(resId);
 		return res;
 	}
 	

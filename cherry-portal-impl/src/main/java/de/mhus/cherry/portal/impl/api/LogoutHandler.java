@@ -6,6 +6,7 @@ import org.codehaus.jackson.node.ObjectNode;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.util.JsonResourceRenderer;
 import de.mhus.lib.core.IProperties;
 import de.mhus.osgi.sop.api.Sop;
@@ -15,17 +16,16 @@ public class LogoutHandler extends JsonResourceRenderer {
 
 	@Override
 	protected void doRender(CallContext call, JsonResult result) throws Exception {
+		
 		ObjectNode res = result.createObjectNode();
-		String sessionId = call.getHttpRequest().getSession().getId();
-		IProperties session = Sop.getApi(CherryApi.class).getCherrySession(sessionId);
-		if (session.get(CherryApi.SESSION_ACCESS_NAME) == null) {
-			res.put("_error", "not logged in");
+		InternalCherryApi intern = Sop.getApi(InternalCherryApi.class);
+		String ret = intern.doLogout();
+		if (ret != null) {
+			res.put("_error", ret);
 			res.put("successful", false);
-			return;
+		} else {
+			res.put("successful", true);
 		}
-		session.remove(CherryApi.SESSION_ACCESS_NAME);
-
-		res.put("successful", true);
 
 	}
 

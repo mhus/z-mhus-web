@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.lib.cao.CaoNode;
 
 public class NavigationTagHandler extends TagSupport {
@@ -15,16 +16,11 @@ public class NavigationTagHandler extends TagSupport {
 	private static final long serialVersionUID = 1L;
 	private CaoNode res;
 	private Collection<CaoNode> nodes;
-	private String iteratorName;
 	private boolean showHidden = false;
 	private String order = null;
 
 	public void setResource(CaoNode res) {
 		this.res = res;
-	}
-
-	public void setNavigation(String iteratorName) {
-		this.iteratorName = iteratorName;
 	}
 	
 	public void setShowHidden(boolean showHidden) {
@@ -37,6 +33,16 @@ public class NavigationTagHandler extends TagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {
+		
+		if (res == null) {
+			NavigationStack stack = NavigationStack.getStack(pageContext);
+			res = stack.getCurrent().getCurrent();
+			if (res == null) {
+				CallContext call = (CallContext)pageContext.getAttribute("call");
+				res = call.getNavigationResource();
+			}
+		}
+		
 		nodes = res.getNodes();
 		
 		if (!showHidden) {
@@ -64,7 +70,11 @@ public class NavigationTagHandler extends TagSupport {
 			});
 			nodes = list;
 		}
-    	pageContext.setAttribute(iteratorName, "" );
+		
+		NavigationStack stack = NavigationStack.getStack(pageContext);
+		
+		stack.push(new Navigation( res, nodes ));
+		
     	return EVAL_BODY_INCLUDE;
 	}
 }

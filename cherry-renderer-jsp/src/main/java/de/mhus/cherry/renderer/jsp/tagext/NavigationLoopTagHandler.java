@@ -10,13 +10,10 @@ import de.mhus.lib.cao.CaoNode;
 
 public class NavigationLoopTagHandler extends TagSupport {
 
-	private Collection<CaoNode> nav;
-	private String iteratorName;
+	private static final long serialVersionUID = 1L;
 	private Iterator<CaoNode> iterator;
-
-	public void setNavigation(Collection<CaoNode> nav) {
-		this.nav = nav;
-	}
+	private Navigation nav;
+	private String iteratorName;
 
 	public void setIterator(String iteratorName) {
 		this.iteratorName = iteratorName;
@@ -24,7 +21,10 @@ public class NavigationLoopTagHandler extends TagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {
-		iterator = nav.iterator();
+		
+		nav = NavigationStack.getStack(pageContext).getCurrent();
+		
+		iterator = nav.getNodes().iterator();
 	    if(iterate()) {
 	    	return EVAL_BODY_INCLUDE;
 	    }
@@ -35,7 +35,9 @@ public class NavigationLoopTagHandler extends TagSupport {
 	private boolean iterate() throws JspException {
 		if (!iterator.hasNext()) return false;
 	    try{
-	    	pageContext.setAttribute(iteratorName, iterator.next() );
+	    	nav.setCurrent(iterator.next());
+	    	if (iteratorName != null)
+	    		pageContext.setAttribute(iteratorName, nav.getCurrent());
 	    } catch(Exception e){
 	      throw new JspException(e.toString());
 	    }

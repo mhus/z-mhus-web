@@ -37,11 +37,12 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 	private VirtualHost host;
 	private ServletContext servletContext;
 	private ServletConfig config;
-	private HashMap<String, JspServletWrapper> wrappers = new HashMap<>();
+//	private HashMap<String, JspServletWrapper> wrappers = new HashMap<>();
 	private JspServletWrapper servlet;
 	private DelegateClassLoader hostClassLoader;
 	private File root;
 	private File tmp;
+	private Bundle bundle = FrameworkUtil.getBundle(JspRenderer.class);
 	
 	public JspRendererContext(File root, File tmp) throws ServletException {
 		this.root = root;
@@ -81,7 +82,7 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 		}	
 		// libs coming with renderer (default libs)
 		{
-			File renderRoot = Sop.getApi(CherryApi.class).getDeployDescritor(FrameworkUtil.getBundle(JspRenderer.class).getSymbolicName()).getPath(SPACE.PRIVATE);
+			File renderRoot = Sop.getApi(CherryApi.class).getDeployDescritor(bundle).getPath(SPACE.PRIVATE);
 			File lib = new File (renderRoot,"WEB-INF/lib");
 			try {
 				if (lib.exists() && lib.isDirectory()) {

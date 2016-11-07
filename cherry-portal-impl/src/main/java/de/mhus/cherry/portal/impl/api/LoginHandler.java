@@ -8,6 +8,7 @@ import org.codehaus.jackson.node.ObjectNode;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.util.JsonResourceRenderer;
 import de.mhus.lib.core.IProperties;
@@ -25,32 +26,14 @@ public class LoginHandler extends JsonResourceRenderer {
 		String username = call.getHttpRequest().getParameter("username");
 		String password = call.getHttpRequest().getParameter("password");
 		
-		String sessionId = call.getHttpRequest().getSession().getId();
-		IProperties session = Sop.getApi(CherryApi.class).getCherrySession(sessionId);
-		if (session.get(CherryApi.SESSION_ACCESS_NAME) != null) {
-			res.put("_error", "already logged in");
+		InternalCherryApi intern = Sop.getApi(InternalCherryApi.class);
+		String ret = intern.doLogin(username,password);
+		if (ret != null) {
+			res.put("_error", ret);
 			res.put("successful", false);
-			return;
+		} else {
+			res.put("successful", true);
 		}
-		
-		// for secure try to release
-		AaaContext current = (AaaContext)session.get(CherryApi.SESSION_ACCESS_NAME);
-		AccessApi api = Sop.getApi(AccessApi.class);
-		if (current != null) {
-			api.release(current);
-		}
-		
-		AaaContext context = api.process(api.createUserTicket(username,password));
-		if (context == null) {
-			res.put("_error", "wrong user or password");
-			res.put("successful", false);
-			return;
-		}
-		session.put(CherryApi.SESSION_ACCESS_NAME, context);
-
-		res.put("successful", true);
-		return;
-
 		
 	}
 

@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.osgi.sop.api.Sop;
@@ -26,27 +28,14 @@ public class CherryServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 			
-		CherryApi cherry = Sop.getApi(CherryApi.class);
-		String host = req.getHeader("Host");
-		VirtualHost vHost = cherry.findVirtualHost(host);
-		
-		
-        AccessApi access = Sop.getApi(AccessApi.class);
-        AaaContext context = cherry.getContext( req.getSession().getId() );
-        if (context == null) context = vHost.doLogin(new de.mhus.lib.servlet.HttpServletRequestWrapper(req));
-        access.process(context);
-        
+		InternalCherryApi cherry = Sop.getApi(InternalCherryApi.class);
+		CallContext call = cherry.createCall( this, req, res );
+		if (res.isCommitted()) return;
+
         try {
-						
-			CherryCallContext callContext = new CherryCallContext();
-			callContext.setHttpRequest(req);
-			callContext.setHttpResponse(new CherryResponseWrapper(res));
-			callContext.setVirtualHost(vHost);
-			callContext.setHttpServlet(this);
-			vHost.processRequest(callContext);
-			
+			call.getVirtualHost().processRequest(call);
         } finally {
-        	access.release(context);
+        	cherry.releaseCall(call);
         }
 	}
 	

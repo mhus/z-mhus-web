@@ -3,6 +3,7 @@ package de.mhus.cherry.portal.demo;
 import java.io.File;
 import java.util.Set;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import aQute.bnd.annotation.component.Component;
@@ -20,12 +21,13 @@ import de.mhus.osgi.sop.api.Sop;
 public class SimpleTheme implements ResourceRenderer {
 
 	private String webPath;
+	private Bundle bundle = FrameworkUtil.getBundle(SimpleTheme.class);
 
 	@Override
 	public void doRender(CallContext call) throws Exception {
 		String scope = (String)call.getAttribute(WidgetApi.CURRENT_THEME_SCOPE);
 
-		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(FrameworkUtil.getBundle(SimpleWidget.class).getSymbolicName());
+		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
 		File root = descriptor.getPath(SPACE.PRIVATE);
 		File file = null;
 		switch (scope) {
@@ -38,14 +40,14 @@ public class SimpleTheme implements ResourceRenderer {
 		}
 		if (file == null || !file.exists()) return;
 		ScriptRenderer renderer = CherryUtil.getScriptRenderer(call, file);
-		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class).getSymbolicName(), file);
+		renderer.doRender(call, bundle, file);
 		call.getHttpResponse().flushBuffer(); // really needed?
 	}
 
 	@Override
 	public void doCollectResourceLinks(String name, Set<String> list) {
 		if (webPath == null)
-			webPath = Sop.getApi(CherryApi.class).getDeployDescritor(FrameworkUtil.getBundle(SimpleTheme.class).getSymbolicName()).getWebPath(SPACE.PUBLIC);
+			webPath = Sop.getApi(CherryApi.class).getDeployDescritor(bundle).getWebPath(SPACE.PUBLIC);
 		
 		switch(name) {
 		case ResourceRenderer.RESOURCE_CSS:

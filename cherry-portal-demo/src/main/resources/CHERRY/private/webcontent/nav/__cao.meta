@@ -1,5 +1,5 @@
-resource_id=main.vm
+resource_id=/main.vm
 theme=de.mhus.cherry.portal.impl.page.simpletheme
-title=NRoot
+title=Root
 acl_read=*
 acl_write=editor

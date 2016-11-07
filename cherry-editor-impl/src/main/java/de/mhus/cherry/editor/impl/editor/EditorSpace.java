@@ -65,7 +65,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 //		contentLayout.addComponent(l);
 		
 		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost( GuiUtil.getApi().getHost() );
-		resource = vHost.getResourceResolver().getResourceById(vHost, resId);
+		resource = vHost.getResourceResolver().getResource(vHost, resId);
 		if (resource == null) {
 			// resource not found
 			return;

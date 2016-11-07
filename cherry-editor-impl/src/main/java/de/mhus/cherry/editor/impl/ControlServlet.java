@@ -18,6 +18,9 @@ import com.vaadin.ui.UI;
 
 import aQute.bnd.annotation.component.Activate;
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.CallContext;
+import de.mhus.cherry.portal.api.InternalCherryApi;
+import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = Servlet.class, properties = { "alias=/.control" }, name="CHERRYGUI",servicefactory=true)
 @VaadinServletConfiguration(ui=ControlUi.class, productionMode=true)
@@ -38,7 +41,13 @@ public class ControlServlet extends VaadinServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		
+		CallContext currentCall = null;
 		try {
+			currentCall = Sop.getApi(InternalCherryApi.class).createCall(this, request, response);
+			if (response.isCommitted()) return;
+			
 			super.service(request, response);
 		} finally {
 			// cleanup
@@ -53,12 +62,18 @@ public class ControlServlet extends VaadinServlet {
     		} catch (Throwable t) {
     			
     		}
+			
+			if (currentCall != null) {
+				Sop.getApi(InternalCherryApi.class).releaseCall(currentCall);
+				currentCall = null;
+			}
+
 		}
 	}
 
-    protected boolean isStaticResourceRequest(HttpServletRequest request) {
+    @Override
+	protected boolean isStaticResourceRequest(HttpServletRequest request) {
     	// set user and trace ...
-    	
         
     	boolean ret = super.isStaticResourceRequest(request);
     	if (!ret) {

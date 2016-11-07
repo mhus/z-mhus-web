@@ -80,7 +80,9 @@ public class Desktop extends CssLayout {
 		menuSpace[2] = menuBar.addItem("", null);
 		menuSpace[3] = menuBar.addItem("", null);
 		
-		menuUser = menuBar.addItem( ui.getAccessControl().getName(), null);
+		String name = ui.getAccessControl().getName();
+		if (name == null) name = "?";
+		menuUser = menuBar.addItem( name, null);
 		menuUser.setStyleName("right");
 		menuLogout = menuUser.addItem("Logout", new MenuBar.Command() {
 			

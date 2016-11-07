@@ -3,6 +3,7 @@ package de.mhus.cherry.portal.demo;
 import java.io.File;
 import java.util.Set;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import aQute.bnd.annotation.component.Component;
@@ -22,6 +23,8 @@ import de.mhus.osgi.sop.api.Sop;
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_de.mhus.cherry.portal.impl.page.simplepage")
 public class SimplePage extends MLog implements ResourceRenderer {
 
+	private Bundle bundle = FrameworkUtil.getBundle(SimpleWidget.class);
+	
 	@Override
 	public void doRender(CallContext call) throws Exception {
 		CaoNode res = Sop.getApi(WidgetApi.class).getResource(call);
@@ -44,11 +47,11 @@ public class SimplePage extends MLog implements ResourceRenderer {
 			call.setAttribute(WidgetApi.CURRENT_THEME_SCOPE, WidgetApi.THEME_SCOPE_HEADER);
 			theme.doRender(call);
 		}
-		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(FrameworkUtil.getBundle(SimpleWidget.class).getSymbolicName());
+		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
 		File root = descriptor.getPath(SPACE.PRIVATE);
 		File file = new File(root, "script/page.jsp");
 		ScriptRenderer renderer =  CherryUtil.getScriptRenderer(call, file);
-		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class).getSymbolicName(), file);
+		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class), file);
 
 		if (theme != null) {
 			call.setAttribute(WidgetApi.CURRENT_THEME_SCOPE, WidgetApi.THEME_SCOPE_FOOTER);

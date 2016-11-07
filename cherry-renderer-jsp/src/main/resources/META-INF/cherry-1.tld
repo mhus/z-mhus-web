@@ -182,5 +182,92 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
+
+    <tag>
+        <description>
+        	Output Rendition Content
+        </description>
+        <name>rendition</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.RenditionTagHandler</tag-class>
+        <body-content>JSP</body-content>
+		<attribute>
+            <description>
+                Resource
+            </description>
+            <name>resource</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Rendition name
+            </description>
+            <name>rendition</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+<!-- Navigation -->
+    
+    <tag>
+        <description>
+        	Collect Navigation Children
+        </description>
+        <name>navigation</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationTagHandler</tag-class>
+        <body-content>JSP</body-content>
+		<attribute>
+            <description>
+                Resource
+            </description>
+            <name>resource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Show also hidden nodes
+            </description>
+            <name>showHidden</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Order by this attribute
+            </description>
+            <name>order</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+        	Render body if navigation has no children (leaf)
+        </description>
+        <name>navigationLeaf</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationLeafTagHandler</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+        
+    <tag>
+        <description>
+        	Render body if navigation has children (node)
+        </description>
+        <name>navigationNode</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationNodeTagHandler</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+    <tag>
+        <description>
+        	Render all navigation children
+        </description>
+        <name>navigationLoop</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationLoopTagHandler</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
     
 </taglib>

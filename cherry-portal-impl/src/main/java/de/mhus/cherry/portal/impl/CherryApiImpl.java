@@ -1,5 +1,6 @@
 package de.mhus.cherry.portal.impl;
 
+import org.osgi.framework.Bundle;
 import org.osgi.service.component.ComponentContext;
 
 import aQute.bnd.annotation.component.Activate;
@@ -31,8 +32,7 @@ import de.mhus.osgi.sop.api.aaa.AccessApi;
 public class CherryApiImpl extends MLog implements CherryApi {
 
 	public static CherryApiImpl instance;
-	
-	public TimeoutMap<String, MProperties> globalSession = new TimeoutMap<>();
+	private ThreadLocal<CallContext> calls = new ThreadLocal<>();
 	
     @Activate
     public void activate(ComponentContext ctx) {
@@ -76,8 +76,8 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	}
 
 	@Override
-	public DeployDescriptor getDeployDescritor(String symbolicName) {
-		return CherryDeployServlet.instance.getDescriptor(symbolicName);
+	public DeployDescriptor getDeployDescritor(Bundle bundle) {
+		return CherryDeployServlet.instance.getDescriptor(bundle.getSymbolicName());
 	}
 
 	@Override
@@ -111,22 +111,6 @@ public class CherryApiImpl extends MLog implements CherryApi {
 //	}
 
 	@Override
-	public synchronized IProperties getCherrySession(String sessionId) {
-		MProperties ret = globalSession.get(sessionId);
-		if (ret == null) {
-			ret = new MProperties();
-			globalSession.put(sessionId, ret);
-		}
-		return ret;
-	}
-
-	@Override
-	public AaaContext getContext(String sessionId) {
-		IProperties session = getCherrySession(sessionId);
-		return (AaaContext) session.get(SESSION_ACCESS_NAME);
-	}
-
-	@Override
 	public boolean canEditResource(CallContext call, CaoNode res) {
 		// TODO check if editor is available
 		// check if edit is on
@@ -139,6 +123,18 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		}
 
 		return true;
+	}
+
+	@Override
+	public CallContext getCurrentCall() {
+		return calls.get();
+	}
+
+	public void setCallContext(CherryCallContext callContext) {
+		if (callContext != null)
+			calls.set(callContext);
+		else
+			calls.remove();
 	}
 
 }

@@ -16,14 +16,13 @@ public class DefaultResourceProvider implements ResourceProvider {
 	}
 
 	@Override
-	public CaoNode getResourceByPath(String path) {
-		return con.getResourceByPath(path);
+	public CaoNode getResource(String path) {
+		if (path.startsWith("/"))
+			return con.getResourceByPath(path);
+		else
+			return con.getResourceById(path);
 	}
 
-	@Override
-	public CaoNode getResourceById(String id) {
-		return con.getResourceById(id);
-	}
 	public CaoConnection getCon() {
 		return con;
 	}
