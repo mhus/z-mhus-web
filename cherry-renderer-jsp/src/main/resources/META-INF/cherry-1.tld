@@ -31,8 +31,8 @@
         	Load important variables.
         </description>
         <name>load</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.LoadTagHandler</tag-class>
-		<tei-class>de.mhus.cherry.renderer.jsp.tagext.LoadTagTei</tei-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.LoadTag</tag-class>
+		<tei-class>de.mhus.cherry.renderer.jsp.tagext.LoadTei</tei-class>
         <body-content>JSP</body-content>
     </tag>
 
@@ -41,7 +41,7 @@
         	Render a resource with script renderer.
         </description>
         <name>render</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.RenderTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.RenderTag</tag-class>
         <body-content>JSP</body-content>
 		<attribute>
             <description>
@@ -58,15 +58,23 @@
         	Iterate all children of the resource
         </description>
         <name>children</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.ChildrenTagHandler</tag-class>
-        <tei-class>de.mhus.cherry.renderer.jsp.tagext.ChildrenTagTei</tei-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.ChildrenTag</tag-class>
+        <tei-class>de.mhus.cherry.renderer.jsp.tagext.ChildrenTei</tei-class>
         <body-content>JSP</body-content>
 		<attribute>
             <description>
-                Parent resource
+                Resource
             </description>
             <name>resource</name>
-            <required>true</required>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Resource Name
+            </description>
+            <name>name</name>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
 		<attribute>
@@ -100,15 +108,23 @@
         	Iterate all elements of a path, inclusive first and last node
         </description>
         <name>path</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.PathTagHandler</tag-class>
-        <tei-class>de.mhus.cherry.renderer.jsp.tagext.PathTagTei</tei-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.PathTag</tag-class>
+        <tei-class>de.mhus.cherry.renderer.jsp.tagext.PathTei</tei-class>
         <body-content>JSP</body-content>
 		<attribute>
             <description>
-                Last resource
+                Resource
             </description>
             <name>resource</name>
-            <required>true</required>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Resource Name
+            </description>
+            <name>name</name>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
 		<attribute>
@@ -126,7 +142,7 @@
         	Render body if editor mode is set.
         </description>
         <name>editor</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.EditorTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.EditorTag</tag-class>
         <body-content>JSP</body-content>
     </tag>
 
@@ -135,7 +151,7 @@
         	Render link to editor
         </description>
         <name>editorLink</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.EditorLinkTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.EditorLinkTag</tag-class>
         <body-content>JSP</body-content>
     </tag>
     
@@ -144,7 +160,7 @@
         	Render needed html head content
         </description>
         <name>htmlHead</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.HtmlHeadTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.HtmlHeadTag</tag-class>
         <body-content>JSP</body-content>
     </tag>
     
@@ -153,7 +169,7 @@
         	Render Current User Information
         </description>
         <name>currentUser</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.CurrentUserTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.CurrentUserTag</tag-class>
         <body-content>JSP</body-content>
     </tag>
     
@@ -162,7 +178,7 @@
         	Render my current node name (last name in the path)
         </description>
         <name>me</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.MeTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.MeTag</tag-class>
         <body-content>JSP</body-content>
     </tag>
     
@@ -171,7 +187,7 @@
         	Render body if not logged in
         </description>
         <name>guest</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.GuestTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.GuestTag</tag-class>
         <body-content>JSP</body-content>
 		<attribute>
             <description>
@@ -185,24 +201,40 @@
 
     <tag>
         <description>
-        	Output Rendition Content
+        	Output Content Of The Resource, if the content is not found, the body will be displayed
         </description>
-        <name>rendition</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.RenditionTagHandler</tag-class>
+        <name>print</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.PrintTag</tag-class>
         <body-content>JSP</body-content>
 		<attribute>
             <description>
                 Resource
             </description>
             <name>resource</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
 		<attribute>
             <description>
-                Rendition name
+                Resource Name
+            </description>
+            <name>name</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Rendition name an empty string for the defut rendition
             </description>
             <name>rendition</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Attribute name or _name or _id for special values
+            </description>
+            <name>attribute</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
@@ -215,13 +247,22 @@
         	Collect Navigation Children
         </description>
         <name>navigation</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationTag</tag-class>
+        <tei-class>de.mhus.cherry.renderer.jsp.tagext.NavigationTei</tei-class>
         <body-content>JSP</body-content>
 		<attribute>
             <description>
                 Resource
             </description>
             <name>resource</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Navigation Root
+            </description>
+            <name>root</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
@@ -248,7 +289,7 @@
         	Render body if navigation has no children (leaf)
         </description>
         <name>navigationLeaf</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationLeafTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationLeafTag</tag-class>
         <body-content>JSP</body-content>
     </tag>
         
@@ -257,7 +298,7 @@
         	Render body if navigation has children (node)
         </description>
         <name>navigationNode</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationNodeTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationNodeTag</tag-class>
         <body-content>JSP</body-content>
     </tag>
 
@@ -266,8 +307,17 @@
         	Render all navigation children
         </description>
         <name>navigationLoop</name>
-        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationLoopTagHandler</tag-class>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.NavigationLoopTag</tag-class>
+        <tei-class>de.mhus.cherry.renderer.jsp.tagext.NavigationLoopTei</tei-class>
         <body-content>JSP</body-content>
+		<attribute>
+            <description>
+                Iterator
+            </description>
+            <name>iterator</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
     
 </taglib>

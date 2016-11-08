@@ -29,4 +29,8 @@ public class Navigation {
 		return current;
 	}
 
+	public CaoNode getParent() {
+		return parent;
+	}
+
 }

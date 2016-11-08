@@ -7,7 +7,7 @@ import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
 
-public class CurrentUserTagHandler extends TagSupport {
+public class CurrentUserTag extends TagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {

@@ -7,7 +7,7 @@ import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
 
-public class GuestTagHandler extends TagSupport {
+public class GuestTag extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	private boolean switz;

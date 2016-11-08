@@ -10,7 +10,7 @@ import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.logging.MLogUtil;
 
-public class RenditionTagHandler extends TagSupport {
+public class RenditionTag extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	private CaoNode res;

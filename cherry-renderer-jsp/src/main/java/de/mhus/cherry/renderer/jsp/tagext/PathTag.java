@@ -7,15 +7,20 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import de.mhus.lib.cao.CaoNode;
 
-public class PathTagHandler extends TagSupport {
+public class PathTag extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	private CaoNode res;
 	private LinkedList<CaoNode> nodes = new LinkedList<>();
 	private String iteratorName;
+	private String name;
 
 	public void setResource(CaoNode res) {
 		this.res = res;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setIterator(String iteratorName) {
@@ -24,6 +29,8 @@ public class PathTagHandler extends TagSupport {
 	
 	@Override
 	public int doStartTag() throws JspException {
+		
+		res = Util.findRes(res, name, pageContext);
 		
 		CaoNode r = res;
 		while (r != null) {

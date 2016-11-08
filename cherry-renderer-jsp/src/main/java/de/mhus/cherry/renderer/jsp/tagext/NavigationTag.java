@@ -1,6 +1,5 @@
 package de.mhus.cherry.renderer.jsp.tagext;
 
-import java.awt.List;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -9,24 +8,24 @@ import java.util.LinkedList;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.lib.cao.CaoNode;
 
-public class ChildrenTagHandler extends TagSupport {
+public class NavigationTag extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	private CaoNode res;
 	private Collection<CaoNode> nodes;
-	private String iteratorName;
-	private Iterator<CaoNode> iterator;
 	private boolean showHidden = false;
 	private String order = null;
+	private String resName;
 
-	public void setResource(CaoNode res) {
-		this.res = res;
+	public void setResource(String resName) {
+		this.resName = resName;
 	}
 
-	public void setIterator(String iteratorName) {
-		this.iteratorName = iteratorName;
+	public void setRoot(CaoNode res) {
+		this.res = res;
 	}
 	
 	public void setShowHidden(boolean showHidden) {
@@ -36,11 +35,24 @@ public class ChildrenTagHandler extends TagSupport {
 	public void setOrder(String order) {
 		this.order = order;
 	}
-	
+
 	@Override
 	public int doStartTag() throws JspException {
-		nodes = res.getNodes();
 		
+		if (res == null) {
+			NavigationStack stack = NavigationStack.getStack(pageContext);
+			if (stack.getCurrent() != null) res = stack.getCurrent().getCurrent();
+			if (res == null) {
+				CallContext call = (CallContext)pageContext.getAttribute("call");
+//				res = call.getNavigationResource();
+				res = call.getVirtualHost().getNavigationProvider().getNode("/"); // get root				
+			}
+		}
+		
+		nodes = res.getNodes();
+		if (resName != null)
+			pageContext.setAttribute(resName, res);
+
 		if (!showHidden) {
 			// remove hidden elements
 			for (Iterator<CaoNode> iter = nodes.iterator(); iter.hasNext();) {
@@ -66,32 +78,19 @@ public class ChildrenTagHandler extends TagSupport {
 			});
 			nodes = list;
 		}
-
-		iterator = nodes.iterator();
-
-	    if(iterate()) {
-	    	return EVAL_BODY_INCLUDE;
-	    }
-	    return SKIP_BODY;
+		
+		NavigationStack stack = NavigationStack.getStack(pageContext);
+		
+		stack.push(new Navigation( res, nodes ));
+		
+    	return EVAL_BODY_INCLUDE;
 	}
 	
-	private boolean iterate() throws JspException {
-		if (!iterator.hasNext()) return false;
-	    try{
-	    	pageContext.setAttribute(iteratorName, iterator.next() );
-	    } catch(Exception e){
-	      throw new JspException(e.toString());
-	    }
-	    return true;
-	}
-
 	@Override
 	public int doAfterBody() throws JspException {
-		
-	    if(iterate()) {
-	    	return EVAL_BODY_AGAIN;
-	    }
-	    return SKIP_BODY;
-	  }
+		NavigationStack stack = NavigationStack.getStack(pageContext);
+		stack.pop();
+		return SKIP_BODY;
+	}
 	
 }

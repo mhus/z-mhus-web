@@ -4,18 +4,17 @@ import javax.servlet.jsp.tagext.TagData;
 import javax.servlet.jsp.tagext.TagExtraInfo;
 import javax.servlet.jsp.tagext.VariableInfo;
 
-import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.lib.cao.CaoNode;
 
-public class LoadTagTei extends TagExtraInfo {
+public class ChildrenTei extends TagExtraInfo {
 
 	@Override
 	public VariableInfo[] getVariableInfo(TagData data) {
 
+		String name = data.getAttributeString("iterator");
         return new VariableInfo[] { 
-        		new VariableInfo("resource", CaoNode.class.getName(), true, VariableInfo.AT_BEGIN),
-        		new VariableInfo("call", CallContext.class.getName(), true, VariableInfo.AT_BEGIN)
+        		new VariableInfo(name, CaoNode.class.getName(), true, VariableInfo.NESTED)
         };
     }
-	
+
 }

@@ -215,6 +215,8 @@ public class CherryDeployServlet extends HttpServlet implements BundleListener {
 				File f = new File(root, path.substring(prefixLength));
 //				if (f.exists() && update && ) return; // Update is not working, have no modify date of the origin
 				
+				if (f.exists() && f.isDirectory()) MFile.deleteDir(f); // delete directory before write the file
+				
 				f.getParentFile().mkdirs();
 				try {
 					InputStream is = entry.openStream();

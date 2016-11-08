@@ -8,7 +8,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import de.mhus.lib.cao.CaoNode;
 
-public class NavigationLoopTagHandler extends TagSupport {
+public class NavigationLoopTag extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	private Iterator<CaoNode> iterator;

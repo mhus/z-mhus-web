@@ -8,7 +8,7 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.osgi.sop.api.Sop;
 
-public class LoadTagHandler extends TagSupport {
+public class LoadTag extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 

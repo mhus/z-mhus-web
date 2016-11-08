@@ -8,16 +8,15 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.osgi.sop.api.Sop;
 
-public class EditorLinkTagHandler extends TagSupport {
+public class MeTag extends TagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {
 		
 		try {
 			CallContext call = (CallContext)pageContext.getAttribute("call");
-			CaoNode res = (CaoNode)pageContext.getAttribute("resource");
-			String path = Sop.getApi(WidgetApi.class).getEditorLink(call, res);
-			pageContext.getOut().print(path );
+			CaoNode nav = call.getNavigationResource();
+			pageContext.getOut().print(nav.getName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

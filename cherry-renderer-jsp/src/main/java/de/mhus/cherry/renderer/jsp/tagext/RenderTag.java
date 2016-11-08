@@ -10,7 +10,7 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.osgi.sop.api.Sop;
 
-public class RenderTagHandler extends TagSupport {
+public class RenderTag extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	private CaoNode res;

@@ -36,6 +36,7 @@ public class CacheApiImpl extends MLog implements CacheApi {
 		if (!enabled) return null;
 		try {
 			String key = getName(node, name);
+			if (key == null) return null;
 			Container cont = cache.get( key );
 			if (cont == null) return null;
 			if (cont.isTimeout()) {
@@ -50,6 +51,7 @@ public class CacheApiImpl extends MLog implements CacheApi {
 	}
 
 	public String getName(CaoNode node, String name) throws MException {
+		if (node == null) return null;
 		String source = node.getConnection().getName();
 		String id = node.getId();
 		return source + "|" + id + "|" + name;
@@ -59,7 +61,9 @@ public class CacheApiImpl extends MLog implements CacheApi {
 	public void put(CaoNode node, String name, Object value) {
 		if (!enabled) return;
 		try {
-			cache.put(getName(node, name), new Container(value) );
+			String key = getName(node, name);
+			if (key == null) return;
+			cache.put(key, new Container(value) );
 		} catch (MException e) {
 			log().d(e);
 		}

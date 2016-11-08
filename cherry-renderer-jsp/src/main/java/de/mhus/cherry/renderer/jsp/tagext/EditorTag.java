@@ -11,7 +11,7 @@ import de.mhus.lib.cao.auth.AuthAccess;
 import de.mhus.lib.cao.auth.AuthNode;
 import de.mhus.osgi.sop.api.Sop;
 
-public class EditorTagHandler extends TagSupport {
+public class EditorTag extends TagSupport {
 	
 	private static final long serialVersionUID = 1L;
 

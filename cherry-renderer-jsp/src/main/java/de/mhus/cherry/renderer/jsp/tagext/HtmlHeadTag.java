@@ -8,7 +8,7 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.osgi.sop.api.Sop;
 
-public class HtmlHeadTagHandler extends TagSupport {
+public class HtmlHeadTag extends TagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {

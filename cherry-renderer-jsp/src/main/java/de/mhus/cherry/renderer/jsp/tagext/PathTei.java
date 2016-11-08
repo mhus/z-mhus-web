@@ -6,7 +6,7 @@ import javax.servlet.jsp.tagext.VariableInfo;
 
 import de.mhus.lib.cao.CaoNode;
 
-public class PathTagTei extends TagExtraInfo {
+public class PathTei extends TagExtraInfo {
 
 	@Override
 	public VariableInfo[] getVariableInfo(TagData data) {
