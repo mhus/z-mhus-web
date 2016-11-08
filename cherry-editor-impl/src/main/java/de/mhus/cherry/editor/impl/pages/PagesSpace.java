@@ -1,6 +1,10 @@
 package de.mhus.cherry.editor.impl.pages;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.TreeSet;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -32,6 +36,8 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
+import de.mhus.cherry.portal.api.control.PageControl;
+import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.lib.cao.CaoAction;
 import de.mhus.lib.cao.CaoActionList;
 import de.mhus.lib.cao.CaoNode;
@@ -39,18 +45,19 @@ import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MXml;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
+import de.mhus.lib.karaf.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.SopApi;
 
 public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycle {
 
+	private static final long serialVersionUID = 1L;
 	private Panel panel;
 	private VerticalLayout contentLayout;
 	private HorizontalSplitPanel split;
 	private TreeTable tree;
 	private Accordion controlAcc;
-	private VerticalLayout controlActions;
-	private VerticalLayout controlWidgets;
+	private HashMap<PageControl,String> controls;
 
 	@Override
 	public void doInitialize() {
@@ -114,92 +121,33 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 			}
 		});
 		
-		controlActions = new VerticalLayout();
-		controlWidgets = new VerticalLayout();
-		
-		
-		controlAcc.addTab(controlWidgets, "Widgets");
-		controlAcc.addTab(controlActions, "Actions");
-		
+		controls = new HashMap<>();
+		for (PageControlFactory factory : MOsgi.getServices(PageControlFactory.class, null)) {
+			String name = factory.getName();
+			PageControl control = factory.createPageControl();
+			controls.put(control, name);
+			controlAcc.addTab(control, name);
+		}
+				
 	}
 
 	protected void doUpdateControl() {
 		Component selected = controlAcc.getSelectedTab();
-		if (selected == controlActions)
-			doUpdateActions();
-		else
-		if (selected == controlWidgets)
-			doUpdateWidgets();
 		
-	}
-
-	private void doUpdateWidgets() {
-		controlWidgets.removeAllComponents();
+		String name = controls.get(selected);
+		if (name == null) return;
+		
+		((PageControl)selected).doClean();
+		
 		String selId = (String)tree.getValue();
 		if (selId == null) return;
 		Item sel = (Item)tree.getItem(selId);
 		if (sel == null) return;
-		
-		CaoNode res = (CaoNode)sel.getItemProperty("resource").getValue();
-		if (res == null) return;
-		
-		CaoNode content = res.getNode(WidgetApi.CONTENT_NODE);
-		if (content == null) return;
-		
-		for (CaoNode c : content.getNodes()) {
-			try {
-				Button b = new Button();
-				b.setHtmlContentAllowed(true);
-				
-				String type = c.getString(WidgetApi.RENDERER, null);
-				if (MString.isIndex(type, '.')) type = MString.afterLastIndex(type, '.');
-				b.setCaption("<b>" + c.getString("title", MXml.encode(c.getName())) + "</b>" + (type == null ? "" : "<br/>" + MXml.encode(type) ) );
-				b.setWidth("100%");
-				controlWidgets.addComponent(b);
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-		}
-		
-	}
 
-	private void doUpdateActions() {
-		controlActions.removeAllComponents();
-		String selId = (String)tree.getValue();
-		if (selId == null) return;
-		Item sel = (Item)tree.getItem(selId);
-		if (sel == null) return;
-		
 		CaoNode nav = (CaoNode)sel.getItemProperty("object").getValue();
-		if (nav != null) {
-			boolean first = true;
-			for (CaoAction action : nav.getConnection().getActions()) {
-				if (first) {
-					Label label = new Label("Navigation");
-					controlActions.addComponent(label);
-					first = false;
-				}
-				Button b = new Button(action.getName());
-				b.setWidth("100%");
-				controlActions.addComponent(b);
-			}
-		}
-		
 		CaoNode res = (CaoNode)sel.getItemProperty("resource").getValue();
-		if (res != null) {
-			boolean first = true;
-			for (CaoAction action : res.getConnection().getActions()) {
-				if (first) {
-					Label label = new Label("Resource");
-					controlActions.addComponent(label);
-					first = false;
-				}
-				Button b = new Button(action.getName());
-				b.setWidth("100%");
-				controlActions.addComponent(b);
-			}
-		}
-		
+
+		((PageControl)selected).doUpdate(nav, res);
 
 	}
 
