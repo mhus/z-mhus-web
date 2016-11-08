@@ -20,10 +20,12 @@ import com.vaadin.ui.VerticalLayout;
 import de.mhus.cherry.editor.impl.ControlUi;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.sop.api.Sop;
@@ -73,6 +75,9 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 				doCollapse(event.getItemId());
 			}
 		});
+		
+		tree.setSizeFull();
+		tree.setSelectable(true);
 	}
 
 	protected void doCollapse(Object itemId) {
@@ -98,8 +103,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 				try {
 					Item next = container.addItem(n.getId());
 					container.setParent(n.getId(), itemId);
-					next.getItemProperty("name").setValue(n.getString("title", n.getName()) );
-					next.getItemProperty("object").setValue(n);
+					fillItem(next, n);
 					container.setChildrenAllowed(n.getName(), true);
 				} catch (Throwable t) {
 					MLogUtil.log().i(t);
@@ -115,11 +119,11 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 	private HierarchicalContainer createNavigationContainer() {
 		HierarchicalContainer container = new HierarchicalContainer();
 		container.addContainerProperty("name", String.class, "?");
-		container.addContainerProperty("tecName", String.class, null);
+		container.addContainerProperty("tecName", String.class, "");
 		container.addContainerProperty("object", CaoNode.class, null);
-		container.addContainerProperty("theme", Boolean.class, null);
-		container.addContainerProperty("acl", Boolean.class, null);
-		container.addContainerProperty("pageType", String.class, null);
+		container.addContainerProperty("theme", Boolean.class, false);
+		container.addContainerProperty("acl", Boolean.class, false);
+		container.addContainerProperty("pageType", String.class, "");
 		
 		String host = ((ControlUi)GuiUtil.getApi()).getHost();
 		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
@@ -149,7 +153,26 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		item.getItemProperty("object").setValue(node);
 		item.getItemProperty("tecName").setValue(node.getName());
 		item.getItemProperty("acl").setValue( hasAcl );
+		item.getItemProperty("theme").setValue( node.isProperty(WidgetApi.THEME)  );
 		
+		String pageType = "";
+		String resId = node.getString(CherryApi.RESOURCE_ID);
+		if (resId != null) {
+			VirtualHost vHost = GuiUtil.getVirtualHost();
+			CaoNode res = vHost.getResourceResolver().getResource(vHost, resId);
+			if (res != null) {
+				CaoNode content = res.getNode(WidgetApi.CONTENT_NODE);
+				if (content != null) {
+					String renderer = content.getString(WidgetApi.RENDERER, null);
+					if (renderer != null) {
+						if (MString.isIndex(renderer, '.')) renderer = MString.afterLastIndex(renderer, '.');
+						pageType = renderer;
+					}
+				}
+			}
+		}
+		item.getItemProperty("pageType").setValue( pageType );
+			
 	}
 
 	@Override

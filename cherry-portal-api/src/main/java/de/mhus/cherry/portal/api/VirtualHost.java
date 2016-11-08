@@ -10,8 +10,6 @@ import de.mhus.osgi.sop.api.aaa.AaaContext;
 
 public interface VirtualHost {
 
-	String RESOURCE_ID = "resource_id";
-
 	public NavigationProvider getNavigationProvider();
 
 	public void sendError(CallContext context, int sc) throws IOException;

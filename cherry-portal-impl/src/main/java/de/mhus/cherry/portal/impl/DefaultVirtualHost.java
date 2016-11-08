@@ -105,7 +105,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 			control = "";
 		}
 		
-		String resId = navResource.getString(NavigationProvider.RESOURCE_ID, null);
+		String resId = navResource.getString(CherryApi.RESOURCE_ID, null);
 		if (resId == null)
 			return null;
 		
@@ -202,7 +202,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 				selectors = new String[0];
 			
 			
-			String resId = call.getNavigationResource().getString(NavigationProvider.RESOURCE_ID, null);
+			String resId = call.getNavigationResource().getString(CherryApi.RESOURCE_ID, null);
 			if (resId == null) {
 				log().d("resource id not found", call);
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);

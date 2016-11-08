@@ -12,6 +12,8 @@ import de.mhus.osgi.sop.api.aaa.AaaContext;
 
 public interface CherryApi extends SApi {
 	
+	public static final String RESOURCE_ID = "cherry:resource_id";
+
 	VirtualHost findVirtualHost(String host);
 	
 	FileDeployer findFileDeployer(String suffix);
