@@ -1,5 +1,5 @@
-renderer=de.mhus.cherry.portal.impl.page.SimplePage
+cherry:renderer=de.mhus.cherry.portal.impl.page.SimplePage
+cherry:editor=de.mhus.cherry.portal.demo.simpleeditorfactory
 title=Page
-editor=de.mhus.cherry.portal.demo.simpleeditorfactory
 text=Ipsur
-acl_read=*
+acl:read=*

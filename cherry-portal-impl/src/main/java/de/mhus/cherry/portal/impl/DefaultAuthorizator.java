@@ -1,4 +1,4 @@
-package de.mhus.cherry.portal.demo;
+package de.mhus.cherry.portal.impl;
 
 import java.util.List;
 
@@ -14,12 +14,12 @@ import de.mhus.osgi.sop.api.aaa.AaaContext;
 import de.mhus.osgi.sop.api.aaa.AaaUtil;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
 
-public class DemoAuth implements Authorizator {
+public class DefaultAuthorizator implements Authorizator {
 
 	@Override
 	public boolean hasReadAccess(CaoNode node) {
 		try {
-			String acl = Sop.getApi(CherryApi.class).getRecursiveString(node, "acl_read");
+			String acl = Sop.getApi(CherryApi.class).getRecursiveString(node, "acl:read");
 			if (acl == null) return true;
 			AccessApi aaa = Sop.getApi(AccessApi.class);
 			AaaContext context = aaa.getCurrentOrGuest();
@@ -34,7 +34,7 @@ public class DemoAuth implements Authorizator {
 	@Override
 	public boolean hasWriteAccess(CaoNode node) {
 		try {
-			String acl = Sop.getApi(CherryApi.class).getRecursiveString(node, "acl_write");
+			String acl = Sop.getApi(CherryApi.class).getRecursiveString(node, "acl:write");
 			if (acl == null) return true;
 			AccessApi aaa = Sop.getApi(AccessApi.class);
 			AaaContext context = aaa.getCurrentOrGuest();

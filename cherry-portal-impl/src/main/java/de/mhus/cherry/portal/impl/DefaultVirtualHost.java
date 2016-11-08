@@ -206,6 +206,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 			if (resId == null) {
 				log().d("resource id not found", call);
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);
+				return;
 			}
 			CaoNode resResource = getResourceResolver().getResource(this, resId);
 			if (resResource == null) {

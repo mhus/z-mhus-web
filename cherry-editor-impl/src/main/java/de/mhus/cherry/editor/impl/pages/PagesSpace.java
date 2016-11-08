@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractComponent;
@@ -13,6 +14,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.CollapseEvent;
 import com.vaadin.ui.Tree.ExpandEvent;
+import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.cherry.editor.impl.ControlUi;
@@ -23,6 +25,7 @@ import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.logging.MLogUtil;
+import de.mhus.lib.errors.MException;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.SopApi;
 
@@ -31,7 +34,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 	private Panel panel;
 	private VerticalLayout contentLayout;
 	private HorizontalSplitPanel split;
-	private Tree tree;
+	private TreeTable tree;
 
 	@Override
 	public void doInitialize() {
@@ -45,11 +48,11 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		split.setSizeFull();
 		panel.setContent(split);
 		
-		tree = new Tree("Navigation");
+		tree = new TreeTable("Navigation");
 		
 		split.setFirstComponent(tree);
 		split.setSecondComponent(contentLayout);
-		split.setSplitPosition(300, Unit.PIXELS);
+		split.setSplitPosition(600, Unit.PIXELS);
 
 		tree.setImmediate(true);
 		tree.setItemCaptionMode(ItemCaptionMode.PROPERTY);
@@ -112,7 +115,11 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 	private HierarchicalContainer createNavigationContainer() {
 		HierarchicalContainer container = new HierarchicalContainer();
 		container.addContainerProperty("name", String.class, "?");
+		container.addContainerProperty("tecName", String.class, null);
 		container.addContainerProperty("object", CaoNode.class, null);
+		container.addContainerProperty("theme", Boolean.class, null);
+		container.addContainerProperty("acl", Boolean.class, null);
+		container.addContainerProperty("pageType", String.class, null);
 		
 		String host = ((ControlUi)GuiUtil.getApi()).getHost();
 		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
@@ -120,14 +127,29 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		
 		try {
 			Item item = container.addItem(navRoot.getId());
-			item.getItemProperty("name").setValue(navRoot.getString("title", navRoot.getName()) );
-			item.getItemProperty("object").setValue(navRoot);
+			fillItem(item, navRoot);
 			container.setParent(navRoot.getId(), null);
 			container.setChildrenAllowed(navRoot.getName(), true);
 		} catch (Throwable t) {
 			MLogUtil.log().i(t);
 		}
 		return container;
+	}
+
+	private void fillItem(Item item, CaoNode node) throws ReadOnlyException, MException {
+		
+		boolean hasAcl = false;
+		for (String key : node.getPropertyKeys())
+			if (key.startsWith("acl:")) {
+				hasAcl = true;
+				break;
+			}
+		
+		item.getItemProperty("name").setValue(node.getString("title", node.getName()) );
+		item.getItemProperty("object").setValue(node);
+		item.getItemProperty("tecName").setValue(node.getName());
+		item.getItemProperty("acl").setValue( hasAcl );
+		
 	}
 
 	@Override

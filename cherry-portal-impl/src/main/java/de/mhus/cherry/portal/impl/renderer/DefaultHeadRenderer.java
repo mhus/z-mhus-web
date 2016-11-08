@@ -7,6 +7,7 @@ import java.util.Set;
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.ResourceRenderer;
+import de.mhus.lib.cao.CaoConst;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.errors.MException;
 
@@ -22,7 +23,7 @@ public class DefaultHeadRenderer extends MLog implements ResourceRenderer {
 	
 		call.getHttpResponse().setDateHeader("Date", System.currentTimeMillis());
 		
-		Date modified = call.getResource().getDate("modified");
+		Date modified = call.getResource().getDate(CaoConst.MODIFIED);
 		if (modified != null) call.getHttpResponse().setDateHeader("Last-Modified", modified.getTime());
 		
 		String contentType = call.getResource().getString("contentType", null);

@@ -6,9 +6,9 @@ import de.mhus.osgi.sop.api.SApi;
 public interface WidgetApi extends SApi {
 
 	public static final String CURRENT_WIDGET_NODE = "current_widget_node";
-	public static final String RENDERER = "renderer";
-	public static final String EDITOR = "editor";
-	public static final String THEME = "theme";
+	public static final String RENDERER = "cherry:renderer";
+	public static final String EDITOR = "cherry:editor";
+	public static final String THEME = "cherry:theme";
 	public static final String CURRENT_THEME_SCOPE = "current_theme_scope";
 	public static final String THEME_SCOPE_HEADER = "header";
 	public static final String THEME_SCOPE_FOOTER = "footer";

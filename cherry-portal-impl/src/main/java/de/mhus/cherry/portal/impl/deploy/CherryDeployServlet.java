@@ -33,6 +33,7 @@ import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.FileDeployer;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
+import de.mhus.lib.core.MThread;
 import de.mhus.lib.core.cfg.CfgFile;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.osgi.sop.api.Sop;
@@ -70,9 +71,18 @@ public class CherryDeployServlet extends HttpServlet implements BundleListener {
     @Activate
     public void activate(ComponentContext ctx) {
 		context = ctx.getBundleContext();
-		context.addBundleListener(this);
 		instance = this;
-		refreshAll(SENSIVITY.CHECK);
+		
+		MThread.asynchron(new Runnable(){
+
+			@Override
+			public void run() {
+				Sop.waitForApi(CherryApi.class, 10000);
+				context.addBundleListener(CherryDeployServlet.this);
+				refreshAll(SENSIVITY.CHECK);
+			}
+			
+		});
     }
     
     @Deactivate

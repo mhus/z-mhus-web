@@ -1,2 +1,2 @@
-acl_read=*
-acl_write=editor
+acl:read=*
+acl:write=editor
