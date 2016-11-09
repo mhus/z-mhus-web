@@ -3,6 +3,7 @@ package de.mhus.cherry.editor.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -31,6 +32,7 @@ import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.control.GuiApi;
 import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiSpaceService;
+import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
@@ -40,6 +42,7 @@ import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.AccessControl;
 import de.mhus.lib.core.security.Account;
+import de.mhus.lib.errors.MException;
 import de.mhus.lib.vaadin.VaadinAccessControl;
 import de.mhus.lib.vaadin.servlet.VaadinRequestWrapper;
 import de.mhus.osgi.sop.api.Sop;
@@ -61,8 +64,9 @@ public class ControlUi extends UI implements GuiApi {
 	private String trailConfig = null;
 	private String initPath;
 	private String host;
-	private HttpServletRequest httpRequest;
-	private CallContext currentCall;
+//	private HttpServletRequest httpRequest;
+//	private CallContext currentCall;
+	private LinkedList<String> history = new LinkedList<>();
 
 	@Override
 	protected void init(VaadinRequest request) {
@@ -215,21 +219,36 @@ public class ControlUi extends UI implements GuiApi {
 	
 	@Override
 	public boolean openSpace(String spaceId, String subSpace, String search) {
+		return openSpace(spaceId, subSpace, search, true);
+	}
+	
+	public boolean openSpace(String spaceId, String subSpace, String search, boolean history) {
 		GuiSpaceService space = getSpace(spaceId);
 		if (space == null) return false;
 		if (!hasAccess(space.getName()) || !space.hasAccess(getAccessControl())) return false;
 
-		return desktop.showSpace(space, subSpace, search);
+		boolean ret = desktop.showSpace(space, subSpace, search);
+		if (ret && history) {
+			String newEntry = spaceId + "|" + subSpace + "|" + search;
+			while (this.history.remove(newEntry) ) {} // move up
+			this.history.add(newEntry);
+			doUpdateHistoryMenu();
+		}
+		return ret;
 	}
 
 	
+	private void doUpdateHistoryMenu() {
+		desktop.doUpdateHistoryMenu(history);
+	}
+
 	@Override
 	public Subject getCurrentUser() {
 		return (Subject)getSession().getAttribute(VaadinAccessControl.SUBJECT_ATTR);
 	}
 
 	public void requestBegin(HttpServletRequest request) {
-		this.httpRequest = request;
+//		this.httpRequest = request;
 		if (trailConfig != null)
 			MLogUtil.setTrailConfig(trailConfig);
 		else
@@ -260,6 +279,29 @@ public class ControlUi extends UI implements GuiApi {
 	@Override
 	public String getHost() {
 		return host;
+	}
+
+	@Override
+	public void navigateToEditor(CaoNode content) {
+		try {
+			openSpace("editor", null, content.getConnection().getName() + ":" + content.getId() );
+		} catch (MException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+
+	@Override
+	public void navigateBack() {
+		if (history.size() == 0) return;
+		String link = history.removeLast();
+		if (history.size() == 0) return;
+		link = history.getLast();
+		doUpdateHistoryMenu();
+		String[] parts = link.split("\\|", 3);
+		if (parts[1].equals("null")) parts[1] = null;
+		if (parts[2].equals("null")) parts[2] = null;
+		openSpace(parts[0], parts[1], parts[2], false);
 	}
 	
 }

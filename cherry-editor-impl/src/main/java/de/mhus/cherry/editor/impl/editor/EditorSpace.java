@@ -5,6 +5,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -13,6 +14,8 @@ import de.mhus.cherry.portal.api.Editor;
 import de.mhus.cherry.portal.api.EditorFactory;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
+import de.mhus.cherry.portal.api.control.EditorControl;
+import de.mhus.cherry.portal.api.control.EditorControlFactory;
 import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
@@ -20,6 +23,7 @@ import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.errors.MException;
+import de.mhus.lib.karaf.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
 
 public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecycle {
@@ -35,10 +39,13 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private Button bSave;
 	private Button bCancel;
 	private String resId;
+	private TabSheet tabs;
 
 	@Override
 	public boolean navigateTo(String selection, String filter) {
-		return false;
+		
+		return doShow(filter);
+		
 	}
 
 	@Override
@@ -59,21 +66,38 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		addComponent(panel);
 		panel.setCaption("Editor");
 		panel.setSizeFull();
-		contentLayout = new VerticalLayout();
-		panel.setContent(contentLayout);
+		tabs = new TabSheet();
 		
+		panel.setContent(tabs);
+		
+		contentLayout = new VerticalLayout();
 //		contentLayout.addComponent(l);
+		if (resId != null)
+			doShow(resId);
+
+	}
+
+	private synchronized boolean doShow(String resId) {
+		log.d("show resource", resId);
+		
+		tabs.removeAllComponents();
+		tabs.addTab(contentLayout, "Content");
+		
+		contentLayout.removeAllComponents();
 		
 		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost( GuiUtil.getApi().getHost() );
 		resource = vHost.getResourceResolver().getResource(vHost, resId);
 		if (resource == null) {
 			// resource not found
-			return;
+			return false;
 		}
+		
+		doFillTabs(resource);
+		
 		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost,resource);
 		if (factory == null) {
 			// editor not found
-			return;
+			return false;
 		}
 		
 		Panel editorPanel = new Panel();
@@ -89,7 +113,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			panel.setCaption( editor.getTitle() );
 		} catch (MException e) {
 			log.e(e);
-			return;
+			return false;
 		}
 		
 		HorizontalLayout buttonPanel = new HorizontalLayout();
@@ -117,11 +141,24 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		contentLayout.setExpandRatio(editorPanel, 1f);
 		contentLayout.setMargin(true);
 		contentLayout.setSpacing(true);
-		//contentLayout.setSizeFull();
+		//contentLayout.setSizeFull();		
+		
+		return true;
+	}
+
+	private void doFillTabs(CaoNode res) {
+		for (EditorControlFactory factory : MOsgi.getServices(EditorControlFactory.class, null)) {
+			EditorControl c = factory.createEditorControl(res);
+			if (c != null) {
+				tabs.addTab(c, factory.getName());
+			}
+		}
+		
+		
 	}
 
 	protected void doCancel() {
-		UI.getCurrent().getPage().setLocation( getNavLink() );
+		doBack();
 	}
 
 	protected void doSave() {
@@ -130,7 +167,14 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			UI.getCurrent().showNotification(error);
 			return;
 		}
-		UI.getCurrent().getPage().setLocation( getNavLink() );
+		doBack();
+	}
+
+	private void doBack() {
+		if (lnk != null)
+			UI.getCurrent().getPage().setLocation( getNavLink() );
+		else
+			GuiUtil.getApi().navigateBack();
 	}
 
 	@Override

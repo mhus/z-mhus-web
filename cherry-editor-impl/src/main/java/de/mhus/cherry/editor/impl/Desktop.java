@@ -37,7 +37,6 @@ public class Desktop extends CssLayout {
 	private MenuItem menuTrace;
 	private MenuItem menuHistory;
 	private MenuItem menuBack;
-	private MenuItem menuForward;
 	private static Log log = Log.getLog(Desktop.class);
 
 	public Desktop(ControlUi cherryUi) {
@@ -61,19 +60,28 @@ public class Desktop extends CssLayout {
 
 			@Override
 			public void menuSelected(MenuItem selectedItem) {
-				doNavigateBack();
-			}
-			
-		});
-		menuForward = menuHistory.addItem("Forward", new MenuBar.Command() {
-
-			@Override
-			public void menuSelected(MenuItem selectedItem) {
-				doNavigateForward();
+				GuiUtil.getApi().navigateBack();
 			}
 			
 		});
 		menuHistory.addSeparator();
+		for (int i = 0; i < 15; i++)
+			menuHistory.addItem("", new MenuBar.Command() {
+
+				@Override
+				public void menuSelected(MenuItem selectedItem) {
+					String text = selectedItem.getText();
+					if (MString.isSet(text)) {
+						String[] parts = text.split("\\|", 3);
+						if (parts.length == 3) {
+							if (parts[1].equals("null")) parts[1] = null;
+							if (parts[2].equals("null")) parts[2] = null;
+							GuiUtil.getApi().openSpace(parts[0], parts[1], parts[2]);
+						}
+					}
+				}
+				
+			});
 		
 		menuSpace[0] = menuBar.addItem("", null);
 		menuSpace[1] = menuBar.addItem("", null);
@@ -101,7 +109,7 @@ public class Desktop extends CssLayout {
 				UI.getCurrent().getPage().reload();
 			}
 		});
-		
+		menuUser.addSeparator();
 		menuTrace = menuUser.addItem("Trace An", new MenuBar.Command() {
 			
 			@Override
@@ -128,16 +136,6 @@ public class Desktop extends CssLayout {
 		setSizeFull();
 		
 		showOverview();
-	}
-
-	protected void doNavigateBack() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void doNavigateForward() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void refreshSpaceList(Map<String, GuiSpaceService> spaceList) {
@@ -175,7 +173,7 @@ public class Desktop extends CssLayout {
 				
 				@Override
 				public void buttonClick(ClickEvent event) {
-					showSpace(space, null, null);
+					GuiUtil.getApi().openSpace(space.getName(), null, null); // not directly to support history
 				}
 			});
 			
@@ -249,6 +247,19 @@ public class Desktop extends CssLayout {
 			menuSpace[i].removeChildren();
 			menuSpace[i].setText("");
 			menuSpace[i].setVisible(false);
+		}
+	}
+
+	public void doUpdateHistoryMenu(LinkedList<String> history) {
+		int cnt = -2;
+		for (MenuItem c : menuHistory.getChildren()) {
+			if (cnt >= 0) {
+				if (history.size() - cnt - 1 < 0)
+					c.setText("");
+				else
+					c.setText( history.get(history.size() - cnt - 1));
+			}
+			cnt++;
 		}
 	}
 

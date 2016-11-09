@@ -2,6 +2,7 @@ package de.mhus.cherry.portal.api.control;
 
 import javax.security.auth.Subject;
 
+import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.IProperties;
 
 public interface GuiApi {
@@ -13,4 +14,8 @@ public interface GuiApi {
 	Subject getCurrentUser();
 	
 	String getHost();
+
+	void navigateToEditor(CaoNode content);
+
+	void navigateBack();
 }

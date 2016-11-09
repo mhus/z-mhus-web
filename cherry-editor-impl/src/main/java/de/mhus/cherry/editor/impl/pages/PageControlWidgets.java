@@ -3,9 +3,12 @@ package de.mhus.cherry.editor.impl.pages;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.WidgetApi;
+import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.lib.cao.CaoAction;
@@ -46,6 +49,22 @@ public class PageControlWidgets implements PageControlFactory {
 			CaoNode content = res.getNode(WidgetApi.CONTENT_NODE);
 			if (content == null) return;
 			
+			{
+				Button b = new Button();
+				b.setHtmlContentAllowed(true);
+				b.setCaption("<b>Page</b>");
+				b.setWidth("100%");
+				addComponent(b);
+				addComponent(new Label("---"));
+				b.addClickListener(new ClickListener() {
+					
+					@Override
+					public void buttonClick(ClickEvent event) {
+						GuiUtil.getApi().navigateToEditor( content );
+					}
+				});
+			}
+			
 			for (CaoNode c : content.getNodes()) {
 				try {
 					Button b = new Button();
@@ -56,6 +75,14 @@ public class PageControlWidgets implements PageControlFactory {
 					b.setCaption("<b>" + c.getString("title", MXml.encode(c.getName())) + "</b>" + (type == null ? "" : "<br/>" + MXml.encode(type) ) );
 					b.setWidth("100%");
 					addComponent(b);
+					b.addClickListener(new ClickListener() {
+						
+						@Override
+						public void buttonClick(ClickEvent event) {
+							GuiUtil.getApi().navigateToEditor( c );
+						}
+					});
+
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
