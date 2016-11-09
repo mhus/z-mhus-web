@@ -10,12 +10,12 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.Editor;
-import de.mhus.cherry.portal.api.EditorFactory;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
+import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.cherry.portal.api.control.EditorControl;
 import de.mhus.cherry.portal.api.control.EditorControlFactory;
+import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
@@ -36,7 +36,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private Panel panel;
 	private VerticalLayout contentLayout;
 	private CaoNode resource;
-	private Editor editor;
+	private EditorPanel editor;
 	private Button bSave;
 	private Button bCancel;
 	private String resId;
@@ -93,13 +93,14 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			return null;
 		}
 		
-		doFillTabs(resource);
-		
 		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost,resource);
 		if (factory == null) {
 			// editor not found
 			return null;
 		}
+		
+		doFillTabs(resource, factory);
+		
 		
 		Panel editorPanel = new Panel();
 		editorPanel.setSizeFull();
@@ -147,9 +148,9 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		return "Edit " + resource.getString("title", resource.getName());
 	}
 
-	private void doFillTabs(CaoNode res) {
+	private void doFillTabs(CaoNode res, EditorFactory editorFactory) {
 		for (EditorControlFactory factory : CherryUtil.orderServices(EditorSpace.class, EditorControlFactory.class)) {
-			EditorControl c = factory.createEditorControl(res);
+			EditorControl c = factory.createEditorControl(res, editorFactory);
 			if (c != null) {
 				tabs.addTab(c, factory.getName());
 			}

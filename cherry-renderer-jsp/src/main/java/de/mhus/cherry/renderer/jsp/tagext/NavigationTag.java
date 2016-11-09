@@ -9,6 +9,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import de.mhus.cherry.portal.api.CallContext;
+import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.lib.cao.CaoNode;
 
 public class NavigationTag extends TagSupport {
@@ -57,7 +58,7 @@ public class NavigationTag extends TagSupport {
 			// remove hidden elements
 			for (Iterator<CaoNode> iter = nodes.iterator(); iter.hasNext();) {
 				CaoNode n = iter.next();
-				if (n.getBoolean("hidden", false))
+				if (n.getBoolean(CherryApi.NAV_HIDDEN, false))
 					iter.remove();
 			}
 		}

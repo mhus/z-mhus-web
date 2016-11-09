@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.EditorFactory;
 import de.mhus.cherry.portal.api.LoginHandler;
 import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.RendererResolver;
@@ -20,6 +19,7 @@ import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ResourceResolver;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.lib.basics.Named;
 import de.mhus.lib.cao.CaoDataSource;
 import de.mhus.lib.cao.CaoNode;

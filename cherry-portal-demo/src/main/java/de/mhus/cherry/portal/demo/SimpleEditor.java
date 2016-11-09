@@ -3,12 +3,12 @@ package de.mhus.cherry.portal.demo;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextField;
 
-import de.mhus.cherry.portal.api.Editor;
+import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.lib.cao.CaoWritableElement;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.errors.MException;
 
-public class SimpleEditor extends Editor {
+public class SimpleEditor extends EditorPanel {
 
 	private static Log log = Log.getLog(SimpleEditor.class);
 	private static final long serialVersionUID = 1L;

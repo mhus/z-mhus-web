@@ -8,6 +8,7 @@ import com.vaadin.ui.Button.ClickListener;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.WidgetApi;
+import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
@@ -31,10 +32,17 @@ public class PageControlWidgets implements PageControlFactory {
 
 	private static class Control extends PageControl {
 
+		private ControlParent controlParent;
+
 		public Control() {
 			
 		}
-		
+
+		@Override
+		public void doInit(ControlParent controlParent) {
+			this.controlParent = controlParent;
+		}
+
 		@Override
 		public void doClean() {
 			removeAllComponents();

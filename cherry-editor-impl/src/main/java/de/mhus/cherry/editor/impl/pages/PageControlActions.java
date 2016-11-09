@@ -5,6 +5,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.lib.cao.CaoAction;
@@ -25,10 +26,17 @@ public class PageControlActions implements PageControlFactory {
 
 	private static class Control extends PageControl {
 
+		private ControlParent controlParent;
+
 		public Control() {
 			
 		}
 		
+		@Override
+		public void doInit(ControlParent controlParent) {
+			this.controlParent = controlParent;
+		}
+
 		@Override
 		public void doClean() {
 			removeAllComponents();
