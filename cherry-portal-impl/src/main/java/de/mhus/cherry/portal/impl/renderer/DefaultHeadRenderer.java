@@ -28,10 +28,7 @@ public class DefaultHeadRenderer extends MLog implements ResourceRenderer {
 		
 		String contentType = call.getResource().getString("contentType", null);
 		if (contentType == null) contentType = call.getHttpServlet().getServletContext().getMimeType("a." + call.getReturnType());
-		if (contentType == null) 
-			try {
-				contentType = call.getHttpServlet().getServletContext().getMimeType(call.getResource().getName());
-			} catch (MException e) {}
+		if (contentType == null) contentType = call.getHttpServlet().getServletContext().getMimeType(call.getResource().getName());
 		if (contentType == null) contentType = call.getVirtualHost().getDefaultContentType();
 		if (contentType != null) call.getHttpResponse().setContentType(contentType);
 				

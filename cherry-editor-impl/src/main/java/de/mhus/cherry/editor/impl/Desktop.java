@@ -3,6 +3,7 @@ package de.mhus.cherry.editor.impl;
 import java.util.LinkedList;
 import java.util.Map;
 
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CssLayout;
@@ -70,13 +71,13 @@ public class Desktop extends CssLayout {
 
 				@Override
 				public void menuSelected(MenuItem selectedItem) {
-					String text = selectedItem.getText();
+					String text = selectedItem.getDescription();
 					if (MString.isSet(text)) {
-						String[] parts = text.split("\\|", 3);
-						if (parts.length == 3) {
-							if (parts[1].equals("null")) parts[1] = null;
+						String[] parts = text.split("\\|", 4);
+						if (parts.length == 4) {
 							if (parts[2].equals("null")) parts[2] = null;
-							GuiUtil.getApi().openSpace(parts[0], parts[1], parts[2]);
+							if (parts[3].equals("null")) parts[3] = null;
+							GuiUtil.getApi().openSpace(parts[1], parts[2], parts[3]);
 						}
 					}
 				}
@@ -208,7 +209,7 @@ public class Desktop extends CssLayout {
 		return GuiUtil.getApi().hasAccess(space.getName());
 	}
 
-	protected boolean showSpace(GuiSpaceService space, String subSpace, String search) {
+	protected String showSpace(GuiSpaceService space, String subSpace, String search) {
 		AbstractComponent component = ui.getSpaceComponent(space.getName());
 		
 		contentScreen.removeAllComponents();
@@ -216,7 +217,7 @@ public class Desktop extends CssLayout {
 		if (component == null) {
 			contentScreen.addComponent(new Label("Der Space ist aktuell nicht erreichbar " + space.getName()));
 			addComponent(contentScreen);
-			return false;
+			return null;
 		}
 		
 		component.setSizeFull();
@@ -230,7 +231,7 @@ public class Desktop extends CssLayout {
 		if (component instanceof Navigable && (MString.isSet(subSpace) || MString.isSet(search)))
 			return ((Navigable)component).navigateTo(subSpace, search);
 		
-		return true;
+		return space.getDisplayName();
 	}
 
 	protected void showOverview() {
@@ -254,10 +255,16 @@ public class Desktop extends CssLayout {
 		int cnt = -2;
 		for (MenuItem c : menuHistory.getChildren()) {
 			if (cnt >= 0) {
-				if (history.size() - cnt - 1 < 0)
+				if (history.size() - cnt - 1 < 0) {
 					c.setText("");
-				else
-					c.setText( history.get(history.size() - cnt - 1));
+					c.setDescription("");
+					c.setIcon(null);
+				} else {
+					String x = history.get(history.size() - cnt - 1);
+					c.setText(MString.beforeIndex(x, '|'));
+					c.setDescription(x);
+					c.setIcon(FontAwesome.ARROW_RIGHT);
+				}
 			}
 			cnt++;
 		}

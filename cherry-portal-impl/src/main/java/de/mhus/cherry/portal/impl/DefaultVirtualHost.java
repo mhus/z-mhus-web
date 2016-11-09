@@ -25,6 +25,7 @@ import de.mhus.lib.core.MString;
 import de.mhus.lib.errors.NotFoundException;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.lib.servlet.RequestWrapper;
+import de.mhus.lib.servlet.ResponseWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 
@@ -380,7 +381,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	}
 
 	@Override
-	public AaaContext doLogin(RequestWrapper request) {
+	public AaaContext doLogin(RequestWrapper request, ResponseWrapper response) {
 		AaaContext out = null;
 		for (LoginHandler handler : loginHandlers) {
 			out = handler.doLogin(request);

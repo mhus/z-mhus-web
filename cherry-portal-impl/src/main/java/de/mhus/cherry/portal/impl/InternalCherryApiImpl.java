@@ -28,6 +28,8 @@ import de.mhus.lib.core.cfg.CfgInt;
 import de.mhus.lib.core.cfg.CfgLong;
 import de.mhus.lib.core.util.TimeoutMap;
 import de.mhus.lib.core.util.TimeoutMap.Invalidator;
+import de.mhus.lib.servlet.HttpServletRequestWrapper;
+import de.mhus.lib.servlet.HttpServletResponseWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
@@ -69,26 +71,32 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 	public CallContext createCall(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res) throws IOException {
 
 		CherryCallContext callContext = new CherryCallContext();
+		callContext.setHttpRequest(req);
+		callContext.setHttpResponse(new CherryResponseWrapper(res));
+		callContext.setHttpServlet(servlet);
+
+		// find virtual host
 		String host = req.getHeader("Host");
 		VirtualHost vHost = CherryApiImpl.instance.findVirtualHost(host);
 		if (vHost == null) {
 			res.sendError(HttpServletResponse.SC_BAD_GATEWAY);
 			return callContext; // is commited ?
 		}
+		callContext.setVirtualHost(vHost);
 		
+		// find logged in user and auto login
         AccessApi access = Sop.getApi(AccessApi.class);
         AaaContext context = getContext( req.getSession().getId() );
-        if (context == null) context = vHost.doLogin(new de.mhus.lib.servlet.HttpServletRequestWrapper(req));
+        if (context == null) {
+        	context = vHost.doLogin(new HttpServletRequestWrapper(req), new HttpServletResponseWrapper(res) );
+        	if (res.isCommitted()) return callContext;
+        }
+        //callContext.setCurrentAaaContext(context);
+        access.process(context);
 
-		callContext.setHttpRequest(req);
-		callContext.setHttpResponse(new CherryResponseWrapper(res));
-		callContext.setVirtualHost(vHost);
-		callContext.setHttpServlet(servlet);
-		callContext.setCurrentAaaContext(context);
-
+        // remember the current call for this request
 		CherryApiImpl.instance.setCallContext(callContext);
 		
-		access.process(context);
 		return callContext;
 	}
 

@@ -227,14 +227,14 @@ public class ControlUi extends UI implements GuiApi {
 		if (space == null) return false;
 		if (!hasAccess(space.getName()) || !space.hasAccess(getAccessControl())) return false;
 
-		boolean ret = desktop.showSpace(space, subSpace, search);
-		if (ret && history) {
-			String newEntry = spaceId + "|" + subSpace + "|" + search;
+		String ret = desktop.showSpace(space, subSpace, search);
+		if (ret != null && history) {
+			String newEntry = ret.replace('|', ' ') + "|" + spaceId + "|" + subSpace + "|" + search;
 			while (this.history.remove(newEntry) ) {} // move up
 			this.history.add(newEntry);
 			doUpdateHistoryMenu();
 		}
-		return ret;
+		return ret != null;
 	}
 
 	
@@ -283,12 +283,7 @@ public class ControlUi extends UI implements GuiApi {
 
 	@Override
 	public void navigateToEditor(CaoNode content) {
-		try {
-			openSpace("editor", null, content.getConnection().getName() + ":" + content.getId() );
-		} catch (MException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		openSpace("editor", null, content.getConnection().getName() + ":" + content.getId() );
 	}
 
 	@Override
@@ -298,10 +293,10 @@ public class ControlUi extends UI implements GuiApi {
 		if (history.size() == 0) return;
 		link = history.getLast();
 		doUpdateHistoryMenu();
-		String[] parts = link.split("\\|", 3);
-		if (parts[1].equals("null")) parts[1] = null;
+		String[] parts = link.split("\\|", 4);
 		if (parts[2].equals("null")) parts[2] = null;
-		openSpace(parts[0], parts[1], parts[2], false);
+		if (parts[3].equals("null")) parts[3] = null;
+		openSpace(parts[1], parts[2], parts[3], false);
 	}
 	
 }

@@ -24,10 +24,12 @@ public class SimpleEditor extends Editor {
 		
 		title = new TextField("Title");
 		title.setValue(data.getString("title", ""));
+		title.setWidth("100%");
 		addComponent(title);
 		
-		text = new RichTextArea();
+		text = new RichTextArea("Body");
 		text.setValue(data.getString("text", ""));
+		text.setSizeFull();
 		addComponent(text);
 	}
 	

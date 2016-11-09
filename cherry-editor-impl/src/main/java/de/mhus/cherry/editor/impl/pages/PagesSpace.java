@@ -257,8 +257,8 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 	}
 
 	@Override
-	public boolean navigateTo(String selection, String filter) {
-		return false;
+	public String navigateTo(String selection, String filter) {
+		return null;
 	}
 
 }

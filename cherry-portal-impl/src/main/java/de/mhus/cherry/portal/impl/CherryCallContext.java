@@ -14,6 +14,7 @@ import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MSystem;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
+import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 public class CherryCallContext implements CallContext {
 
@@ -30,7 +31,6 @@ public class CherryCallContext implements CallContext {
 	private CaoNode mainResource;
 	private String[] path;
 	private int pathCnt;
-	private AaaContext aaaContext;
 
 	public void setHttpRequest(HttpServletRequest req) {
 		httpRequest = req;
@@ -162,13 +162,10 @@ public class CherryCallContext implements CallContext {
 		return path[pathCnt-1];
 	}
 
-	public void setCurrentAaaContext(AaaContext context) {
-		this.aaaContext = context;
-	}
-
 	@Override
 	public AaaContext getAaaContext() {
-		return aaaContext;
+		// return every time the current context
+		return Sop.getApi(AccessApi.class).getCurrentOrGuest();
 	}
 
 }

@@ -42,7 +42,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private TabSheet tabs;
 
 	@Override
-	public boolean navigateTo(String selection, String filter) {
+	public String navigateTo(String selection, String filter) {
 		
 		return doShow(filter);
 		
@@ -77,7 +77,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 	}
 
-	private synchronized boolean doShow(String resId) {
+	private synchronized String doShow(String resId) {
 		log.d("show resource", resId);
 		
 		tabs.removeAllComponents();
@@ -89,7 +89,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		resource = vHost.getResourceResolver().getResource(vHost, resId);
 		if (resource == null) {
 			// resource not found
-			return false;
+			return null;
 		}
 		
 		doFillTabs(resource);
@@ -97,7 +97,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost,resource);
 		if (factory == null) {
 			// editor not found
-			return false;
+			return null;
 		}
 		
 		Panel editorPanel = new Panel();
@@ -113,7 +113,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			panel.setCaption( editor.getTitle() );
 		} catch (MException e) {
 			log.e(e);
-			return false;
+			return null;
 		}
 		
 		HorizontalLayout buttonPanel = new HorizontalLayout();
@@ -143,7 +143,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		contentLayout.setSpacing(true);
 		//contentLayout.setSizeFull();		
 		
-		return true;
+		return "Edit " + resource.getString("title", resource.getName());
 	}
 
 	private void doFillTabs(CaoNode res) {

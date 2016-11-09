@@ -57,12 +57,8 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 
 	@Override
 	public String getEditorLink(CallContext call, CaoNode res) {
-		try {
-			String path = call.getHttpPath() + ":" + res.getConnection().getName() + ":" + res.getId();
-			return "/.control/editor#" + path;
-		} catch (MException e) {
-			return null;
-		}
+		String path = call.getHttpPath() + ":" + res.getConnection().getName() + ":" + res.getId();
+		return "/.control/editor#" + path;
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 			// try auto login
 			String host = request.getHeader("Host");
 			VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
-			AaaContext context = vHost.doLogin(new VaadinRequestWrapper(request));
+			AaaContext context = vHost.doLogin(new VaadinRequestWrapper(request), null);
 			if (context != null) {
 				IProperties session = Sop.getApi(InternalCherryApi.class).getCherrySession(sessionId);
 				session.put(InternalCherryApi.SESSION_ACCESS_NAME, context);
