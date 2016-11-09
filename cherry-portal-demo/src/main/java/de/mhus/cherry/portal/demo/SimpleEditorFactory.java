@@ -83,7 +83,6 @@ public class SimpleEditorFactory extends MLog implements EditorFactory {
 				CaoConfiguration config = action.createConfiguration(root, null);
 				config.getProperties().setString(CreateConfiguration.NAME, name + "_" + UUID.randomUUID() + ".page");
 				config.getProperties().setString(WidgetApi.RES_TITLE, title); //not needed
-				config.getProperties().setString(WidgetApi.RENDERER, "de.mhus.cherry.portal.demo.simpleeditorfactory");
 				
 				OperationResult result = action.doExecute(config, null);
 				if (!result.isSuccessful()) return null;
@@ -95,6 +94,8 @@ public class SimpleEditorFactory extends MLog implements EditorFactory {
 				CaoConfiguration config = action.createConfiguration(newRes, null);
 				config.getProperties().setString(CreateConfiguration.NAME, "content");
 				config.getProperties().setString(WidgetApi.RES_TITLE, title);
+				config.getProperties().setString(WidgetApi.RENDERER, "de.mhus.cherry.portal.impl.page.SimplePage");
+				config.getProperties().setString(WidgetApi.EDITOR, "de.mhus.cherry.portal.demo.simpleeditorfactory");
 				OperationResult result = action.doExecute(config, null);
 				if (!result.isSuccessful()) return null;
 				newContent = result.getResultAs(CaoNode.class);

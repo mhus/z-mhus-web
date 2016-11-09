@@ -1,5 +1,6 @@
 package de.mhus.cherry.portal.demo;
 
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextField;
 
@@ -14,6 +15,7 @@ public class SimpleEditor extends EditorPanel {
 	private static final long serialVersionUID = 1L;
 	private TextField title;
 	private RichTextArea text;
+	private CheckBox hidden;
 
 	public SimpleEditor(CaoWritableElement data) {
 		super(data);
