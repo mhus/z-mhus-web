@@ -38,6 +38,7 @@ import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoAction;
 import de.mhus.lib.cao.CaoActionList;
 import de.mhus.lib.cao.CaoNode;
@@ -82,6 +83,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		tree.setItemCaptionPropertyId("name");
 		tree.setContainerDataSource(createNavigationContainer());
 		tree.addExpandListener(new Tree.ExpandListener() {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void nodeExpand(ExpandEvent event) {
@@ -90,6 +92,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 
 		});		
 		tree.addCollapseListener(new Tree.CollapseListener() {
+			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void nodeCollapse(CollapseEvent event) {
@@ -97,6 +100,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 			}
 		});
 		tree.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -114,7 +118,8 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		controlAcc.setSizeFull();
 		split.setSecondComponent(controlAcc);
 		controlAcc.addSelectedTabChangeListener(new SelectedTabChangeListener() {
-			
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void selectedTabChange(SelectedTabChangeEvent event) {
 				doUpdateControl();
@@ -122,7 +127,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		});
 		
 		controls = new HashMap<>();
-		for (PageControlFactory factory : MOsgi.getServices(PageControlFactory.class, null)) {
+		for (PageControlFactory factory : CherryUtil.orderServices( PagesSpace.class, PageControlFactory.class ) ) {
 			String name = factory.getName();
 			PageControl control = factory.createPageControl();
 			controls.put(control, name);

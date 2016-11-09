@@ -1,9 +1,12 @@
 package de.mhus.cherry.portal.api;
 
 import java.io.IOException;
-
+import java.util.List;
+import java.util.Set;
 
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.security.AccountSource;
+import de.mhus.lib.core.security.AuthorizationSource;
 import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.lib.servlet.ResponseWrapper;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
@@ -41,5 +44,11 @@ public interface VirtualHost {
 	public AaaContext doLogin(RequestWrapper request, ResponseWrapper response);
 
 	public void processApiRequest(CallContext context);
+	
+	public List<String> getConfigurationList(String name);
+	
+	public AccountSource getAccountSource();
+	
+	public AuthorizationSource getAuthorizationSource();
 	
 }

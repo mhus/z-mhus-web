@@ -3,6 +3,8 @@ package de.mhus.cherry.portal.impl;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,10 +20,15 @@ import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ResourceResolver;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.lib.basics.Named;
 import de.mhus.lib.cao.CaoDataSource;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
+import de.mhus.lib.core.MSystem;
+import de.mhus.lib.core.security.AccountSource;
+import de.mhus.lib.core.security.AuthorizationSource;
+import de.mhus.lib.core.util.ReadOnlyList;
 import de.mhus.lib.errors.NotFoundException;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.lib.servlet.RequestWrapper;
@@ -29,7 +36,7 @@ import de.mhus.lib.servlet.ResponseWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 
-public class DefaultVirtualHost extends MLog implements VirtualHost {
+public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 
 	private static final String SESSION_RESOURCE_PROVIDER = "_cherry_resource_provider_";
 	
@@ -39,6 +46,13 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 	private HashMap<String, CaoDataSource> resourceProvider = new HashMap<>();
 	private LinkedList<LoginHandler> loginHandlers = new LinkedList<>();
 	private HashMap<String, ResourceRenderer> apiProvider = new HashMap<>();
+	private HashMap<String, List<String>> configurationLists = new HashMap<>();
+
+	private AccountSource accountSource;
+
+	private AuthorizationSource authorizationSource;
+
+	private String name;
 
 	public DefaultVirtualHost() {
 	}
@@ -421,6 +435,47 @@ public class DefaultVirtualHost extends MLog implements VirtualHost {
 			sendError(call, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		
+	}
+
+	@Override
+	public List<String> getConfigurationList(String name) {
+		return configurationLists.get(name);
+	}
+	
+	public void setConfigurationList(String name, List<String> list) {
+		configurationLists.put(name, new ReadOnlyList<String>(list));
+	}
+
+	@Override
+	public AccountSource getAccountSource() {
+		return accountSource;
+	}
+	
+	public void setAccountSource(AccountSource accountSource) {
+		this.accountSource = accountSource;
+	}
+
+	@Override
+	public AuthorizationSource getAuthorizationSource() {
+		return authorizationSource;
+	}
+	
+	public void setAuthorizationSource(AuthorizationSource authorizationSource) {
+		this.authorizationSource = authorizationSource;
+	}
+	
+	@Override
+	public String toString() {
+		return MSystem.toString(this, name);
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

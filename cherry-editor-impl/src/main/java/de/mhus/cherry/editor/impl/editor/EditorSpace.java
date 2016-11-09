@@ -19,6 +19,7 @@ import de.mhus.cherry.portal.api.control.EditorControlFactory;
 import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.Log;
@@ -147,7 +148,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	}
 
 	private void doFillTabs(CaoNode res) {
-		for (EditorControlFactory factory : MOsgi.getServices(EditorControlFactory.class, null)) {
+		for (EditorControlFactory factory : CherryUtil.orderServices(EditorSpace.class, EditorControlFactory.class)) {
 			EditorControl c = factory.createEditorControl(res);
 			if (c != null) {
 				tabs.addTab(c, factory.getName());
