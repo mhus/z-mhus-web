@@ -1,4 +1,4 @@
-package de.mhus.cherry.portal.impl;
+package de.mhus.cherry.portal.impl.aaa;
 
 import java.util.List;
 

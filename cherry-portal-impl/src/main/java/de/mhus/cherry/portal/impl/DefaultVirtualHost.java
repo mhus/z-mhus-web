@@ -47,6 +47,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 	private LinkedList<LoginHandler> loginHandlers = new LinkedList<>();
 	private HashMap<String, ResourceRenderer> apiProvider = new HashMap<>();
 	private HashMap<String, List<String>> configurationLists = new HashMap<>();
+	private HashMap<String, ResourceProvider> hostResourceProviders = new HashMap<>();
 
 	private AccountSource accountSource;
 
@@ -326,10 +327,18 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 		
 		ResourceProvider provider = null;
 		synchronized (this) {
-			provider = (ResourceProvider) call.getSession().get(SESSION_RESOURCE_PROVIDER + name );
-			if (provider == null) {
-				provider = new DefaultResourceProvider( resourceProvider.get(name).getConnection() );
-				call.getSession().put(SESSION_RESOURCE_PROVIDER + name, provider );
+			if (call == null) {
+				provider = hostResourceProviders.get(name);
+				if (provider == null) {
+					provider = new DefaultResourceProvider( resourceProvider.get(name).getConnection() );
+					hostResourceProviders.put(name, provider);
+				}
+			} else {
+				provider = (ResourceProvider) call.getSession().get(SESSION_RESOURCE_PROVIDER + name );
+				if (provider == null) {
+					provider = new DefaultResourceProvider( resourceProvider.get(name).getConnection() );
+					call.getSession().put(SESSION_RESOURCE_PROVIDER + name, provider );
+				}
 			}
 		}
 //		if (provider == null)

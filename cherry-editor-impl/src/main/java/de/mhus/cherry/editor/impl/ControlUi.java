@@ -213,7 +213,7 @@ public class ControlUi extends UI implements GuiApi {
 		if (role == null || accessControl == null || !accessControl.isUserSignedIn())
 			return false;
 
-		return Sop.getApi(AccessApi.class).hasGroupAccess(accessControl.getAccount(), role, null);
+		return Sop.getApi(AccessApi.class).hasGroupAccess(accessControl.getAccount(), getClass(), role, null);
 		
 	}
 	
