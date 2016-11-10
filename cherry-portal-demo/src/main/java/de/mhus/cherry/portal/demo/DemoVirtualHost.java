@@ -18,9 +18,9 @@ import de.mhus.cherry.portal.impl.aaa.ReadAllAuthorizator;
 import de.mhus.cherry.portal.impl.aaa.ResourceAccountSource;
 import de.mhus.cherry.portal.impl.aaa.ResourceAuthorizationSource;
 import de.mhus.cherry.portal.impl.api.DefaultBaseApi;
-import de.mhus.lib.cao.auth.AuthConnection;
-import de.mhus.lib.cao.fs.FsConnection;
-import de.mhus.lib.cao.fsdb.FdConnection;
+import de.mhus.lib.cao.auth.AuthCore;
+import de.mhus.lib.cao.fs.FsCore;
+import de.mhus.lib.cao.fsdb.FdCore;
 import de.mhus.lib.cao.util.SharedDataSource;
 import de.mhus.lib.core.MThread;
 import de.mhus.osgi.sop.api.Sop;
@@ -41,15 +41,15 @@ public class DemoVirtualHost extends DefaultVirtualHost {
 					DeployDescriptor privDep = api.getDeployDescritor(FrameworkUtil.getBundle(DemoVirtualHost.class));
 					File priv = privDep.getPath(SPACE.PRIVATE);
 					DefaultNavigationProvider nv = new DefaultNavigationProvider(DemoVirtualHost.this);
-					nv.setConnection(new AuthConnection( new FdConnection(CherryApi.DEFAULT_NAVIGATION_PROVIDER, new File(priv, "webcontent/nav"), false), new DefaultAuthorizator() ) );
+					nv.setConnection(new AuthCore( new FdCore(CherryApi.DEFAULT_NAVIGATION_PROVIDER, new File(priv, "webcontent/nav"), false), new DefaultAuthorizator() ) );
 					setNavigationProvider( nv );
 					
 					setRendererResolver(new DefaultRendererResolver());
 					setResourceResolver(new DefaultResourceResolver());
 					
-					addResourceDataSource(new SharedDataSource(new AuthConnection( new FdConnection(CherryApi.DEFAULT_RESOURCE_PROVIDER, new File(priv, "webcontent/res"), false), new DefaultAuthorizator() ) ) );
-					addResourceDataSource(new SharedDataSource(new AuthConnection( new FsConnection("pub", new File(priv, "webcontent/pub"), true, false), null ) ) );
-					addResourceDataSource(new SharedDataSource(new AuthConnection( new FsConnection("aaa", new File(priv, "webcontent/aaa"), true, false), new ReadAllAuthorizator() ) ) );
+					addResourceDataSource(new SharedDataSource(new AuthCore( new FdCore(CherryApi.DEFAULT_RESOURCE_PROVIDER, new File(priv, "webcontent/res"), false), new DefaultAuthorizator() ) ) );
+					addResourceDataSource(new SharedDataSource(new AuthCore( new FsCore("pub", new File(priv, "webcontent/pub"), true, false), null ) ) );
+					addResourceDataSource(new SharedDataSource(new AuthCore( new FsCore("aaa", new File(priv, "webcontent/aaa"), true, false), new ReadAllAuthorizator() ) ) );
 					
 					addApiProvider("base", new DefaultBaseApi());
 					
