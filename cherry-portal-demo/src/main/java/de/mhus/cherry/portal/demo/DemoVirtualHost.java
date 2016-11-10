@@ -7,6 +7,7 @@ import org.osgi.framework.FrameworkUtil;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
+import de.mhus.cherry.portal.impl.DefaultContentNodeResolver;
 import de.mhus.cherry.portal.impl.DefaultNavigationProvider;
 import de.mhus.cherry.portal.impl.DefaultRendererResolver;
 import de.mhus.cherry.portal.impl.DefaultResourceProvider;
@@ -55,6 +56,7 @@ public class DemoVirtualHost extends DefaultVirtualHost {
 					setAccountSource(new ResourceAccountSource( getResourceProvider("aaa") ));
 					setAuthorizationSource(new ResourceAuthorizationSource( getResourceProvider("aaa") ));
 					
+					setContentNodeResolver(new DefaultContentNodeResolver( DemoVirtualHost.this ));
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}

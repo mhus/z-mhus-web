@@ -21,6 +21,7 @@ public interface CherryApi extends SApi {
 	public static final String RES_RET_TYPE = "cherry:retType";
 	public static final String RET_TYPE_PAGE = "page";
 	public static final String DEFAULT_NAVIGATION_PROVIDER = "navigation";
+	public static final String NAV_CONTENT_NODE_PREFIX = "_";
 
 	VirtualHost findVirtualHost(String host);
 	
@@ -46,7 +47,7 @@ public interface CherryApi extends SApi {
 
 	boolean deleteNavNode(CaoNode nav);
 
-	NavNode createNavNode(VirtualHost vHost, CaoNode parent, String name, String title) throws CaoException;
+	NavNode createNavNode(VirtualHost vHost, CaoNode parent, String pageRendition, String name, String title) throws CaoException;
 	
 
 }

@@ -54,13 +54,10 @@ public class NavigationTag extends TagSupport {
 		if (resName != null)
 			pageContext.setAttribute(resName, res);
 
-		if (!showHidden) {
-			// remove hidden elements
-			for (Iterator<CaoNode> iter = nodes.iterator(); iter.hasNext();) {
-				CaoNode n = iter.next();
-				if (!n.getName().equals(CherryApi.NAV_CONTENT_NODE) && n.getBoolean(CherryApi.NAV_HIDDEN, false))
-					iter.remove();
-			}
+		for (Iterator<CaoNode> iter = nodes.iterator(); iter.hasNext();) {
+			CaoNode n = iter.next();
+			if (n.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX) || !showHidden && n.getBoolean(CherryApi.NAV_HIDDEN, false))
+				iter.remove();
 		}
 		
 		if (order != null) {

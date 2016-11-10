@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.ContentNodeResolver;
 import de.mhus.cherry.portal.api.LoginHandler;
 import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.NavigationProvider;
@@ -50,6 +51,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 	private HashMap<String, ResourceRenderer> apiProvider = new HashMap<>();
 	private HashMap<String, List<String>> configurationLists = new HashMap<>();
 	private HashMap<String, ResourceProvider> hostResourceProviders = new HashMap<>();
+	private ContentNodeResolver contentNodeResolver;
 
 	private AccountSource accountSource;
 
@@ -484,6 +486,15 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public ContentNodeResolver getContentNodeResolver() {
+		return contentNodeResolver;
+	}
+
+	public void setContentNodeResolver(ContentNodeResolver contentNodeResolver) {
+		this.contentNodeResolver = contentNodeResolver;
 	}
 	
 }

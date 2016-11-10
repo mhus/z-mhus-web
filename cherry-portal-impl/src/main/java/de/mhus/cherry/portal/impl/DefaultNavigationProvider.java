@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.ContentNodeResolver;
 import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.VirtualHost;
@@ -36,13 +37,12 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 
 	private NavNode prepare(CaoNode nav) {
 		CaoNode res = null;
-		String resId = nav.getString(CherryApi.RESOURCE_ID, null);
-		if (MString.isSet(resId)) {
-			res = vHost.getResourceResolver().getResource(vHost, resId);
+		ContentNodeResolver resolver = vHost.getContentNodeResolver();
+		if (resolver != null) {
+			res = resolver.doResolve(nav);
 		} else {
-			res = nav.getNode(CherryApi.NAV_CONTENT_NODE);
+			log().d("ContentNodeResolver not found");
 		}
-		
 		return new NavNode(this, nav, res);
 	}
 
@@ -58,7 +58,7 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 	public Collection<NavNode> getChildren(NavNode parent) {
 		LinkedList<NavNode> out = new LinkedList<>();
 		for (CaoNode node : parent.getNav().getNodes())
-			if (!node.getName().equals(CherryApi.NAV_CONTENT_NODE))
+			if (!node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX))
 				out.add( prepare(node) );
 		return out;
 	}

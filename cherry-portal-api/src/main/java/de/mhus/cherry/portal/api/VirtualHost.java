@@ -51,5 +51,7 @@ public interface VirtualHost {
 	public AccountSource getAccountSource();
 	
 	public AuthorizationSource getAuthorizationSource();
+
+	public ContentNodeResolver getContentNodeResolver();
 	
 }

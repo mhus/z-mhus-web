@@ -167,7 +167,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	}
 	
 	@Override
-	public NavNode createNavNode(VirtualHost vHost, CaoNode parent, String name, String title) throws CaoException {
+	public NavNode createNavNode(VirtualHost vHost, CaoNode parent, String pageRendition, String name, String title) throws CaoException {
 		
 		CaoNode newNav = null;
 		CaoNode newRes = null;
@@ -182,9 +182,11 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			newNav = result.getResultAs(CaoNode.class);
 		}
 		{	// Create Res Node
+			if (pageRendition == null) pageRendition = CherryApi.NAV_CONTENT_NODE;
+			if (!pageRendition.startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX)) pageRendition = CherryApi.NAV_CONTENT_NODE_PREFIX + pageRendition;
 			CaoAction action = parent.getConnection().getAction(CaoAction.CREATE);
 			CaoConfiguration config = action.createConfiguration(newNav, null);
-			config.getProperties().setString(CreateConfiguration.NAME, CherryApi.NAV_CONTENT_NODE);
+			config.getProperties().setString(CreateConfiguration.NAME, pageRendition);
 			config.getProperties().setBoolean(CherryApi.NAV_HIDDEN, true);
 			OperationResult result = action.doExecute(config, null);
 			if (!result.isSuccessful()) return null;
