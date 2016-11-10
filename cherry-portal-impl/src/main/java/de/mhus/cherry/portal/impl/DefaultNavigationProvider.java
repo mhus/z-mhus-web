@@ -32,10 +32,13 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 		CaoNode nav = connection.getResourceByPath(path);
 		if (nav == null) return null;
 		
-		return  prepare(nav);
+		return  prepare(null, nav);
 	}
 
-	private NavNode prepare(CaoNode nav) {
+	private NavNode prepare(NavNode parent, CaoNode nav) {
+		if (parent != null && parent.isDeep())
+			return new NavNode(this, parent.getNav(), nav, true);
+		
 		CaoNode res = null;
 		ContentNodeResolver resolver = vHost.getContentNodeResolver();
 		if (resolver != null) {
@@ -43,7 +46,7 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 		} else {
 			log().d("ContentNodeResolver not found");
 		}
-		return new NavNode(this, nav, res);
+		return new NavNode(this, nav, res, false);
 	}
 
 	public CaoConnection getConnection() {
@@ -59,7 +62,7 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 		LinkedList<NavNode> out = new LinkedList<>();
 		for (CaoNode node : parent.getNav().getNodes())
 			if (!node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX))
-				out.add( prepare(node) );
+				out.add( prepare(parent, node) );
 		return out;
 	}
 
@@ -75,6 +78,17 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 	@Override
 	public String getName() {
 		return connection.getName();
+	}
+
+	@Override
+	public Collection<NavNode> getAllChildren(NavNode parent) {
+		LinkedList<NavNode> out = new LinkedList<>();
+		for (CaoNode node : parent.getNav().getNodes())
+			if (node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX))
+				out.add( new NavNode(this, parent.getNav(), node, true) );
+			else
+				out.add( prepare(parent, node) );
+		return out;
 	}
 
 }

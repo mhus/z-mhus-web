@@ -13,5 +13,7 @@ public interface NavigationProvider {
 	public CaoNode getResource(String resId);
 
 	public String getName();
+
+	public Collection<NavNode> getAllChildren(NavNode navNode);
 	
 }

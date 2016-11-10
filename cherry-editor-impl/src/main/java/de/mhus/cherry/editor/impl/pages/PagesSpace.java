@@ -13,6 +13,8 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
@@ -112,9 +114,10 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		
 		tree.setSizeFull();
 		tree.setSelectable(true);
+		tree.setItemIconPropertyId("icon");
 		tree.setVisibleColumns("name","tecName","hidden","acl","theme","pageType");
 		tree.setColumnHeaders("Navigation","Name","Hidden","ACL","Theme","Page");
-		
+
 		
 		controlAcc = new Accordion();
 		controlAcc.setSizeFull();
@@ -136,7 +139,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 			controlAcc.addTab(control, name);
 			control.doInit(this);
 		}
-				
+
 	}
 
 	protected void doUpdateControl() {
@@ -173,7 +176,9 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 			Collection<?> children = tree.getChildren(itemId);
 			if (children != null && children.size() != 0) return;
 		
-			Collection<NavNode> nodeChildren = node.getNodes();
+			if (node.isDeep()) return; // do not iterate deeper then content nodes
+			
+			Collection<NavNode> nodeChildren = node.getAllNodes();
 			if (nodeChildren.size() == 0) return;
 			
 			// sort nav nodes
@@ -182,7 +187,8 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 					Item next = container.addItem(n.getId());
 					container.setParent(n.getId(), itemId);
 					fillItem(next, n);
-					container.setChildrenAllowed(n.getId(), true);
+					if (!n.isDeep())
+						container.setChildrenAllowed(n.getId(), true);
 				} catch (Throwable t) {
 					MLogUtil.log().i(t);
 				}
@@ -203,6 +209,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		container.addContainerProperty("acl", Boolean.class, false);
 		container.addContainerProperty("pageType", String.class, "");
 		container.addContainerProperty("hidden", Boolean.class, false);
+		container.addContainerProperty("icon", FontAwesome.class, null);
 		
 		String host = ((ControlUi)GuiUtil.getApi()).getHost();
 		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
@@ -222,24 +229,32 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 	@SuppressWarnings("unchecked")
 	private void fillItem(Item item, NavNode node) throws ReadOnlyException, MException {
 		
+
+		CaoNode itemRes = null;
+		item.getItemProperty("object").setValue(node);
+		if (node.isDeep()) {
+			itemRes = node.getRes();
+			item.getItemProperty("icon").setValue( FontAwesome.STICKY_NOTE_O );
+		} else {
+			itemRes = node.getNav();
+			item.getItemProperty("icon").setValue( FontAwesome.NAVICON );
+		}
 		boolean hasAcl = false;
-		for (String key : node.getNav().getPropertyKeys())
+		for (String key : itemRes.getPropertyKeys())
 			if (key.startsWith("acl:")) {
 				hasAcl = true;
 				break;
 			}
-		
-		item.getItemProperty("name").setValue(node.getNav().getString("title", node.getNav().getName()) );
-		item.getItemProperty("object").setValue(node);
-		item.getItemProperty("tecName").setValue(node.getNav().getName());
-		item.getItemProperty("hidden").setValue(node.getNav().getBoolean(CherryApi.NAV_HIDDEN, false));
+		item.getItemProperty("name").setValue("  " + itemRes.getString("title", itemRes.getName()) );
+		item.getItemProperty("tecName").setValue(itemRes.getName());
+		item.getItemProperty("hidden").setValue(itemRes.getBoolean(CherryApi.NAV_HIDDEN, false));
 		item.getItemProperty("acl").setValue( hasAcl );
 		String theme = node.getNav().getString(WidgetApi.THEME, null); 
 		if (theme != null && MString.isIndex(theme, '.')) theme = MString.afterLastIndex(theme, '.');
 		item.getItemProperty("theme").setValue( theme );
 		
 		String pageType = "";
-		String renderer = node.getRes().getString(WidgetApi.RENDERER, null);
+		String renderer = node.getRes() == null ? null : node.getRes().getString(WidgetApi.RENDERER, null);
 		if (renderer != null) {
 			if (MString.isIndex(renderer, '.')) renderer = MString.afterLastIndex(renderer, '.');
 			pageType = renderer;
@@ -263,12 +278,11 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		if (item == null) return;
 		boolean collapsed = tree.isCollapsed(node.getId());
 		HierarchicalContainer container = (HierarchicalContainer)tree.getContainerDataSource();
-		for (Object child : container.getChildren(node.getId())) {
+		for (Object child : new LinkedList<>( container.getChildren(node.getId())) ) {
 			container.removeItemRecursively(child);
 		}
 		if (!collapsed) {
-			tree.setCollapsed(node.getId(), true);
-			tree.setCollapsed(node.getId(), false);
+			doCheck(node.getId());
 		}
 		tree.markAsDirty();
 	}

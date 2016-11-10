@@ -193,7 +193,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			newRes = result.getResultAs(CaoNode.class);
 		}
 
-		return new NavNode(vHost.getNavigationProvider(), newNav, newRes);
+		return new NavNode(vHost.getNavigationProvider(), newNav, newRes, false);
 	}
 	
 }
