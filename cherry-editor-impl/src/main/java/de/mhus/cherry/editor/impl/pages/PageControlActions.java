@@ -5,6 +5,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
@@ -43,11 +44,11 @@ public class PageControlActions implements PageControlFactory {
 		}
 
 		@Override
-		public void doUpdate(CaoNode nav, CaoNode res) {
+		public void doUpdate(NavNode nav) {
 			removeAllComponents();
 			if (nav != null) {
 				boolean first = true;
-				for (CaoAction action : nav.getConnection().getActions()) {
+				for (CaoAction action : nav.getNav().getConnection().getActions()) {
 					if (first) {
 						Label label = new Label("Navigation");
 						addComponent(label);
@@ -59,9 +60,9 @@ public class PageControlActions implements PageControlFactory {
 				}
 			}
 			
-			if (res != null) {
+			if (nav.getRes() != null) {
 				boolean first = true;
-				for (CaoAction action : res.getConnection().getActions()) {
+				for (CaoAction action : nav.getRes().getConnection().getActions()) {
 					if (first) {
 						Label label = new Label("Resource");
 						addComponent(label);

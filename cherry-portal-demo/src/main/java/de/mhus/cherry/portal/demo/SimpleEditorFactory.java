@@ -38,38 +38,20 @@ public class SimpleEditorFactory extends MLog implements EditorFactory {
 	}
 
 	@Override
-	public boolean deletePage(CaoNode nav) {
-		
-		CaoNode parent = nav.getParent();
-		if (parent == null) return false; // can't delete root
+	public boolean doPrepareCreateWidget(CaoNode content, String title) {
 		try {
-			String resId = nav.getString(CherryApi.RESOURCE_ID, null);
-			VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
-			CaoNode res = vHost.getResourceResolver().getResource(vHost, resId);
-			CaoUtil.deleteRecursive(res, 100);
+			CaoWritableElement w = content.getWritableNode();
+			w.setString(WidgetApi.RES_TITLE, title);
+			w.setString(CherryApi.RES_RET_TYPE, CherryApi.RET_TYPE_PAGE);
+			w.setString(WidgetApi.RENDERER, "de.mhus.cherry.portal.impl.page.SimplePage");
+			w.setString(WidgetApi.EDITOR, "de.mhus.cherry.portal.demo.simpleeditorfactory");
+			OperationResult res = w.getUpdateAction().doExecute(null);
+			return res != null && res.isSuccessful();
 		} catch (Throwable t) {
 			log().d(t);
 		}
-
-		try {
-			CaoUtil.deleteRecursive(nav, 100);
-			return true;
-		} catch (Throwable t) {
-			log().d(t);
-		}
-
 		return false;
-	}
-
-	@Override
-	public CaoNode createWidget(CaoNode parent, String title) {
-		return null;
-		
-	}
-	
-	@Override
-	public CaoNode createPage(CaoNode parent, String title) {
-		
+/*		
 		try {
 			String name = MFile.normalize(title);
 			CaoNode newNav = null;
@@ -118,22 +100,7 @@ public class SimpleEditorFactory extends MLog implements EditorFactory {
 		} catch (Throwable t) {
 			log().d(t);
 		}
-		return null;
-	}
-
-	@Override
-	public boolean deleteWidget(CaoNode res) {
-		return false;
-	}
-
-	@Override
-	public boolean isPage() {
-		return true;
-	}
-
-	@Override
-	public boolean isWidget() {
-		return false;
+*/		
 	}
 
 	@Override
@@ -144,7 +111,17 @@ public class SimpleEditorFactory extends MLog implements EditorFactory {
 
 	@Override
 	public String getName() {
-		return "simplePage";
+		return "SimplePage";
+	}
+
+	@Override
+	public boolean doDeleteWidget(CaoNode res) {
+		return false;
+	}
+
+	@Override
+	public TYPE getType() {
+		return TYPE.PAGE;
 	}
 
 }

@@ -17,15 +17,10 @@ public class PageGetRenderer extends MLog implements ResourceRenderer {
 	@Override
 	public void doRender(CallContext call) throws Exception {
 		CaoNode res = call.getMainResource();
-		CaoNode content = res.getNode("content");
-		if (content == null) {
-			//TODO
-			return;
-		}
 		DefaultHeadRenderer.doRenderHead(call);
 		call.getHttpResponse().setContentType("text/html");
 		
-		Sop.getApi(WidgetApi.class).doRender(call, content);
+		Sop.getApi(WidgetApi.class).doRender(call, res);
 	}
 
 	@Override

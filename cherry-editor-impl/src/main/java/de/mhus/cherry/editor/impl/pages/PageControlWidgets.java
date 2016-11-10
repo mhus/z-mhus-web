@@ -7,6 +7,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.GuiUtil;
@@ -49,12 +50,10 @@ public class PageControlWidgets implements PageControlFactory {
 		}
 
 		@Override
-		public void doUpdate(CaoNode nav, CaoNode res) {
+		public void doUpdate(NavNode nav) {
 			removeAllComponents();
 
-			if (res == null) return;
-			
-			CaoNode content = res.getNode(WidgetApi.CONTENT_NODE);
+			CaoNode content = nav.getRes();
 			if (content == null) return;
 			
 			{

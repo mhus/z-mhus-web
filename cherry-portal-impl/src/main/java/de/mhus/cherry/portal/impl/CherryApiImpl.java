@@ -1,5 +1,7 @@
 package de.mhus.cherry.portal.impl;
 
+import java.util.UUID;
+
 import org.osgi.framework.Bundle;
 import org.osgi.service.component.ComponentContext;
 
@@ -11,14 +13,23 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.FileDeployer;
+import de.mhus.cherry.portal.api.NavNode;
+import de.mhus.cherry.portal.api.ResourceProvider;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.impl.deploy.CherryDeployServlet;
+import de.mhus.lib.cao.CaoAction;
+import de.mhus.lib.cao.CaoException;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.CaoUtil;
+import de.mhus.lib.cao.action.CaoConfiguration;
+import de.mhus.lib.cao.action.CreateConfiguration;
 import de.mhus.lib.cao.auth.AuthAccess;
 import de.mhus.lib.cao.auth.AuthNode;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
+import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.lib.core.util.TimeoutMap;
 import de.mhus.lib.errors.NotFoundException;
 import de.mhus.lib.karaf.MOsgi;
@@ -137,4 +148,50 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			calls.remove();
 	}
 
+	@Override
+	public boolean deleteNavNode(CaoNode nav) {
+		CaoNode parent = nav.getParent();
+		if (parent == null) return false; // can't delete root
+		
+		// TODO inform all widgets and page to delete foreign resources?
+		
+		try {
+			CaoUtil.deleteRecursive(nav, 100);
+			return true;
+		} catch (Throwable t) {
+			log().d(t);
+		}
+
+		return false;
+
+	}
+	
+	@Override
+	public NavNode createNavNode(VirtualHost vHost, CaoNode parent, String name, String title) throws CaoException {
+		
+		CaoNode newNav = null;
+		CaoNode newRes = null;
+		{	// Create Nav Node
+			CaoAction action = parent.getConnection().getAction(CaoAction.CREATE);
+			CaoConfiguration config = action.createConfiguration(parent, null);
+			config.getProperties().setString(CreateConfiguration.NAME, name);
+			config.getProperties().setString(CherryApi.NAV_TITLE, title);
+			config.getProperties().setBoolean(CherryApi.NAV_HIDDEN, true);
+			OperationResult result = action.doExecute(config, null);
+			if (!result.isSuccessful()) return null;
+			newNav = result.getResultAs(CaoNode.class);
+		}
+		{	// Create Res Node
+			CaoAction action = parent.getConnection().getAction(CaoAction.CREATE);
+			CaoConfiguration config = action.createConfiguration(newNav, null);
+			config.getProperties().setString(CreateConfiguration.NAME, CherryApi.NAV_CONTENT_NODE);
+			config.getProperties().setBoolean(CherryApi.NAV_HIDDEN, true);
+			OperationResult result = action.doExecute(config, null);
+			if (!result.isSuccessful()) return null;
+			newRes = result.getResultAs(CaoNode.class);
+		}
+
+		return new NavNode(vHost.getNavigationProvider(), newNav, newRes);
+	}
+	
 }

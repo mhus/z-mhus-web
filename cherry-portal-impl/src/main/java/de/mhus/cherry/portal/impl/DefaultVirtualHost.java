@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.LoginHandler;
+import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.RendererResolver;
 import de.mhus.cherry.portal.api.ResourceProvider;
@@ -81,7 +82,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 		if (navProvider == null)
 			return null;
 		
-		CaoNode navResource = navProvider.getNode(path);
+		NavNode navResource = navProvider.getNode(path);
 		if (navResource == null)
 			return null;
 		
@@ -121,11 +122,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 			control = "";
 		}
 		
-		String resId = navResource.getString(CherryApi.RESOURCE_ID, null);
-		if (resId == null)
-			return null;
-		
-		CaoNode resResource = getResourceResolver().getResource(this, resId);
+		CaoNode resResource = navResource.getRes();
 		if (resResource == null)
 			return null;
 
@@ -164,13 +161,13 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 			String path = call.getHttpPath();
 			
 			
-			CaoNode navResource = navProvider.getNode(path);
+			NavNode navResource = navProvider.getNode(path);
 			
 			if (navResource == null) {
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
-			call.setNavigationResource(navResource);
+			call.setNavigationResource(navResource.getNav());
 
 			String subPath = "";
 			String control = "";
@@ -218,15 +215,9 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 				selectors = new String[0];
 			
 			
-			String resId = call.getNavigationResource().getString(CherryApi.RESOURCE_ID, null);
-			if (resId == null) {
-				log().d("resource id not found", call);
-				sendError(call, HttpServletResponse.SC_NOT_FOUND);
-				return;
-			}
-			CaoNode resResource = getResourceResolver().getResource(this, resId);
+			CaoNode resResource = navResource.getRes();
 			if (resResource == null) {
-				log().d("resource not found", call, resId);
+				log().d("content not found", call);
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
@@ -234,6 +225,8 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 			call.setSelectors(selectors);
 			
 			String resName = resResource.getName();
+			if (MString.isEmpty(retType))
+				retType = resResource.getString(CherryApi.RES_RET_TYPE, null);
 			if (MString.isEmpty(retType) && resName != null && MString.isIndex(resName, '.') )
 				retType = MString.afterLastIndex(resName, '.');
 			call.setReturnType(retType);
@@ -330,14 +323,22 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 			if (call == null) {
 				provider = hostResourceProviders.get(name);
 				if (provider == null) {
-					provider = new DefaultResourceProvider( resourceProvider.get(name).getConnection() );
-					hostResourceProviders.put(name, provider);
+					try {
+						provider = new DefaultResourceProvider( resourceProvider.get(name).getConnection() );
+						hostResourceProviders.put(name, provider);
+					} catch (Exception e) {
+						log().w(e);
+					}
 				}
 			} else {
 				provider = (ResourceProvider) call.getSession().get(SESSION_RESOURCE_PROVIDER + name );
 				if (provider == null) {
-					provider = new DefaultResourceProvider( resourceProvider.get(name).getConnection() );
-					call.getSession().put(SESSION_RESOURCE_PROVIDER + name, provider );
+					try {
+						provider = new DefaultResourceProvider( resourceProvider.get(name).getConnection() );
+						call.getSession().put(SESSION_RESOURCE_PROVIDER + name, provider );
+					} catch (Exception e) {
+						log().w(e);
+					}
 				}
 			}
 		}

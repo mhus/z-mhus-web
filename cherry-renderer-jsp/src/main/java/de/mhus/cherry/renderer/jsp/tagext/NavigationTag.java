@@ -46,7 +46,7 @@ public class NavigationTag extends TagSupport {
 			if (res == null) {
 				CallContext call = (CallContext)pageContext.getAttribute("call");
 //				res = call.getNavigationResource();
-				res = call.getVirtualHost().getNavigationProvider().getNode("/"); // get root				
+				res = call.getVirtualHost().getNavigationProvider().getNode("/").getNav(); // get root				
 			}
 		}
 		
@@ -58,7 +58,7 @@ public class NavigationTag extends TagSupport {
 			// remove hidden elements
 			for (Iterator<CaoNode> iter = nodes.iterator(); iter.hasNext();) {
 				CaoNode n = iter.next();
-				if (n.getBoolean(CherryApi.NAV_HIDDEN, false))
+				if (!n.getName().equals(CherryApi.NAV_CONTENT_NODE) && n.getBoolean(CherryApi.NAV_HIDDEN, false))
 					iter.remove();
 			}
 		}

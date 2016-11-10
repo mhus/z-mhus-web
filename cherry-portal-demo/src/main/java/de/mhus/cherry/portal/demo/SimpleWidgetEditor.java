@@ -23,36 +23,6 @@ public class SimpleWidgetEditor implements EditorFactory {
 	}
 
 	@Override
-	public CaoNode createPage(CaoNode parentNav, String title) {
-		return null;
-	}
-
-	@Override
-	public boolean deletePage(CaoNode nav) {
-		return false;
-	}
-
-	@Override
-	public CaoNode createWidget(CaoNode parent, String title) {
-		return null;
-	}
-
-	@Override
-	public boolean deleteWidget(CaoNode res) {
-		return false;
-	}
-
-	@Override
-	public boolean isPage() {
-		return false;
-	}
-
-	@Override
-	public boolean isWidget() {
-		return true;
-	}
-
-	@Override
 	public LayoutPanel createLayoutPanel(CaoNode res) {
 		// TODO Auto-generated method stub
 		return null;
@@ -60,7 +30,23 @@ public class SimpleWidgetEditor implements EditorFactory {
 
 	@Override
 	public String getName() {
-		return "simpleWidget";
+		return "SimpleWidget";
+	}
+
+	@Override
+	public boolean doPrepareCreateWidget(CaoNode content, String title) {
+		return false;
+	}
+
+	@Override
+	public boolean doDeleteWidget(CaoNode res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public TYPE getType() {
+		return TYPE.WIDGET;
 	}
 
 }

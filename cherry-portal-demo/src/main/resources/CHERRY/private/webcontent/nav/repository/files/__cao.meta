@@ -1,0 +1,4 @@
+cherry:theme=de.mhus.cherry.portal.impl.page.simpletheme
+title=Root
+acl:read=*
+acl:write=editor

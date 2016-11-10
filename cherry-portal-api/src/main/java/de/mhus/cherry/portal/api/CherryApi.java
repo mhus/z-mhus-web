@@ -4,6 +4,7 @@ import javax.servlet.ServletRequest;
 
 import org.osgi.framework.Bundle;
 
+import de.mhus.lib.cao.CaoException;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.servlet.RequestWrapper;
@@ -16,6 +17,10 @@ public interface CherryApi extends SApi {
 	public static final String DEFAULT_RESOURCE_PROVIDER = "default";
 	public static final String NAV_HIDDEN = "cherry:hidden";
 	public static final String NAV_TITLE = "title";
+	public static final String NAV_CONTENT_NODE = "_content";
+	public static final String RES_RET_TYPE = "cherry:retType";
+	public static final String RET_TYPE_PAGE = "page";
+	public static final String DEFAULT_NAVIGATION_PROVIDER = "navigation";
 
 	VirtualHost findVirtualHost(String host);
 	
@@ -38,6 +43,10 @@ public interface CherryApi extends SApi {
 	boolean canEditResource(CallContext call, CaoNode res);
 
 	CallContext getCurrentCall();
+
+	boolean deleteNavNode(CaoNode nav);
+
+	NavNode createNavNode(VirtualHost vHost, CaoNode parent, String name, String title) throws CaoException;
 	
 
 }

@@ -11,10 +11,12 @@ import com.vaadin.ui.UI;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.EditorFactory;
+import de.mhus.cherry.portal.api.control.EditorFactory.TYPE;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
@@ -68,7 +70,7 @@ public class PageControlControl extends MLog implements PageControlFactory {
 				addComponent( label);
 			}
 			for (EditorFactory editor : CherryUtil.orderServices(PageControlControl.class, EditorFactory.class) ) {
-				if (editor.isPage()) {
+				if (editor.getType() == TYPE.PAGE) {
 					Button bCreatePage = new Button(editor.getName());
 					// bCreatePage.setIcon(FontAwesome.PLUS);
 					bCreatePage.setEnabled(false);
@@ -109,7 +111,10 @@ public class PageControlControl extends MLog implements PageControlFactory {
 					public void onClose(ConfirmDialog dialog) {
 						try {
 							if (dialog.isCancel()) return;
-							if (editor.deletePage(nav))
+							
+							boolean success = Sop.getApi(CherryApi.class).deleteNavNode(nav);
+							
+							if (success)
 								UI.getCurrent().showNotification("Page deleted");
 							else
 								UI.getCurrent().showNotification("Error deleting page");
@@ -143,11 +148,16 @@ public class PageControlControl extends MLog implements PageControlFactory {
 						if (dialog.isCancel()) return;
 						try {
 							String title = dialog.getInputText();
-							CaoNode newNode = editor.createPage(nav, title);
-							if (newNode == null)
-								UI.getCurrent().showNotification("Error creating page!");
-							else
+							String name = MFile.normalize(title);
+							
+							VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+							NavNode newNode = Sop.getApi(CherryApi.class).createNavNode(vHost, nav, name, title);
+
+							boolean success = editor.doPrepareCreateWidget(newNode.getRes(), title);
+							if (success)
 								UI.getCurrent().showNotification("Page Created");
+							else
+								UI.getCurrent().showNotification("Error creating page!");
 							
 							// TODO Update Tree
 							controlParent.doRefreshNode(nav);
@@ -183,11 +193,11 @@ public class PageControlControl extends MLog implements PageControlFactory {
 		}
 		
 		@Override
-		public void doUpdate(CaoNode nav, CaoNode res) {
+		public void doUpdate(NavNode nav) {
 			bDeletePage.setEnabled(true);
 			createButtons.forEach(this::doEnable);
-			this.nav = nav;
-			this.res = res;
+			this.nav = nav.getNav();
+			this.res = nav.getRes();
 		}
 
 		@Override

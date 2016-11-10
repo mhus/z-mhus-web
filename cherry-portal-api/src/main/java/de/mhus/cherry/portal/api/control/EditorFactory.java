@@ -8,19 +8,15 @@ import de.mhus.lib.cao.CaoWritableElement;
 
 public interface EditorFactory extends Named {
 
+	enum TYPE {PAGE, WIDGET}
 	EditorPanel createEditor(CaoWritableElement data);
 	AbstractComponent createPreview(CaoNode res);
 	LayoutPanel createLayoutPanel(CaoNode res);
 	
-	CaoNode createPage(CaoNode parentNav, String title);
-	boolean deletePage(CaoNode nav);
+	boolean doPrepareCreateWidget(CaoNode content, String title);
+	boolean doDeleteWidget(CaoNode res);
 	
-	CaoNode createWidget(CaoNode parent, String title);
-	boolean deleteWidget(CaoNode res);
-	
-	boolean isPage();
-	boolean isWidget();
-
+	TYPE getType();
 	
 	
 }

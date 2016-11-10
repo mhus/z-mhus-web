@@ -39,14 +39,14 @@ public class DemoVirtualHost extends DefaultVirtualHost {
 					CherryApi api = Sop.getApi(CherryApi.class);
 					DeployDescriptor privDep = api.getDeployDescritor(FrameworkUtil.getBundle(DemoVirtualHost.class));
 					File priv = privDep.getPath(SPACE.PRIVATE);
-					DefaultNavigationProvider nv = new DefaultNavigationProvider();
-					nv.setConnection(new AuthConnection( new FsConnection("navigation", new File(priv, "webcontent/nav"), true, false), new DefaultAuthorizator() ) );
+					DefaultNavigationProvider nv = new DefaultNavigationProvider(DemoVirtualHost.this);
+					nv.setConnection(new AuthConnection( new FdConnection(CherryApi.DEFAULT_NAVIGATION_PROVIDER, new File(priv, "webcontent/nav"), false), new DefaultAuthorizator() ) );
 					setNavigationProvider( nv );
 					
 					setRendererResolver(new DefaultRendererResolver());
 					setResourceResolver(new DefaultResourceResolver());
 					
-					addResourceDataSource(new SharedDataSource(new AuthConnection( new FdConnection("default", new File(priv, "webcontent/res"), false), new DefaultAuthorizator() ) ) );
+					addResourceDataSource(new SharedDataSource(new AuthConnection( new FdConnection(CherryApi.DEFAULT_RESOURCE_PROVIDER, new File(priv, "webcontent/res"), false), new DefaultAuthorizator() ) ) );
 					addResourceDataSource(new SharedDataSource(new AuthConnection( new FsConnection("pub", new File(priv, "webcontent/pub"), true, false), null ) ) );
 					addResourceDataSource(new SharedDataSource(new AuthConnection( new FsConnection("aaa", new File(priv, "webcontent/aaa"), true, false), new ReadAllAuthorizator() ) ) );
 					

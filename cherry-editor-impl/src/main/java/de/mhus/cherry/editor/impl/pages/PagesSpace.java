@@ -31,6 +31,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.cherry.editor.impl.ControlUi;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.ControlParent;
@@ -151,10 +152,9 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		Item sel = (Item)tree.getItem(selId);
 		if (sel == null) return;
 
-		CaoNode nav = (CaoNode)sel.getItemProperty("object").getValue();
-		CaoNode res = (CaoNode)sel.getItemProperty("resource").getValue();
+		NavNode nav = (NavNode)sel.getItemProperty("object").getValue();
 
-		((PageControl)selected).doUpdate(nav, res);
+		((PageControl)selected).doUpdate(nav);
 
 	}
 
@@ -169,20 +169,20 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		try {
 			HierarchicalContainer container = (HierarchicalContainer)tree.getContainerDataSource();
 			Item item = container.getItem(itemId);
-			CaoNode node = (CaoNode) item.getItemProperty("object").getValue();
+			NavNode node = (NavNode) item.getItemProperty("object").getValue();
 			Collection<?> children = tree.getChildren(itemId);
 			if (children != null && children.size() != 0) return;
 		
-			Collection<CaoNode> nodeChildren = node.getNodes();
+			Collection<NavNode> nodeChildren = node.getNodes();
 			if (nodeChildren.size() == 0) return;
 			
 			// sort nav nodes
-			for (CaoNode n : nodeChildren) {
+			for (NavNode n : nodeChildren) {
 				try {
 					Item next = container.addItem(n.getId());
 					container.setParent(n.getId(), itemId);
 					fillItem(next, n);
-					container.setChildrenAllowed(n.getName(), true);
+					container.setChildrenAllowed(n.getId(), true);
 				} catch (Throwable t) {
 					MLogUtil.log().i(t);
 				}
@@ -198,8 +198,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		HierarchicalContainer container = new HierarchicalContainer();
 		container.addContainerProperty("name", String.class, "?");
 		container.addContainerProperty("tecName", String.class, "");
-		container.addContainerProperty("object", CaoNode.class, null);
-		container.addContainerProperty("resource", CaoNode.class, null);
+		container.addContainerProperty("object", NavNode.class, null);
 		container.addContainerProperty("theme", String.class, false);
 		container.addContainerProperty("acl", Boolean.class, false);
 		container.addContainerProperty("pageType", String.class, "");
@@ -207,13 +206,13 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		
 		String host = ((ControlUi)GuiUtil.getApi()).getHost();
 		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
-		CaoNode navRoot = vHost.getNavigationProvider().getNode("/");
+		NavNode navRoot = vHost.getNavigationProvider().getNode("/");
 		
 		try {
 			Item item = container.addItem(navRoot.getId());
 			fillItem(item, navRoot);
 			container.setParent(navRoot.getId(), null);
-			container.setChildrenAllowed(navRoot.getName(), true);
+			container.setChildrenAllowed(navRoot.getId(), true);
 		} catch (Throwable t) {
 			MLogUtil.log().i(t);
 		}
@@ -221,42 +220,30 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 	}
 
 	@SuppressWarnings("unchecked")
-	private void fillItem(Item item, CaoNode node) throws ReadOnlyException, MException {
+	private void fillItem(Item item, NavNode node) throws ReadOnlyException, MException {
 		
 		boolean hasAcl = false;
-		for (String key : node.getPropertyKeys())
+		for (String key : node.getNav().getPropertyKeys())
 			if (key.startsWith("acl:")) {
 				hasAcl = true;
 				break;
 			}
 		
-		item.getItemProperty("name").setValue(node.getString("title", node.getName()) );
+		item.getItemProperty("name").setValue(node.getNav().getString("title", node.getNav().getName()) );
 		item.getItemProperty("object").setValue(node);
-		item.getItemProperty("tecName").setValue(node.getName());
-		item.getItemProperty("hidden").setValue(node.getBoolean(CherryApi.NAV_HIDDEN, false));
+		item.getItemProperty("tecName").setValue(node.getNav().getName());
+		item.getItemProperty("hidden").setValue(node.getNav().getBoolean(CherryApi.NAV_HIDDEN, false));
 		item.getItemProperty("acl").setValue( hasAcl );
-		String theme = node.getString(WidgetApi.THEME, null); 
+		String theme = node.getNav().getString(WidgetApi.THEME, null); 
 		if (theme != null && MString.isIndex(theme, '.')) theme = MString.afterLastIndex(theme, '.');
 		item.getItemProperty("theme").setValue( theme );
 		
 		String pageType = "";
-		CaoNode res = null;
-		String resId = node.getString(CherryApi.RESOURCE_ID);
-		if (resId != null) {
-			VirtualHost vHost = GuiUtil.getVirtualHost();
-			res = vHost.getResourceResolver().getResource(vHost, resId);
-			if (res != null) {
-				CaoNode content = res.getNode(WidgetApi.CONTENT_NODE);
-				if (content != null) {
-					String renderer = content.getString(WidgetApi.RENDERER, null);
-					if (renderer != null) {
-						if (MString.isIndex(renderer, '.')) renderer = MString.afterLastIndex(renderer, '.');
-						pageType = renderer;
-					}
-				}
-			}
+		String renderer = node.getRes().getString(WidgetApi.RENDERER, null);
+		if (renderer != null) {
+			if (MString.isIndex(renderer, '.')) renderer = MString.afterLastIndex(renderer, '.');
+			pageType = renderer;
 		}
-		item.getItemProperty("resource").setValue(res);
 		item.getItemProperty("pageType").setValue( pageType );
 			
 	}

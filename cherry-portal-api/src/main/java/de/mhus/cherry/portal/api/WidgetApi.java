@@ -14,7 +14,7 @@ public interface WidgetApi extends SApi {
 	public static final String THEME_SCOPE_HEADER = "header";
 	public static final String THEME_SCOPE_FOOTER = "footer";
 	public static final int MAX_SEARCH_LEVEL = 10;
-	public static final String CONTENT_NODE = "content";
+//	public static final String CONTENT_NODE = "content";
 	public static final String RES_TITLE = "title";
 
 	void doRender(CallContext call, CaoNode widget) throws Exception;
