@@ -9,6 +9,7 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.CaoWritableElement;
+import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.strategy.OperationResult;
 
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_put")
@@ -21,8 +22,8 @@ public class DefaultPutRenderer extends AbstractActionRenderer implements Resour
 	protected OperationResult doAction(CallContext call) throws Exception {
 
 		CaoNode res = call.getResource();
-		String[] s = call.getSelectors();
-		if (s != null && s.length > 0 && "nav".equals(s[0]))
+		IProperties s = call.getSelectors();
+		if (s != null && "nav".equals(s.getString("resource", "")) )
 			res = call.getNavigationResource();
 
 		CaoWritableElement wRes = res.getWritableNode();

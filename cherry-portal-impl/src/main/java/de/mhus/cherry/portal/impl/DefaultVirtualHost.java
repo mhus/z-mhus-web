@@ -25,6 +25,7 @@ import de.mhus.lib.basics.Named;
 import de.mhus.lib.cao.CaoDataSource;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.security.AccountSource;
@@ -172,7 +173,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 			String subPath = "";
 			String control = "";
 			String subType = ""; // type of path after nav node, nav/.content/res/res/
-			String[] selectors;
+			MProperties selectors = null;
 			String retType = "";
 			boolean isFolder = false;
 			if (MString.isIndex(path, '.')) {
@@ -210,10 +211,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 			}
 			// the rest are selectors
 			if (MString.isSet(control))
-				selectors = control.split("\\.");
-			else
-				selectors = new String[0];
-			
+				selectors = MProperties.explodeToMProperties(control.split("\\."), ':');
 			
 			CaoNode resResource = navResource.getRes();
 			if (resResource == null) {

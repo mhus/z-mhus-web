@@ -43,7 +43,7 @@ public class RenditionPostRenderer extends AbstractActionRenderer implements Res
 		list.add(res);
 		DefaultMonitor monitor = new DefaultMonitor(getClass());
 		CaoConfiguration configuration = action.createConfiguration(list, null);
-		configuration.getProperties().setString(UploadRenditionConfiguration.RENDITION, call.getSelectors()[0]);
+		configuration.getProperties().setString(UploadRenditionConfiguration.RENDITION, call.getSelectors().getString("0",null));
 		
 		File tmpFile = File.createTempFile("cherry_post_", ".dat");
 		OperationResult result = null;

@@ -26,7 +26,7 @@ public class RenditionDeleteRenderer extends AbstractActionRenderer implements R
 		list.add(res);
 		DefaultMonitor monitor = new DefaultMonitor(getClass());
 		CaoConfiguration configuration = action.createConfiguration(list, null);
-		configuration.getProperties().setString(DeleteRenditionConfiguration.RENDITION, call.getSelectors()[0]);
+		configuration.getProperties().setString(DeleteRenditionConfiguration.RENDITION, call.getSelectors().getString("0", null));
 		
 		OperationResult result = action.doExecute(configuration, monitor);
 		return result;

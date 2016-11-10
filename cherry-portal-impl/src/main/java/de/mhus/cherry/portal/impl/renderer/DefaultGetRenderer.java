@@ -9,6 +9,7 @@ import javax.servlet.ServletOutputStream;
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.ResourceRenderer;
+import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 
@@ -24,9 +25,8 @@ public class DefaultGetRenderer extends MLog implements ResourceRenderer {
 
 		if (call.getResource().hasContent()) {
 			String rendition = null;
-			String[] s = call.getSelectors();
-			if (s != null && s.length > 0)
-				rendition = s[0];
+			IProperties s = call.getSelectors();
+			if (s != null) rendition = s.getString("0",null);
 			InputStream is = call.getResource().getInputStream(rendition);
 			if (is != null) {
 				ServletOutputStream os = call.getHttpResponse().getOutputStream();

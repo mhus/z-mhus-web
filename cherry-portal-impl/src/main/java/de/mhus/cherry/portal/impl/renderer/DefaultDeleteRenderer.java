@@ -7,6 +7,7 @@ import de.mhus.lib.cao.CaoAction;
 import de.mhus.lib.cao.CaoList;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.action.CaoConfiguration;
+import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.strategy.DefaultMonitor;
 import de.mhus.lib.core.strategy.OperationResult;
@@ -19,8 +20,8 @@ public class DefaultDeleteRenderer extends AbstractActionRenderer implements Res
 	@Override
 	protected OperationResult doAction(CallContext call) throws Exception {
 		CaoNode res = call.getResource();
-		String[] s = call.getSelectors();
-		if (s != null && s.length > 0 && "nav".equals(s[0]))
+		IProperties s = call.getSelectors();
+		if (s != null && "nav".equals(s.getString("resource", "")) )
 			res = call.getNavigationResource();
 
 		CaoAction action = res.getConnection().getActions().getAction(CaoAction.DELETE);

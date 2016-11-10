@@ -26,7 +26,7 @@ public class CherryCallContext implements CallContext {
 	private VirtualHost virtualHost;
 	private HttpServlet httpServlet;
 	private String returnType;
-	private String[] selectors;
+	private IProperties selectors;
 	private IProperties sessionContext;
 	private CaoNode mainResource;
 	private String[] path;
@@ -98,7 +98,7 @@ public class CherryCallContext implements CallContext {
 		returnType = retType;
 	}
 
-	public void setSelectors(String[] selectors) {
+	public void setSelectors(IProperties selectors) {
 		this.selectors = selectors;
 	}
 
@@ -108,7 +108,7 @@ public class CherryCallContext implements CallContext {
 	}
 
 	@Override
-	public String[] getSelectors() {
+	public IProperties getSelectors() {
 		return selectors;
 	}
 

@@ -10,6 +10,7 @@ import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MCast;
 import de.mhus.lib.core.MJson;
 import de.mhus.lib.core.MLog;
@@ -24,20 +25,20 @@ public class DefaultGetJsonRenderer extends MLog implements ResourceRenderer {
 	@Override
 	public void doRender(CallContext call) throws Exception {
 		try {
-			String[] s = call.getSelectors();
+			IProperties s = call.getSelectors();
 			JsonResult result = new JsonResult();
 			ObjectNode out = result.createObjectNode();
 			CaoNode node = call.getResource();
 			
 			int level = 0;
-			if (s != null && s.length > 0 && s[0] != null) {
+			if (s != null) {
 				
-				if ("infinity".equals(s[0]))
+				if ("infinity".equals(s.getString("0","")))
 					level = maxLevel.value();
 				else
-					level = Math.min( MCast.toint(s[0], 0), maxLevel.value());
+					level = Math.min( s.getInt("0", 0), maxLevel.value());
 				
-				if (s.length > 1 && "nav".equals(s[1]))
+				if (s != null && "nav".equals(s.getString("resource", "")) )
 					node = call.getNavigationResource();
 				
 			}

@@ -30,7 +30,7 @@ public interface CallContext {
 
 	String getReturnType();
 
-	String[] getSelectors();
+	IProperties getSelectors();
 
 	String getHttpMethod(); // returns the current http method in lower case !!!
 	
