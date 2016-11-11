@@ -37,6 +37,7 @@ import de.mhus.osgi.sop.api.aaa.AccessApi;
 @Component
 public class InternalCherryApiImpl extends MLog implements InternalCherryApi, BundleListener {
 
+	public static final String SESSION_DESTROY_ON_RELEASE = "_destroy_session_on_release";
 	private static CfgBoolean storePassword = new CfgBoolean(CherryApi.class, "storePasswordInSession", false);
 	private static CfgLong sessionTimeout = new CfgLong(CherryApi.class, "sessionTimeout", MTimeInterval.MINUTE_IN_MILLISECOUNDS * 20);
 	private static CfgInt sessionMaxSize = new CfgInt(CherryApi.class, "sessionMaxSize", 100);
@@ -106,7 +107,11 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
         AccessApi access = Sop.getApi(AccessApi.class);
     	access.release(call.getAaaContext());
 		CherryApiImpl.instance.setCallContext(null);
-    	
+
+		if (call.getSession().getBoolean(SESSION_DESTROY_ON_RELEASE, false)) {
+			globalSession.remove(call.getSessionId());
+		}
+		
 	}
 
 	@Override

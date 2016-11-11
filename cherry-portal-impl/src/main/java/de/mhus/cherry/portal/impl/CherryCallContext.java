@@ -31,12 +31,14 @@ public class CherryCallContext implements CallContext {
 	private CaoNode mainResource;
 	private String[] path;
 	private int pathCnt;
+	private String sessionId;
 
 	public void setHttpRequest(HttpServletRequest req) {
 		httpRequest = req;
 		httpPath = req.getPathInfo();
 		req.setAttribute(CallContext.REQUEST_ATTRIBUTE_NAME, this);
-		sessionContext = Sop.getApi(InternalCherryApi.class).getCherrySession(req.getSession().getId());
+		sessionId = req.getSession().getId();
+		sessionContext = Sop.getApi(InternalCherryApi.class).getCherrySession(sessionId);
 	}
 
 	public void setHttpResponse(HttpServletResponse res) {
@@ -166,6 +168,11 @@ public class CherryCallContext implements CallContext {
 	public AaaContext getAaaContext() {
 		// return every time the current context
 		return Sop.getApi(AccessApi.class).getCurrentOrGuest();
+	}
+
+	@Override
+	public String getSessionId() {
+		return sessionId;
 	}
 
 }

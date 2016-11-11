@@ -35,6 +35,8 @@ public interface CallContext {
 	String getHttpMethod(); // returns the current http method in lower case !!!
 	
 	IProperties getSession();
+	
+	String getSessionId();
 
 	void setAttribute(String name, Object value);
 	
