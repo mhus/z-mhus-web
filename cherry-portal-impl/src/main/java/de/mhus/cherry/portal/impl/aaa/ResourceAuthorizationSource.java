@@ -27,7 +27,7 @@ public class ResourceAuthorizationSource extends MLog implements AuthorizationSo
 		}
 		CaoNode res = provider.getResource("/acls/" + space + "/" + name + ".acl");
 		if (res == null) {
-			log().d("acl not found", acl, space, name);
+			log().w("acl not found", acl, space, name);
 			return null;
 		}
 		String aclString = res.getString("acl", null);

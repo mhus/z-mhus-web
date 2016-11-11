@@ -1,6 +1,7 @@
 package de.mhus.cherry.portal.api.util;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +39,14 @@ public class CherryUtil {
 		List<String> conf = vHost.getConfigurationList(configListName);
 		if (conf == null) {
 			log.d("Configuration list not found", configListName, vHost);
+			// order !!
+			list.sort(new Comparator<T>() {
+
+				@Override
+				public int compare(T o1, T o2) {
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 			return list;
 		}
 		

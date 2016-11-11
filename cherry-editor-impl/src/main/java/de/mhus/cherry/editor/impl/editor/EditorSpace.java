@@ -23,9 +23,11 @@ import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.Log;
+import de.mhus.lib.core.security.Account;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
+import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecycle {
 
@@ -149,10 +151,14 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	}
 
 	private void doFillTabs(CaoNode res, EditorFactory editorFactory) {
+		AccessApi aaa = Sop.getApi(AccessApi.class);
+		Account account = aaa.getCurrentOrGuest().getAccount();
 		for (EditorControlFactory factory : CherryUtil.orderServices(EditorSpace.class, EditorControlFactory.class)) {
-			EditorControl c = factory.createEditorControl(res, editorFactory);
-			if (c != null) {
-				tabs.addTab(c, factory.getName());
+			if (aaa.hasGroupAccess(account, EditorSpace.class, factory.getName(), "create")) {
+				EditorControl c = factory.createEditorControl(res, editorFactory);
+				if (c != null) {
+					tabs.addTab(c, factory.getName());
+				}
 			}
 		}
 		

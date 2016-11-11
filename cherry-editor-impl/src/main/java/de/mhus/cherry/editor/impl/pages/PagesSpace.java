@@ -32,6 +32,7 @@ import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.cherry.editor.impl.ControlUi;
+import de.mhus.cherry.editor.impl.editor.EditorSpace;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.VirtualHost;
@@ -49,10 +50,12 @@ import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MXml;
 import de.mhus.lib.core.logging.MLogUtil;
+import de.mhus.lib.core.security.Account;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.SopApi;
+import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycle, ControlParent {
 
@@ -132,12 +135,16 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		});
 		
 		controls = new HashMap<>();
+		AccessApi aaa = Sop.getApi(AccessApi.class);
+		Account account = aaa.getCurrentOrGuest().getAccount();
 		for (PageControlFactory factory : CherryUtil.orderServices( PagesSpace.class, PageControlFactory.class ) ) {
-			String name = factory.getName();
-			PageControl control = factory.createPageControl();
-			controls.put(control, name);
-			controlAcc.addTab(control, name);
-			control.doInit(this);
+			if (aaa.hasGroupAccess(account, PagesSpace.class, factory.getName(), "create")) {
+				String name = factory.getName();
+				PageControl control = factory.createPageControl();
+				controls.put(control, name);
+				controlAcc.addTab(control, name);
+				control.doInit(this);
+			}
 		}
 
 	}
@@ -234,10 +241,10 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		item.getItemProperty("object").setValue(node);
 		if (node.isDeep()) {
 			itemRes = node.getRes();
-			item.getItemProperty("icon").setValue( FontAwesome.STICKY_NOTE_O );
+			item.getItemProperty("icon").setValue( FontAwesome.SQUARE_O );
 		} else {
 			itemRes = node.getNav();
-			item.getItemProperty("icon").setValue( FontAwesome.NAVICON );
+			item.getItemProperty("icon").setValue( FontAwesome.CIRCLE_THIN );
 		}
 		boolean hasAcl = false;
 		for (String key : itemRes.getPropertyKeys())
