@@ -1,5 +1,6 @@
 package de.mhus.cherry.portal.impl.aaa;
 
+import java.util.Collection;
 import java.util.List;
 
 import de.mhus.cherry.portal.api.CherryApi;
@@ -69,6 +70,26 @@ public class DefaultAuthorizator implements Authorizator {
 	@Override
 	public boolean hasAspectAccess(CaoNode node, Class<? extends CaoAspect> ifc) {
 		return true;
+	}
+
+	@Override
+	public String mapReadName(CaoNode node, String name) {
+		return name;
+	}
+
+	@Override
+	public String mapReadRendition(CaoNode node, String rendition) {
+		return rendition;
+	}
+
+	@Override
+	public Collection<String> mapReadNames(CaoNode node, Collection<String> set) {
+		return set;
+	}
+
+	@Override
+	public String mapWriteName(CaoNode node, String name) {
+		return name;
 	}
 
 }

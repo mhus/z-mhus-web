@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
@@ -41,15 +42,27 @@ public class CherryUtil {
 		}
 		
 		// to Map
-		HashMap<String, T> map = new HashMap<>();
+		TreeMap<String, T> map = new TreeMap<>();
 		for (T item : list)
 			map.put(item.getName(), item);
 		
 		// order
 		list = new LinkedList<>();
 		for (String name : conf) {
-			T item = map.get(name);
-			if (item != null) list.add(item);
+			if (name.equals("*")) {
+				for (T item : map.values())
+					list.add(item);
+				break;
+			} else
+			if (name.startsWith("!")) {
+				map.remove(name.substring(1));
+			} else {
+				T item = map.get(name);
+				if (item != null) {
+					list.add(item);
+					map.remove(name);
+				}
+			}
 		}
 
 		return list;
