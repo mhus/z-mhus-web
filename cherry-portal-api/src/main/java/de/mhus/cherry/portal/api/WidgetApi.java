@@ -1,5 +1,9 @@
 package de.mhus.cherry.portal.api;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.osgi.sop.api.SApi;
@@ -16,6 +20,8 @@ public interface WidgetApi extends SApi {
 	public static final int MAX_SEARCH_LEVEL = 10;
 //	public static final String CONTENT_NODE = "content";
 	public static final String RES_TITLE = "title";
+	public static final String CONTAINER = "cherry:container";
+	public static final String SORT = "cherry:sort";
 
 	void doRender(CallContext call, CaoNode widget) throws Exception;
 
@@ -33,5 +39,24 @@ public interface WidgetApi extends SApi {
 	 * @return
 	 */
 	String getHtmlHead(CallContext call, CaoNode res);
+	
+	/**
+	 * Filters and sorts the widgets of a page into the defined containers by attribute definitions.
+	 * To allow iterating by the taglib it returns a dummy caonode as list. Use getNodes to get the list.
+	 * 
+	 * @param pageRes
+	 * @return Map with container name as key and node list as value
+	 */
+	Map<String, CaoNode> sortWidgetsIntoContainers(CaoNode pageRes);
+
+	CaoNode sortWidgetsIntoContainers(CaoNode pageRes, String container);
+	/**
+	 * Filters and sorts the widgets of a page into a single list. 
+	 * To allow iterating by the taglib it returns a dummy caonode as list. Use getNodes to get the list.
+	 * 
+	 * @param pageRes
+	 * @return List of the nodes packed in the caonode
+	 */
+	CaoNode sortWidgets(CaoNode pageRes);
 
 }

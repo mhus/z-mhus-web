@@ -17,6 +17,7 @@ import de.mhus.lib.cao.CaoAction;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MXml;
+import de.mhus.osgi.sop.api.Sop;
 
 @Component
 public class PageControlWidgets implements PageControlFactory {
@@ -72,7 +73,7 @@ public class PageControlWidgets implements PageControlFactory {
 				});
 			}
 			
-			for (CaoNode c : content.getNodes()) {
+			for (CaoNode c : Sop.getApi(WidgetApi.class).sortWidgets(content).getNodes()) {
 				try {
 					Button b = new Button();
 					b.setHtmlContentAllowed(true);

@@ -23,6 +23,7 @@ import de.mhus.lib.cao.fdb.FdbCore;
 import de.mhus.lib.cao.fs.FsCore;
 import de.mhus.lib.cao.util.SharedDataSource;
 import de.mhus.lib.core.MThread;
+import de.mhus.lib.core.MTimeInterval;
 import de.mhus.osgi.sop.api.Sop;
 
 public class DemoVirtualHost extends DefaultVirtualHost {
@@ -34,10 +35,13 @@ public class DemoVirtualHost extends DefaultVirtualHost {
 			
 			@Override
 			public void run() {
-				Sop.waitForApi(CherryApi.class, 10000);
-		
+				CherryApi api = Sop.waitForApi(CherryApi.class, 10000);
 				try {
-					CherryApi api = Sop.getApi(CherryApi.class);
+//					DeployDescriptor privDep = MThread.getWithTimeout(
+//						() -> {
+//							return api.getDeployDescritor(FrameworkUtil.getBundle(DemoVirtualHost.class));
+//						}, MTimeInterval.MINUTE_IN_MILLISECOUNDS, false);
+
 					DeployDescriptor privDep = api.getDeployDescritor(FrameworkUtil.getBundle(DemoVirtualHost.class));
 					File priv = privDep.getPath(SPACE.PRIVATE);
 					DefaultNavigationProvider nv = new DefaultNavigationProvider(DemoVirtualHost.this);

@@ -14,13 +14,20 @@ public class RenderTag extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	private CaoNode res;
+	private String name;
 
 	public void setResource(CaoNode res) {
 		this.res = res;
 	}
 	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	@Override
 	public int doStartTag() throws JspException {
+
+		res = Util.findRes(res, name, pageContext);
 
 		CallContext call = (CallContext)pageContext.getAttribute("call");
 		try {

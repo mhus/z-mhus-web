@@ -1,6 +1,11 @@
 package de.mhus.cherry.portal.impl.widget;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CacheApi;
@@ -11,6 +16,7 @@ import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.util.ListCaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.errors.MException;
@@ -18,6 +24,7 @@ import de.mhus.osgi.sop.api.Sop;
 
 @Component
 public class WidgetApiImpl extends MLog implements WidgetApi {
+
 
 	@Override
 	public void doRender(CallContext call, CaoNode widget) throws Exception {
@@ -111,6 +118,74 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 		}
 		for (CaoNode child : res.getNodes())
 			collectHtmlResources(call, child, cssList, jsList, level+1);
+	}
+
+	@Override
+	public Map<String, CaoNode> sortWidgetsIntoContainers(CaoNode pageRes) {
+		HashMap<String, CaoNode> out = new HashMap<>();
+		// iterate all widgets
+		for (CaoNode widget : pageRes.getNodes()) {
+			// only nodes with renderer and not hidden are widgets
+			if (widget.getString(WidgetApi.RENDERER, null) != null && !widget.getBoolean(CherryApi.NAV_HIDDEN, false)) {
+				String container = widget.getString(CONTAINER, "");
+				CaoNode listNode = out.get(container);
+				if (listNode == null) {
+					// not defined yet, create new container list
+					TreeSet<CaoNode> list = new TreeSet<>(new Comparator<CaoNode>() {
+						@Override
+						public int compare(CaoNode o1, CaoNode o2) {
+							return Integer.compare(o1.getInt(SORT, Integer.MAX_VALUE), o2.getInt(SORT, Integer.MAX_VALUE));
+						}
+					});
+					listNode = new ListCaoNode(container, list);
+					out.put(container, listNode);
+				}
+				// and add the new node
+				listNode.getNodes().add(widget);
+			}
+		}
+		return out;
+	}
+
+	@Override
+	public CaoNode sortWidgets(CaoNode pageRes) {
+		TreeSet<CaoNode> list = new TreeSet<>(new Comparator<CaoNode>() {
+			@Override
+			public int compare(CaoNode o1, CaoNode o2) {
+				int c = o1.getString(CONTAINER, "").compareTo(o2.getString(CONTAINER, ""));
+				if (c != 0) return c;
+				return Integer.compare(o1.getInt(SORT, Integer.MAX_VALUE), o2.getInt(SORT, Integer.MAX_VALUE));
+			}
+		});
+		// iterate all widgets
+		for (CaoNode widget : pageRes.getNodes()) {
+			// only nodes with renderer and not hidden are widgets
+			if (widget.getString(WidgetApi.RENDERER, null) != null && !widget.getBoolean(CherryApi.NAV_HIDDEN, false)) {
+				list.add(widget);
+			}
+		}
+		return new ListCaoNode("", list);
+	}
+
+	@Override
+	public CaoNode sortWidgetsIntoContainers(CaoNode pageRes, String container) {
+		TreeSet<CaoNode> list = new TreeSet<>(new Comparator<CaoNode>() {
+			@Override
+			public int compare(CaoNode o1, CaoNode o2) {
+				return Integer.compare(o1.getInt(SORT, Integer.MAX_VALUE), o2.getInt(SORT, Integer.MAX_VALUE));
+			}
+		});
+		// iterate all widgets
+		for (CaoNode widget : pageRes.getNodes()) {
+			// only nodes with renderer and not hidden are widgets
+			if (
+					widget.getString(WidgetApi.RENDERER, null) != null && 
+					!widget.getBoolean(CherryApi.NAV_HIDDEN, false) && 
+					widget.getString(CONTAINER, "").equals(container)) {
+				list.add(widget);
+			}
+		}
+		return new ListCaoNode(container, list);
 	}
 
 }

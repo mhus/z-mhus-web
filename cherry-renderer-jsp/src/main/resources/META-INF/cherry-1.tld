@@ -48,7 +48,15 @@
                 Resource to render
             </description>
             <name>resource</name>
-            <required>true</required>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Resource Name
+            </description>
+            <name>name</name>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
@@ -98,6 +106,48 @@
                 Order by this attribute
             </description>
             <name>order</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+        	Iterate all widgets of the resource
+        </description>
+        <name>widgets</name>
+        <tag-class>de.mhus.cherry.renderer.jsp.tagext.WidgetsTag</tag-class>
+        <tei-class>de.mhus.cherry.renderer.jsp.tagext.WidgetsTei</tei-class>
+        <body-content>JSP</body-content>
+		<attribute>
+            <description>
+                Resource
+            </description>
+            <name>resource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Resource Name
+            </description>
+            <name>name</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Iterator name
+            </description>
+            <name>iterator</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+		<attribute>
+            <description>
+                Filter a special container
+            </description>
+            <name>container</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>

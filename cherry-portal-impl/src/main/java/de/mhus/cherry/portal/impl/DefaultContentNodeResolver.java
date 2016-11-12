@@ -17,11 +17,17 @@ public class DefaultContentNodeResolver implements ContentNodeResolver {
 	@Override
 	public CaoNode doResolve(CaoNode nav) {
 		String resId = nav.getString(CherryApi.RESOURCE_ID, null);
+		CaoNode out = null;
 		if (MString.isSet(resId)) {
-			return vHost.getResourceResolver().getResource(vHost, resId);
+			out = vHost.getResourceResolver().getResource(vHost, resId);
 		} else {
-			return nav.getNode(CherryApi.NAV_CONTENT_NODE);
+			out = nav.getNode(CherryApi.NAV_CONTENT_NODE);
 		}
+		
+		if (out == null)
+			out = nav.getNode("_public"); // as fallback a public node
+		
+		return out;
 	}
 
 }
