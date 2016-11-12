@@ -135,7 +135,9 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 					TreeSet<CaoNode> list = new TreeSet<>(new Comparator<CaoNode>() {
 						@Override
 						public int compare(CaoNode o1, CaoNode o2) {
-							return Integer.compare(o1.getInt(SORT, Integer.MAX_VALUE), o2.getInt(SORT, Integer.MAX_VALUE));
+							int c = Integer.compare(o1.getInt(SORT, Integer.MAX_VALUE), o2.getInt(SORT, Integer.MAX_VALUE));
+							if (c != 0) return c;
+							return Integer.compare(o1.hashCode(), o2.hashCode() );
 						}
 					});
 					listNode = new ListCaoNode(container, list);
@@ -155,7 +157,9 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 			public int compare(CaoNode o1, CaoNode o2) {
 				int c = o1.getString(CONTAINER, "").compareTo(o2.getString(CONTAINER, ""));
 				if (c != 0) return c;
-				return Integer.compare(o1.getInt(SORT, Integer.MAX_VALUE), o2.getInt(SORT, Integer.MAX_VALUE));
+				c = Integer.compare(o1.getInt(SORT, Integer.MAX_VALUE), o2.getInt(SORT, Integer.MAX_VALUE));
+				if (c != 0) return c;
+				return Integer.compare(o1.hashCode(), o2.hashCode() );
 			}
 		});
 		// iterate all widgets

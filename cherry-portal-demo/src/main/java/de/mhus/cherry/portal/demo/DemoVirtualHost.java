@@ -37,12 +37,12 @@ public class DemoVirtualHost extends DefaultVirtualHost {
 			public void run() {
 				CherryApi api = Sop.waitForApi(CherryApi.class, 10000);
 				try {
-//					DeployDescriptor privDep = MThread.getWithTimeout(
-//						() -> {
-//							return api.getDeployDescritor(FrameworkUtil.getBundle(DemoVirtualHost.class));
-//						}, MTimeInterval.MINUTE_IN_MILLISECOUNDS, false);
+					DeployDescriptor privDep = MThread.getWithTimeout(
+						() -> {
+							return api.getDeployDescritor(FrameworkUtil.getBundle(DemoVirtualHost.class));
+						}, MTimeInterval.MINUTE_IN_MILLISECOUNDS, false);
 
-					DeployDescriptor privDep = api.getDeployDescritor(FrameworkUtil.getBundle(DemoVirtualHost.class));
+					// DeployDescriptor privDep = api.getDeployDescritor(FrameworkUtil.getBundle(DemoVirtualHost.class));
 					File priv = privDep.getPath(SPACE.PRIVATE);
 					DefaultNavigationProvider nv = new DefaultNavigationProvider(DemoVirtualHost.this);
 					nv.setConnection(new AuthCore( new FdbCore(CherryApi.DEFAULT_NAVIGATION_PROVIDER, new File(priv, "webcontent/nav"), false), new DefaultAuthorizator() ) );
