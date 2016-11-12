@@ -137,6 +137,8 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 						public int compare(CaoNode o1, CaoNode o2) {
 							int c = Integer.compare(o1.getInt(SORT, Integer.MAX_VALUE), o2.getInt(SORT, Integer.MAX_VALUE));
 							if (c != 0) return c;
+							c = o1.getName().compareTo(o2.getName());
+							if (c != 0) return c;
 							return Integer.compare(o1.hashCode(), o2.hashCode() );
 						}
 					});
@@ -158,6 +160,8 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 				int c = o1.getString(CONTAINER, "").compareTo(o2.getString(CONTAINER, ""));
 				if (c != 0) return c;
 				c = Integer.compare(o1.getInt(SORT, Integer.MAX_VALUE), o2.getInt(SORT, Integer.MAX_VALUE));
+				if (c != 0) return c;
+				c = o1.getName().compareTo(o2.getName());
 				if (c != 0) return c;
 				return Integer.compare(o1.hashCode(), o2.hashCode() );
 			}
