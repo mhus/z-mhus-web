@@ -13,6 +13,8 @@ public interface WidgetApi extends SApi {
 	public static final String CURRENT_WIDGET_NODE = "current_widget_node";
 	public static final String RENDERER = "cherry:renderer";
 	public static final String EDITOR = "cherry:editor";
+	public static final String ACTION_CALLBACK = "cherry:callback";
+
 	public static final String THEME = "cherry:theme";
 	public static final String CURRENT_THEME_SCOPE = "current_theme_scope";
 	public static final String THEME_SCOPE_HEADER = "header";
@@ -58,5 +60,14 @@ public interface WidgetApi extends SApi {
 	 * @return List of the nodes packed in the caonode
 	 */
 	CaoNode sortWidgets(CaoNode pageRes);
+
+	/**
+	 * Process an action call.
+	 * 
+	 * @param call
+	 * @param res
+	 * @throws Exception 
+	 */
+	void doAction(CallContext call, CaoNode res) throws Exception;
 
 }

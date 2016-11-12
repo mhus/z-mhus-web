@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import de.mhus.cherry.portal.api.ActionCallback;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.ContentNodeResolver;
@@ -502,6 +503,16 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 
 	public void setContentNodeResolver(ContentNodeResolver contentNodeResolver) {
 		this.contentNodeResolver = contentNodeResolver;
+	}
+
+	@Override
+	public ActionCallback getActionCallback(String actionName) {
+		actionName = actionName.toLowerCase();
+		ActionCallback factory = null;
+		try {
+			factory = MOsgi.getService(ActionCallback.class, MOsgi.filterServiceName("cherry_callback_" + actionName));
+		} catch (NotFoundException e) {}
+		return factory;
 	}
 	
 }

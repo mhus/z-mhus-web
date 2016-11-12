@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.ActionCallback;
 import de.mhus.cherry.portal.api.CacheApi;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
@@ -186,6 +187,27 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 			}
 		}
 		return new ListCaoNode(container, list);
+	}
+
+	@Override
+	public void doAction(CallContext call, CaoNode widget) throws Exception {
+		call.getHttpResponse().flushBuffer();
+		String callbackName = widget.getString(ACTION_CALLBACK);
+		if (callbackName == null)
+			callbackName = widget.getString(RENDERER);
+		if (callbackName == null) {
+			log().d("renderer not set", call, widget);
+			return;
+		}
+		
+		ActionCallback callback = call.getVirtualHost().getActionCallback(callbackName);
+		if (callback == null) {
+			log().d("callback not found", call, callbackName, widget);
+			return;
+		}
+		
+		callback.doAction(call, widget);
+		call.getHttpResponse().flushBuffer();
 	}
 
 }

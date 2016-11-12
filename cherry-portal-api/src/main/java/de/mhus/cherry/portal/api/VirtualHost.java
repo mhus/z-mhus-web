@@ -53,5 +53,7 @@ public interface VirtualHost {
 	public AuthorizationSource getAuthorizationSource();
 
 	public ContentNodeResolver getContentNodeResolver();
+
+	public ActionCallback getActionCallback(String actionName);
 	
 }
