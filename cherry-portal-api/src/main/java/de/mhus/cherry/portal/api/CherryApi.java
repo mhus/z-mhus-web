@@ -1,5 +1,7 @@
 package de.mhus.cherry.portal.api;
 
+import java.util.Map;
+
 import javax.servlet.ServletRequest;
 
 import org.osgi.framework.Bundle;
@@ -22,6 +24,15 @@ public interface CherryApi extends SApi {
 	public static final String RET_TYPE_PAGE = "page";
 	public static final String DEFAULT_NAVIGATION_PROVIDER = "navigation";
 	public static final String NAV_CONTENT_NODE_PREFIX = "_";
+	public static final String ACL_READ =  "read";
+	public static final String ACL_WRITE =  "read";
+	public static final String ACL_CREATE =  "create";
+	public static final String ACL_DELETE =  "delete";
+	public static final String ACL_VERSION =  "version";
+	public static final String ACL_EXECUTE =  "execute";
+	public static final String ACL_STRUCTURE = "structure";
+	public static final String ACL_RENDITION = "rendition";
+	public static final String ACL_PREFIX = "acl:";
 
 	VirtualHost findVirtualHost(String host);
 	
@@ -48,6 +59,20 @@ public interface CherryApi extends SApi {
 	boolean deleteNavNode(CaoNode nav);
 
 	NavNode createNavNode(VirtualHost vHost, CaoNode parent, String pageRendition, String name, String title) throws CaoException;
+
+	/**
+	 * Lookup for node acl defintion. 
+	 * 
+	 * @param node
+	 * @param aclName The name of the requested acl
+	 * @return
+	 */
+	boolean hasResourceAccess(CaoNode node, String aclName);
 	
+	boolean hasResourceAccess(AaaContext context, CaoNode node, String aclName);
+
+	Map<String, String> getEffectiveAcls(CaoNode node);
+
+	CaoNode getAclDefiningNode(CaoNode node, String aclName);
 
 }

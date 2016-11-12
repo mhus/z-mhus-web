@@ -2,8 +2,11 @@ package de.mhus.cherry.portal.impl.widget;
 
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
+import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.impl.renderer.DefaultHeadRenderer;
@@ -17,6 +20,11 @@ public class PagePostRenderer extends MLog implements ResourceRenderer {
 	@Override
 	public void doRender(CallContext call) throws Exception {
 		CaoNode res = call.getResource();
+		if (!Sop.getApi(CherryApi.class).hasResourceAccess(res, CherryApi.ACL_EXECUTE )) {
+			call.getVirtualHost().sendError(call, HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+			
 		DefaultHeadRenderer.doRenderHead(call);
 		
 		Sop.getApi(WidgetApi.class).doAction(call, res);

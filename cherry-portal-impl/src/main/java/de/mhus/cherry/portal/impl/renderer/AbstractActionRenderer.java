@@ -25,6 +25,7 @@ public abstract class AbstractActionRenderer extends MLog implements ResourceRen
 		ObjectNode out = json.createObjectNode();
 		try {
 			OperationResult res = doAction(call);
+			if (res == null) return;
 			
 			out.put("msg", res.getMsg());
 			out.put("success", res.isSuccessful());

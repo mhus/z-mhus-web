@@ -1,5 +1,7 @@
 package de.mhus.cherry.portal.impl;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.osgi.framework.Bundle;
@@ -37,6 +39,7 @@ import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.SopApi;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
+import de.mhus.osgi.sop.api.aaa.AaaUtil;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 @Component
@@ -195,5 +198,51 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
 		return new NavNode(vHost.getNavigationProvider(), newNav, newRes, false);
 	}
+
+	@Override
+	public boolean hasResourceAccess(CaoNode node, String aclName) {
+		AccessApi aaa = Sop.getApi(AccessApi.class);
+		AaaContext context = aaa.getCurrentOrGuest();
+		return hasResourceAccess(context, node, aclName);
+	}
+
+	@Override
+	public boolean hasResourceAccess(AaaContext context, CaoNode node, String aclName) {
+		
+		String acl = getRecursiveString(node, "acl:" + aclName);
+		if (acl == null) return true;
+		return AaaUtil.hasAccess(context.getAccount(), acl);
+		
+	}
+	
+	@Override
+	public Map<String, String> getEffectiveAcls(CaoNode node) {
+		HashMap<String,String> out = new HashMap<>();
+		int len = CherryApi.ACL_PREFIX.length();
+		while(node != null) {
+			for (String key : node.getPropertyKeys()) {
+				if (key.startsWith(CherryApi.ACL_PREFIX)) {
+					String aclName = key.substring(len);
+					if (!out.containsKey(aclName)) {
+						out.put(aclName, node.getString(key, ""));
+					}
+				}
+			}
+			node = node.getParent();
+		}
+		return out;
+	}
+	
+	@Override
+	public CaoNode getAclDefiningNode(CaoNode node, String aclName) {
+		String acl = CherryApi.ACL_PREFIX + aclName;
+		while(node != null) {
+			for (String key : node.getPropertyKeys()) {
+				if (node.containsKey(acl)) return node;
+			}
+		}
+		return null;
+	}
+	
 	
 }
