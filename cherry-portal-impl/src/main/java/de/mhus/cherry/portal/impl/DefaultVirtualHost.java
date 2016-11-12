@@ -281,6 +281,13 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 						return;
 					}
 					
+				} else
+				if ("res".equals(subType)) {
+					// nothing todo ...
+				} else {
+					log().d("unknown subType", call, subType);
+					sendError(call, HttpServletResponse.SC_NOT_FOUND);
+					return;
 				}
 				
 			}

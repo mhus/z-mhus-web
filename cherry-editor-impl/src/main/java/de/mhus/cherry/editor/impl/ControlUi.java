@@ -37,7 +37,9 @@ import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
+import de.mhus.lib.core.MThread;
 import de.mhus.lib.core.cfg.CfgString;
+import de.mhus.lib.core.lang.ValueProvider;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.AccessControl;
@@ -62,10 +64,7 @@ public class ControlUi extends UI implements GuiApi {
 	private HashMap<String, AbstractComponent> spaceInstanceList = new HashMap<String, AbstractComponent>(); 
 	private BundleContext context;
 	private String trailConfig = null;
-	private String initPath;
 	private String host;
-//	private HttpServletRequest httpRequest;
-//	private CallContext currentCall;
 	private LinkedList<String> history = new LinkedList<>();
 
 	@Override
@@ -81,7 +80,6 @@ public class ControlUi extends UI implements GuiApi {
 		spaceTracker = new ServiceTracker<>(context, GuiSpaceService.class, new GuiSpaceServiceTrackerCustomizer() );
 		spaceTracker.open();
 
-        initPath = request.getPathInfo();
         host = request.getHeader("Host");
         
         // get User
@@ -107,24 +105,42 @@ public class ControlUi extends UI implements GuiApi {
 		synchronized (this) {
 			desktop.refreshSpaceList(spaceList);
 		}
+				
+		String nav = UI.getCurrent().getPage().getUriFragment();
 		
-		if (initPath != null && initPath.startsWith("/")) initPath = initPath.substring(1);
-		if (MString.isSet(initPath)) {
-			String spaceName = initPath;
-			String subSpace = null;
-			String search = null;
-			if (MString.isIndex(spaceName, '/')) {
-				subSpace  = MString.afterIndex(spaceName, '/');
-				spaceName = MString.beforeIndex(spaceName, '/');
-				if (MString.isIndex(subSpace, '/')) {
-					search = MString.afterIndex(subSpace, '/');
-					subSpace = MString.beforeIndex(subSpace, '/');
-				}
+		if (nav != null) {
+			
+			if (nav.startsWith("!")) nav=nav.substring(1);
+			
+			if (MString.isIndex(nav, ':')) {
+				String backLink = MString.beforeIndex(nav, ':');
+				nav = MString.afterIndex(nav, ':');
+				if (MString.isSet(backLink))
+					rememberNavigation("Webseite", "site", "", backLink, false );
 			}
-			openSpace(spaceName, subSpace, search);
-			initPath = null; // do not show again
+			
+			String[] parts = nav.split("/", 3);
+			if (parts.length > 0) {
+				String space = parts[0];
+				String subSpace = parts.length > 1 ? parts[1] : null;
+				String filter = parts.length > 2 ? parts[2] : null;
+				
+				openSpace(space, subSpace, filter, true, false);
+
+			}
+			
 		}
 		
+		
+	}
+
+	public void rememberNavigation(String caption, String space, String subSpace, String search, boolean navLink) {
+		String newEntry = caption.replace('|', ' ') + "|" + space + "|" + subSpace + "|" + search;
+		while (this.history.remove(newEntry) ) {} // move up
+		this.history.add(newEntry);
+		doUpdateHistoryMenu();
+		if (navLink)
+			UI.getCurrent().getPage().setUriFragment("!:" + space + "/" + (subSpace == null ? "" : subSpace) + "/" + (search == null ? "" : search));
 	}
 
 	@Override
@@ -219,10 +235,10 @@ public class ControlUi extends UI implements GuiApi {
 	
 	@Override
 	public boolean openSpace(String spaceId, String subSpace, String search) {
-		return openSpace(spaceId, subSpace, search, true);
+		return openSpace(spaceId, subSpace, search, true, true);
 	}
 	
-	public boolean openSpace(String spaceId, String subSpace, String search, boolean history) {
+	public boolean openSpace(String spaceId, String subSpace, String search, boolean history, boolean navLink) {
 		GuiSpaceService space = getSpace(spaceId);
 		if (space == null) return false;
 		if (!hasAccess(space.getName()) || !space.hasAccess(getAccessControl())) return false;
@@ -234,6 +250,8 @@ public class ControlUi extends UI implements GuiApi {
 			this.history.add(newEntry);
 			doUpdateHistoryMenu();
 		}
+		if (navLink)
+			UI.getCurrent().getPage().setUriFragment("!:" + spaceId + "/" + (subSpace == null ? "" : subSpace) + "/" + (search == null ? "" : search));
 		return ret != null;
 	}
 
@@ -296,7 +314,7 @@ public class ControlUi extends UI implements GuiApi {
 		String[] parts = link.split("\\|", 4);
 		if (parts[2].equals("null")) parts[2] = null;
 		if (parts[3].equals("null")) parts[3] = null;
-		openSpace(parts[1], parts[2], parts[3], false);
+		openSpace(parts[1], parts[2], parts[3], false, true);
 	}
 	
 }

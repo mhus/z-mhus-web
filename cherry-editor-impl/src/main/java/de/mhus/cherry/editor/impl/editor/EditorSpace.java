@@ -33,15 +33,12 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 	private static Log log = Log.getLog(EditorSpace.class);
 	private static final long serialVersionUID = 1L;
-	private String nav;
-	private String lnk;
 	private Panel panel;
 	private VerticalLayout contentLayout;
 	private CaoNode resource;
 	private EditorPanel editor;
 	private Button bSave;
 	private Button bCancel;
-	private String resId;
 	private TabSheet tabs;
 
 	@Override
@@ -53,16 +50,6 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 	@Override
 	public void doInitialize() {
-		//UI.getCurrent().getPage().setUriFragment("moin",false);
-		nav = UI.getCurrent().getPage().getUriFragment();
-		lnk = nav;
-		if (MString.isIndex(lnk, ':')) {
-			lnk = MString.beforeIndex(nav, ':');
-			resId = MString.afterIndex(nav, ':');
-		}
-//		Label l = new Label();
-//		l.setCaptionAsHtml(true);
-//		l.setCaption("<a href='" + lnk + "'>" + MXml.encode(nav) + "</a>" );
 		
 		panel = new Panel();
 		setMargin(true);
@@ -75,8 +62,6 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		
 		contentLayout = new VerticalLayout();
 //		contentLayout.addComponent(l);
-		if (resId != null)
-			doShow(resId);
 
 	}
 
@@ -179,22 +164,13 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	}
 
 	private void doBack() {
-		if (lnk != null)
-			UI.getCurrent().getPage().setLocation( getNavLink() );
-		else
-			GuiUtil.getApi().navigateBack();
+		GuiUtil.getApi().navigateBack();
 	}
 
 	@Override
 	public void doDestroy() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	public String getNavLink() {
-		return lnk;
-	}
-	
-	
+	}	
 
 }

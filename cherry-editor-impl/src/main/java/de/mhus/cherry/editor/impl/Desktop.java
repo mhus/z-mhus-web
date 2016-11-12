@@ -158,8 +158,12 @@ public class Desktop extends CssLayout {
 		LinkedList<GuiSpaceService> componentList = new LinkedList<>();
 		for (GuiSpaceService space : spaceList.values()) {
 			
-			if (space.isHiddenSpace() || !hasAccess(space) || !space.hasAccess(ui.getAccessControl())) continue;
-			componentList.add(space);
+			try {
+				if (space.isHiddenSpace() || !hasAccess(space) || !space.hasAccess(ui.getAccessControl())) continue;
+				componentList.add(space);
+			} catch (Throwable t) {
+				log.d(space,t);
+			}
 		}
 		
 
@@ -184,7 +188,7 @@ public class Desktop extends CssLayout {
 				
 				@Override
 				public void menuSelected(MenuItem selectedItem) {
-					showSpace(space, null, null);
+					GuiUtil.getApi().openSpace(space.getName(), null, null); // not directly to support history
 				}
 			});
 			item.setEnabled(true);
