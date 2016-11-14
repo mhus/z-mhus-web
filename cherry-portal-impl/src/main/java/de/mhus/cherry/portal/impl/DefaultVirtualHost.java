@@ -416,8 +416,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 	public AaaContext doLogin(RequestWrapper request, ResponseWrapper response) {
 		AaaContext out = null;
 		for (LoginHandler handler : loginHandlers) {
-			out = handler.doLogin(request);
-			if (out != null) return out;
+			out = handler.doLogin(request, response);
+			if (out != null) {
+				log().d("login handled", handler.getClass(), handler);
+				return out;
+			}
 		}
 		return null;
 	}

@@ -17,6 +17,7 @@ public interface InternalCherryApi extends SApi {
 	public static final String SESSION_ACCESS_USERNAME = "_cherry_username";
 	public static final String SESSION_ACCESS_PASSWORD = "_cherry_password";
 	public static final String SESSION_ACCESS_NAME = "_cherry_access";
+	public static final String SESSION_DESTROY_ON_RELEASE = "_destroy_session_on_release";
 
 	CallContext createCall(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res) throws IOException;
 
