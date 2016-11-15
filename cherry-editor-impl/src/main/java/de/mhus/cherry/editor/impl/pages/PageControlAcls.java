@@ -4,8 +4,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.vaadin.easyuploads.UploadField;
+
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CherryApi;
@@ -42,8 +46,10 @@ public class PageControlAcls implements PageControlFactory {
 			
 		}
 
+		@SuppressWarnings("deprecation")
 		@Override
 		public void doUpdate(NavNode nav) {
+	        
 			Map<String, String> acls = Sop.getApi(CherryApi.class).getEffectiveAcls(nav.getNav());
 			TreeMap<String, String> sorted = new TreeMap<>(acls);
 			for (Entry<String, String> entry : sorted.entrySet()) {

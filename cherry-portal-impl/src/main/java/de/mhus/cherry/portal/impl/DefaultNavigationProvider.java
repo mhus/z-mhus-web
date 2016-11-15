@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.ContentNodeResolver;
 import de.mhus.cherry.portal.api.NavNode;
+import de.mhus.cherry.portal.api.NavNode.TYPE;
 import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoConnection;
@@ -36,8 +37,8 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 	}
 
 	private NavNode prepare(NavNode parent, CaoNode nav) {
-		if (parent != null && parent.isDeep())
-			return new NavNode(this, parent.getNav(), nav, true);
+		if (parent != null && parent.getType() != TYPE.NAVIGATION)
+			return new NavNode(this, parent.getNav(), nav, parent.getType() == TYPE.PAGE ? TYPE.WIDGET : TYPE.RESOURCE );
 		
 		CaoNode res = null;
 		ContentNodeResolver resolver = vHost.getContentNodeResolver();
@@ -46,7 +47,7 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 		} else {
 			log().d("ContentNodeResolver not found");
 		}
-		return new NavNode(this, nav, res, false);
+		return new NavNode(this, nav, res, TYPE.NAVIGATION);
 	}
 
 	public CaoConnection getConnection() {
@@ -83,11 +84,16 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 	@Override
 	public Collection<NavNode> getAllChildren(NavNode parent) {
 		LinkedList<NavNode> out = new LinkedList<>();
-		for (CaoNode node : parent.getNav().getNodes())
-			if (node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX))
-				out.add( new NavNode(this, parent.getNav(), node, true) );
-			else
-				out.add( prepare(parent, node) );
+		if (parent.getType() == TYPE.NAVIGATION) {
+			for (CaoNode node : parent.getNav().getNodes())
+				if (node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX))
+					out.add( new NavNode(this, parent.getNav(), node, TYPE.PAGE) );
+				else
+					out.add( prepare(parent, node) );
+		} else {
+			for (CaoNode node : parent.getRes().getNodes())
+				out.add( new NavNode(this, parent.getNav(), node, parent.getType() == TYPE.PAGE ? TYPE.WIDGET : TYPE.RESOURCE ) );
+		}
 		return out;
 	}
 

@@ -4,4 +4,8 @@
 <module>
     <inherits name="com.vaadin.DefaultWidgetSet"/>
     
+
+    
+
+    <inherits name="org.vaadin.easyuploads.Widgetset" />
 </module>

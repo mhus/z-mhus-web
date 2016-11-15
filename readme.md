@@ -20,6 +20,8 @@ bundle:persistentwatch add cherry-editor-impl
 bundle:persistentwatch add cherry-content-base
 bundle:persistentwatch add cherry-portal-demo
 
+install -s mvn:de.mhus.ports/vaadin-viritin/1.3.1-SNAPSHOT
+install -s mvn:de.mhus.ports/vaadin-easyuploads/1.3.1-SNAPSHOT
 
 ---
 

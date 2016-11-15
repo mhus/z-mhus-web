@@ -23,7 +23,12 @@
     		<artifactId>vaadin-shared</artifactId>
     		<version>${vaadin.version}</version>
     	</dependency>
-    	        
+		    	        
+		<dependency>
+			<groupId>de.mhus.ports</groupId>
+			<artifactId>vaadin-easyuploads</artifactId>
+			<version>${ports.version}</version>
+		</dependency>
     </dependencies>
 
     <build>
@@ -37,7 +42,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>de.mhus.cherry.editor.theme.*;version=${project.version}</Export-Package>
+                        <Export-Package>
+                        	de.mhus.cherry.editor.theme.*;version=${project.version}
+                        	</Export-Package>
                         <Import-Package>*</Import-Package>
                         <Include-Resource>
                         	VAADIN=${basedir}/target/classes/VAADIN
@@ -125,4 +132,11 @@
         </pluginManagement>
     </build>
 
+	<repositories>
+		<repository>
+		   <id>vaadin-addons</id>
+		   <url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+	</repositories>
+	
 </project>

@@ -35,6 +35,7 @@ import de.mhus.cherry.editor.impl.ControlUi;
 import de.mhus.cherry.editor.impl.editor.EditorSpace;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.NavNode;
+import de.mhus.cherry.portal.api.NavNode.TYPE;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.ControlParent;
@@ -81,6 +82,8 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		
 		tree = new TreeTable("Navigation");
 		
+		
+		
 		split.setFirstComponent(tree);
 		split.setSecondComponent(contentLayout);
 		split.setSplitPosition(75, Unit.PERCENTAGE);
@@ -119,7 +122,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		tree.setSelectable(true);
 		tree.setItemIconPropertyId("icon");
 		tree.setVisibleColumns("name","tecName","hidden","acl","theme","pageType");
-		tree.setColumnHeaders("Navigation","Name","Hidden","ACL","Theme","Page");
+		tree.setColumnHeaders("Navigation","Name","Hidden","ACL","Theme","Type");
 
 		
 		controlAcc = new Accordion();
@@ -183,7 +186,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 			Collection<?> children = tree.getChildren(itemId);
 			if (children != null && children.size() != 0) return;
 		
-			if (node.isDeep()) return; // do not iterate deeper then content nodes
+//			if (node.isDeep()) return; // do not iterate deeper then content nodes
 			
 			Collection<NavNode> nodeChildren = node.getAllNodes();
 			if (nodeChildren.size() == 0) return;
@@ -194,7 +197,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 					Item next = container.addItem(n.getId());
 					container.setParent(n.getId(), itemId);
 					fillItem(next, n);
-					if (!n.isDeep())
+//					if (!n.isDeep())
 						container.setChildrenAllowed(n.getId(), true);
 				} catch (Throwable t) {
 					MLogUtil.log().i(t);
@@ -239,13 +242,23 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 
 		CaoNode itemRes = null;
 		item.getItemProperty("object").setValue(node);
-		if (node.isDeep()) {
-			itemRes = node.getRes();
-			item.getItemProperty("icon").setValue( FontAwesome.SQUARE_O );
-		} else {
+		if (node.getType() == TYPE.NAVIGATION) {
 			itemRes = node.getNav();
-			item.getItemProperty("icon").setValue( FontAwesome.CIRCLE_THIN );
+			item.getItemProperty("icon").setValue( FontAwesome.FOLDER );
+		} else 
+		if (node.getType() == TYPE.PAGE) {
+			itemRes = node.getRes();
+			item.getItemProperty("icon").setValue( FontAwesome.FOLDER_O );
+		} else 
+		if (node.getType() == TYPE.WIDGET) {
+			itemRes = node.getRes();
+			item.getItemProperty("icon").setValue( FontAwesome.FILE_O );
+		} else 
+		if (node.getType() == TYPE.RESOURCE) {
+			itemRes = node.getRes();
+			item.getItemProperty("icon").setValue( FontAwesome.FILE_O );
 		}
+		
 		boolean hasAcl = false;
 		for (String key : itemRes.getPropertyKeys())
 			if (key.startsWith("acl:")) {

@@ -16,6 +16,7 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.FileDeployer;
 import de.mhus.cherry.portal.api.NavNode;
+import de.mhus.cherry.portal.api.NavNode.TYPE;
 import de.mhus.cherry.portal.api.ResourceProvider;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
@@ -196,7 +197,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			newRes = result.getResultAs(CaoNode.class);
 		}
 
-		return new NavNode(vHost.getNavigationProvider(), newNav, newRes, false);
+		return new NavNode(vHost.getNavigationProvider(), newNav, newRes, TYPE.NAVIGATION);
 	}
 
 	@Override

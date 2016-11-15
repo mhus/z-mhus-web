@@ -93,7 +93,13 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet.version}</version>
 		</dependency>
-		        
+
+		<dependency>
+			<groupId>de.mhus.ports</groupId>
+			<artifactId>vaadin-easyuploads</artifactId>
+			<version>${ports.version}</version>
+		</dependency>
+
     </dependencies>
 
     <build>

@@ -2,6 +2,9 @@ package de.mhus.cherry.editor.impl.pages;
 
 import java.util.LinkedList;
 
+import org.vaadin.easyuploads.ImagePreviewField;
+import org.vaadin.easyuploads.UploadField;
+
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -46,10 +49,12 @@ public class PageControlControl extends MLog implements PageControlFactory {
 
 		private LinkedList<Button> createButtons = new LinkedList<>();
 		private Button bDeletePage;
-		private CaoNode nav;
-		private CaoNode res;
+		private NavNode nav;
 		private ControlParent controlParent;
+		private ImagePreviewField uploadField;
+		private Button bUpload;
 
+		@SuppressWarnings("deprecation")
 		public Control() {
 
 			bDeletePage = new Button("Delete");
@@ -88,13 +93,36 @@ public class PageControlControl extends MLog implements PageControlFactory {
 				}
 			}
 
+			{
+				Label label = new Label( "Renditions" );
+				addComponent( label);
+			}
+			uploadField = new ImagePreviewField();
+			uploadField.setCaption("Select Image");
+			uploadField.setWidth("100%");
+			bUpload = new Button("Upload");
+			bUpload.setWidth("100%");
+	        bUpload.addListener(new Button.ClickListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+	                Object value = uploadField.getValue();
+	                UI.getCurrent().showNotification("Value:" + value);
+	            }
+	        });
+	        
+	        addComponent(uploadField);
+	        addComponent(bUpload);
+
+
 		}
 		
 		protected void doDelete() {
-			if (nav == null || res == null) return;
+			if (nav == null) return;
 			
 			try {
-				CaoNode parent = nav.getParent();
+				CaoNode parent = nav.getNav().getParent();
 				if (parent == null) {
 					UI.getCurrent().showNotification("Can't delete root");
 					return;
@@ -102,7 +130,7 @@ public class PageControlControl extends MLog implements PageControlFactory {
 				VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
 			
 //				CaoNode page = res.getParent();
-				CaoNode page = res;
+				CaoNode page = nav.getRes();
 				EditorFactory editor = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost, page);
 			
 				ConfirmDialog dialog = new ConfirmDialog("Delete Page", "Really delete page and all sub pages", "Delete", "Cancel", new ConfirmDialog.Listener() {
@@ -112,7 +140,7 @@ public class PageControlControl extends MLog implements PageControlFactory {
 						try {
 							if (dialog.isCancel()) return;
 							
-							boolean success = Sop.getApi(CherryApi.class).deleteNavNode(nav);
+							boolean success = Sop.getApi(CherryApi.class).deleteNavNode(nav.getNav());
 							
 							if (success)
 								UI.getCurrent().showNotification("Page deleted");
@@ -151,7 +179,7 @@ public class PageControlControl extends MLog implements PageControlFactory {
 							String name = MFile.normalize(title);
 							
 							VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
-							NavNode newNode = Sop.getApi(CherryApi.class).createNavNode(vHost, nav, null, name, title);
+							NavNode newNode = Sop.getApi(CherryApi.class).createNavNode(vHost, nav.getNav(), null, name, title);
 
 							boolean success = editor.doPrepareCreateWidget(newNode.getRes(), title);
 							if (success)
@@ -160,7 +188,7 @@ public class PageControlControl extends MLog implements PageControlFactory {
 								UI.getCurrent().showNotification("Error creating page!");
 							
 							// TODO Update Tree
-							controlParent.doRefreshNode(nav);
+							controlParent.doRefreshNode(nav.getNav());
 						} catch (Throwable t) {
 							t.printStackTrace();
 							UI.getCurrent().showNotification("Error creating page!");
@@ -180,8 +208,9 @@ public class PageControlControl extends MLog implements PageControlFactory {
 		public void doClean() {
 			bDeletePage.setEnabled(false);
 			createButtons.forEach(this::doDisable);
+			bUpload.setEnabled(false);
+			//uploadField.setEnabled(false);
 			this.nav = null;
-			this.res = null;
 		}
 		
 		public void doDisable(Button b) {
@@ -195,9 +224,15 @@ public class PageControlControl extends MLog implements PageControlFactory {
 		@Override
 		public void doUpdate(NavNode nav) {
 			bDeletePage.setEnabled(true);
-			createButtons.forEach(this::doEnable);
-			this.nav = nav.getNav();
-			this.res = nav.getRes();
+			if (nav.getType() == NavNode.TYPE.NAVIGATION)
+				createButtons.forEach(this::doEnable);
+			
+			if (nav.getType() != NavNode.TYPE.NAVIGATION ) {
+				bUpload.setEnabled(true);
+				//uploadField.setEnabled(true);
+			}
+				
+			this.nav = nav;
 		}
 
 		@Override
