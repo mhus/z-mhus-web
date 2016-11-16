@@ -34,6 +34,10 @@ public interface CherryApi extends SApi {
 	public static final String ACL_RENDITION = "rendition";
 	public static final String ACL_PREFIX = "acl:";
 	public static final String REFERENCE_ID = "cherry:reference";
+	public static final String DATA_PREFIX =  "data:";
+	public static final String REF_DATA = "data";
+	public static final String REF_CONTENT = "content";
+	public static final String REF_RES = "res";
 
 	VirtualHost findVirtualHost(String host);
 	

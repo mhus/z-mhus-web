@@ -6,3 +6,4 @@ cherry\:editor=de.mhus.cherry.portal.demo.simpleeditorfactory
 acl\:read=*
 text=Ipsur
 title=Page
+data:pub=pub:/

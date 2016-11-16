@@ -40,16 +40,6 @@ cp {src}/examples/test/cherry-default-host.xml deploy/
 
 ---
 
-http://localhost:8181/page/sub1/.data.infinity.json/pub
-http://localhost:8181/page/sub1/.data.infinity.json/pub/de/mhus/cherry?_method=PUT&bla=blub
-
-http://localhost:8181/page.infinity.resource:nav.json
-
-Need the 'x' because the root is a folder:
-http://localhost:8181/.x.5.resource:nav.json
-
----
-
 Apache Configuration:
 
 ProxyPass /forum !

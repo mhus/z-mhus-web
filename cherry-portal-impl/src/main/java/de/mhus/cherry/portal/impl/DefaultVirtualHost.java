@@ -234,7 +234,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 			
 			if (isFolder && MString.isSet(subType)) {
 				
-				if ("content".equals(subType)) {
+				if (CherryApi.REF_CONTENT.equals(subType)) {
 					
 					for (String part : subPath.split("/")) {
 						if (MString.isSetTrim(part)) {
@@ -248,12 +248,12 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 					}
 					
 				} else
-				if ("data".equals(subType)) {
+				if (CherryApi.REF_DATA.equals(subType)) {
 					String[] subParts = subPath.split("/");
 					CaoNode subNode = null;
 					if (subParts.length > 0) {
 						String linkName = subParts[0];
-						String dataName = resResource.getString("data:" + linkName, null);
+						String dataName = resResource.getString( CherryApi.DATA_PREFIX + linkName, null);
 						if (MString.isSet(dataName)) {
 							String dataProviderName = MString.beforeIndex(dataName, ':');
 							String dataPath = MString.afterIndex(dataName, ':');
@@ -271,6 +271,8 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 								}
 							}
 							
+						} else {
+							log().d("datasource not found", linkName, path);
 						}
 						
 					}
@@ -283,7 +285,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 					}
 					
 				} else
-				if ("res".equals(subType)) {
+				if (CherryApi.REF_RES.equals(subType)) {
 					// nothing todo ...
 				} else {
 					log().d("unknown subType", call, subType);
