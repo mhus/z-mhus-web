@@ -19,14 +19,25 @@ import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
 
-@Component(provide = Servlet.class, properties = "alias=/*", name="CherryServlet",servicefactory=true)
-public class CherryServlet extends AbstractServlet {
+public abstract class AbstractServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-
-	@Override
-	protected void doService(CallContext call, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		call.getVirtualHost().processRequest(call);
-	}
 	
+	@Override
+	protected void service(HttpServletRequest req, HttpServletResponse res)
+			throws ServletException, IOException {
+			
+		InternalCherryApi cherry = Sop.getApi(InternalCherryApi.class);
+		CallContext call = cherry.createCall( this, req, res );
+		if (res.isCommitted()) return;
+
+        try {
+        	doService(call, req, res);
+        } finally {
+        	cherry.releaseCall(call);
+        }
+	}
+
+	protected abstract void doService(CallContext call, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException;
+
 }
