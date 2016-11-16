@@ -12,6 +12,7 @@ import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
@@ -67,6 +68,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 	private TreeTable tree;
 	private Accordion controlAcc;
 	private HashMap<PageControl,String> controls;
+	private Action actionReload;
 
 	@Override
 	public void doInitialize() {
@@ -97,7 +99,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 
 			@Override
 			public void nodeExpand(ExpandEvent event) {
-				doCheck(event.getItemId());
+				doExpand(event.getItemId());
 			}
 
 		});		
@@ -123,7 +125,25 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		tree.setItemIconPropertyId("icon");
 		tree.setVisibleColumns("name","tecName","hidden","acl","theme","pageType");
 		tree.setColumnHeaders("Navigation","Name","Hidden","ACL","Theme","Type");
-
+		
+		actionReload = new Action("Reload");
+		tree.addActionHandler(new Action.Handler() {
+			
+			@Override
+			public void handleAction(Action action, Object sender, Object target) {
+				if (action == actionReload) {
+					String id = (String) tree.getValue();
+            		if (id != null ) {
+            			doRefreshNode(id);
+            		}
+				}
+			}
+			
+			@Override
+			public Action[] getActions(Object target, Object sender) {
+				return new Action[] { actionReload };
+			}
+		});
 		
 		controlAcc = new Accordion();
 		controlAcc.setSizeFull();
@@ -178,16 +198,14 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 //			container.removeItemRecursively(c);
 	}
 
-	protected void doCheck(Object itemId) {
+	protected void doExpand(Object itemId) {
 		try {
 			HierarchicalContainer container = (HierarchicalContainer)tree.getContainerDataSource();
 			Item item = container.getItem(itemId);
 			NavNode node = (NavNode) item.getItemProperty("object").getValue();
 			Collection<?> children = tree.getChildren(itemId);
 			if (children != null && children.size() != 0) return;
-		
-//			if (node.isDeep()) return; // do not iterate deeper then content nodes
-			
+					
 			Collection<NavNode> nodeChildren = node.getAllNodes();
 			if (nodeChildren.size() == 0) return;
 			
@@ -197,8 +215,8 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 					Item next = container.addItem(n.getId());
 					container.setParent(n.getId(), itemId);
 					fillItem(next, n);
-//					if (!n.isDeep())
-						container.setChildrenAllowed(n.getId(), true);
+					container.setChildrenAllowed(n.getId(), true);
+					tree.setCollapsed(n.getId(), true);
 				} catch (Throwable t) {
 					MLogUtil.log().i(t);
 				}
@@ -239,6 +257,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 	@SuppressWarnings("unchecked")
 	private void fillItem(Item item, NavNode node) throws ReadOnlyException, MException {
 		
+		String renderer = node.getRes() == null ? null : node.getRes().getString(WidgetApi.RENDERER, null);
 
 		CaoNode itemRes = null;
 		item.getItemProperty("object").setValue(node);
@@ -250,13 +269,12 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 			itemRes = node.getRes();
 			item.getItemProperty("icon").setValue( FontAwesome.FOLDER_O );
 		} else 
-		if (node.getType() == TYPE.WIDGET) {
-			itemRes = node.getRes();
-			item.getItemProperty("icon").setValue( FontAwesome.FILE_O );
-		} else 
 		if (node.getType() == TYPE.RESOURCE) {
 			itemRes = node.getRes();
-			item.getItemProperty("icon").setValue( FontAwesome.FILE_O );
+			if (MString.isSet(renderer))
+				item.getItemProperty("icon").setValue( FontAwesome.FILE );
+			else
+				item.getItemProperty("icon").setValue( FontAwesome.FILE_O );
 		}
 		
 		boolean hasAcl = false;
@@ -274,7 +292,6 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		item.getItemProperty("theme").setValue( theme );
 		
 		String pageType = "";
-		String renderer = node.getRes() == null ? null : node.getRes().getString(WidgetApi.RENDERER, null);
 		if (renderer != null) {
 			if (MString.isIndex(renderer, '.')) renderer = MString.afterLastIndex(renderer, '.');
 			pageType = renderer;
@@ -294,15 +311,19 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 
 	@Override
 	public void doRefreshNode(CaoNode node) {
-		Item item = tree.getItem(node.getId());
+		doRefreshNode(node.getId());
+	}
+	
+	public void doRefreshNode(String id) {
+		Item item = tree.getItem(id);
 		if (item == null) return;
-		boolean collapsed = tree.isCollapsed(node.getId());
+		boolean collapsed = tree.isCollapsed(id);
 		HierarchicalContainer container = (HierarchicalContainer)tree.getContainerDataSource();
-		for (Object child : new LinkedList<>( container.getChildren(node.getId())) ) {
+		for (Object child : new LinkedList<>( container.getChildren(id)) ) {
 			container.removeItemRecursively(child);
 		}
 		if (!collapsed) {
-			doCheck(node.getId());
+			doExpand(id);
 		}
 		tree.markAsDirty();
 	}

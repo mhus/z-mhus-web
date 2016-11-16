@@ -7,16 +7,18 @@ import de.mhus.lib.cao.CaoNode;
 
 public class NavNode {
 
-	public enum TYPE {NAVIGATION, PAGE, WIDGET, RESOURCE}
+	public enum TYPE {NAVIGATION, PAGE, RESOURCE}
 	private CaoNode nav;
 	private CaoNode res;
 	private NavigationProvider provider;
 	private TYPE type = TYPE.NAVIGATION;
+	private CaoNode main;
 
-	public NavNode(NavigationProvider provider, CaoNode nav, CaoNode res, TYPE type) {
+	public NavNode(NavigationProvider provider, CaoNode nav, CaoNode main, CaoNode res, TYPE type) {
 		this.provider = provider;
 		this.nav = nav;
 		this.res = res;
+		this.main = main;
 		this.type = type;
 	}
 	
@@ -28,6 +30,10 @@ public class NavNode {
 		return res;
 	}
 
+	public CaoNode getMainRes() {
+		return main;
+	}
+	
 	public String getId() {
 		if (type == TYPE.NAVIGATION) 
 			return nav.getId();
@@ -35,12 +41,7 @@ public class NavNode {
 	}
 
 	public Collection<NavNode> getNodes() {
-		if (type == TYPE.NAVIGATION)
-			return provider.getChildren(this);
-		LinkedList<NavNode> nodeChildren = new LinkedList<>();
-		for (CaoNode n : res.getNodes())
-			nodeChildren.add(new NavNode(provider, nav, n, type == TYPE.PAGE ? TYPE.WIDGET : TYPE.RESOURCE  ));
-		return nodeChildren;
+		return provider.getChildren(this);
 	}
 
 	public Collection<NavNode> getAllNodes() {
@@ -49,6 +50,11 @@ public class NavNode {
 
 	public TYPE getType() {
 		return type;
+	}
+	
+	@Override
+	public String toString() {
+		return type + " " + nav + " " + res;
 	}
 	
 }

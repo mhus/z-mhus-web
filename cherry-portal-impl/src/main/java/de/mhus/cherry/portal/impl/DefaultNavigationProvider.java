@@ -29,25 +29,53 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 		
 		if (MString.isIndex(path, '.'))
 			path = MString.beforeIndex(path, '.');
-		
+
+		int pos = path.indexOf("/" + CherryApi.NAV_CONTENT_NODE_PREFIX); // minimum one page starting prefix
+		if (pos >= 0) return null; // do not return deep, non nav, nodes
+
 		CaoNode nav = connection.getResourceByPath(path);
 		if (nav == null) return null;
 		
 		return  prepare(null, nav);
 	}
 
-	private NavNode prepare(NavNode parent, CaoNode nav) {
-		if (parent != null && parent.getType() != TYPE.NAVIGATION)
-			return new NavNode(this, parent.getNav(), nav, parent.getType() == TYPE.PAGE ? TYPE.WIDGET : TYPE.RESOURCE );
+	private NavNode prepare(NavNode parent, CaoNode node) {
+		if (parent != null && parent.getType() != TYPE.NAVIGATION) {
+			
+			String ref = node.getString(CherryApi.REFERENCE_ID, null);
+			if (ref != null) {
+				ContentNodeResolver resolver = vHost.getContentNodeResolver();
+				if (resolver != null) {
+					node = resolver.doResolve(node);
+				} else {
+					log().d("ContentNodeResolver not found (2)");
+				}
+			}
+			return new NavNode(this, parent.getNav(), parent.getMainRes(), node, TYPE.RESOURCE );
+		}
+		
+//		if (path != null) {
+//			int pos = path.indexOf("/" + CherryApi.NAV_CONTENT_NODE_PREFIX); // minimum one page starting prefix
+//			if (pos >= 0) {
+//				if (path.indexOf('/', pos+1 ) < 0) // no more slash after prefix
+//					return new NavNode(this, parent.getNav(), node, node, TYPE.PAGE);
+//				else
+//					return new NavNode(this, parent.getNav(), parent.getMainRes(), node, TYPE.RESOURCE);
+//			}
+//		}
+		
+		if (node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX)) {
+			return new NavNode(this, parent.getNav(), node, node, TYPE.PAGE);
+		}
 		
 		CaoNode res = null;
 		ContentNodeResolver resolver = vHost.getContentNodeResolver();
 		if (resolver != null) {
-			res = resolver.doResolve(nav);
+			res = resolver.doResolve(node);
 		} else {
 			log().d("ContentNodeResolver not found");
 		}
-		return new NavNode(this, nav, res, TYPE.NAVIGATION);
+		return new NavNode(this, node, res, res, TYPE.NAVIGATION);
 	}
 
 	public CaoConnection getConnection() {
@@ -61,9 +89,11 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 	@Override
 	public Collection<NavNode> getChildren(NavNode parent) {
 		LinkedList<NavNode> out = new LinkedList<>();
-		for (CaoNode node : parent.getNav().getNodes())
-			if (!node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX))
-				out.add( prepare(parent, node) );
+		if (parent != null && parent.getType() == TYPE.NAVIGATION) {
+			for (CaoNode node : parent.getNav().getNodes())
+				if (!node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX))
+					out.add( prepare(parent, node) );
+		}
 		return out;
 	}
 
@@ -81,19 +111,14 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 		return connection.getName();
 	}
 
+	/**
+	 * Return navigation and page nodes.
+	 */
 	@Override
 	public Collection<NavNode> getAllChildren(NavNode parent) {
 		LinkedList<NavNode> out = new LinkedList<>();
-		if (parent.getType() == TYPE.NAVIGATION) {
-			for (CaoNode node : parent.getNav().getNodes())
-				if (node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX))
-					out.add( new NavNode(this, parent.getNav(), node, TYPE.PAGE) );
-				else
-					out.add( prepare(parent, node) );
-		} else {
-			for (CaoNode node : parent.getRes().getNodes())
-				out.add( new NavNode(this, parent.getNav(), node, parent.getType() == TYPE.PAGE ? TYPE.WIDGET : TYPE.RESOURCE ) );
-		}
+		for (CaoNode node : parent.getType() == TYPE.NAVIGATION ? parent.getNav().getNodes() : parent.getRes().getNodes())
+			out.add( prepare(parent, node) );
 		return out;
 	}
 

@@ -15,7 +15,7 @@ import de.mhus.osgi.sop.api.aaa.AaaContext;
 
 public interface CherryApi extends SApi {
 	
-	public static final String RESOURCE_ID = "cherry:resource_id";
+	public static final String RESOURCE_ID = "cherry:resourceId";
 	public static final String DEFAULT_RESOURCE_PROVIDER = "default";
 	public static final String NAV_HIDDEN = "cherry:hidden";
 	public static final String NAV_TITLE = "title";
@@ -33,6 +33,7 @@ public interface CherryApi extends SApi {
 	public static final String ACL_STRUCTURE = "structure";
 	public static final String ACL_RENDITION = "rendition";
 	public static final String ACL_PREFIX = "acl:";
+	public static final String REFERENCE_ID = "cherry:reference";
 
 	VirtualHost findVirtualHost(String host);
 	
