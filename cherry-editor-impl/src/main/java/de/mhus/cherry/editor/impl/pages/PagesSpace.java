@@ -160,6 +160,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		controls = new HashMap<>();
 		AccessApi aaa = Sop.getApi(AccessApi.class);
 		Account account = aaa.getCurrentOrGuest().getAccount();
+		PageControl controlTab = null;
 		for (PageControlFactory factory : CherryUtil.orderServices( PagesSpace.class, PageControlFactory.class ) ) {
 			if (aaa.hasGroupAccess(account, PagesSpace.class, factory.getName(), "create")) {
 				String name = factory.getName();
@@ -167,9 +168,12 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 				controls.put(control, name);
 				controlAcc.addTab(control, name);
 				control.doInit(this);
+				if ("Control".equals(name))
+					controlTab = control;
 			}
 		}
-
+		if (controlTab != null)
+			controlAcc.setSelectedTab(controlTab);
 	}
 
 	protected void doUpdateControl() {

@@ -9,14 +9,18 @@ import org.vaadin.easyuploads.UploadField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.Acl;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
+import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MString;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component
@@ -46,17 +50,29 @@ public class PageControlAcls implements PageControlFactory {
 			
 		}
 
-		@SuppressWarnings("deprecation")
 		@Override
 		public void doUpdate(NavNode nav) {
-	        
-			Map<String, String> acls = Sop.getApi(CherryApi.class).getEffectiveAcls(nav.getNav());
-			TreeMap<String, String> sorted = new TreeMap<>(acls);
-			for (Entry<String, String> entry : sorted.entrySet()) {
-				Button bName = new Button(entry.getKey());
+	        CherryApi api = Sop.getApi(CherryApi.class);
+	        CaoNode cur = nav.getCurrent();
+			Map<String, Acl> acls = api.getEffectiveAcls(cur);
+			TreeMap<String, Acl> sorted = new TreeMap<>(acls);
+			for (Entry<String, Acl> entry : sorted.entrySet()) {
+				TextField bName = new TextField();
+				bName.setValue(entry.getKey());
+				bName.setEnabled(false);
+//				bName.setCaption("<b>" + entry.getKey() + "</b>");
 				bName.setWidth("100%");
 				addComponent(bName);
-				for (String ace : entry.getValue().split(",")) {
+
+				CaoNode def = entry.getValue().getDefiningNode();
+				String txt = null;
+				if (def.getId().equals(cur.getId()))
+					txt = "From here";
+				else
+					txt = MString.truncateNiceLeft(def.getPath(), 40);
+				Label src = new Label(txt);
+				addComponent(src);
+				for (String ace : entry.getValue().getAces()) {
 					Label lAce = new Label( ace );
 					addComponent(lAce);
 				}

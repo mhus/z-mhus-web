@@ -10,6 +10,7 @@ import org.osgi.service.component.ComponentContext;
 import aQute.bnd.annotation.component.Activate;
 import aQute.bnd.annotation.component.Component;
 import aQute.bnd.annotation.component.Deactivate;
+import de.mhus.cherry.portal.api.Acl;
 import de.mhus.cherry.portal.api.CacheApi;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
@@ -217,15 +218,15 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	}
 	
 	@Override
-	public Map<String, String> getEffectiveAcls(CaoNode node) {
-		HashMap<String,String> out = new HashMap<>();
+	public Map<String, Acl> getEffectiveAcls(CaoNode node) {
+		HashMap<String,Acl> out = new HashMap<>();
 		int len = CherryApi.ACL_PREFIX.length();
 		while(node != null) {
 			for (String key : node.getPropertyKeys()) {
 				if (key.startsWith(CherryApi.ACL_PREFIX)) {
 					String aclName = key.substring(len);
 					if (!out.containsKey(aclName)) {
-						out.put(aclName, node.getString(key, ""));
+						out.put(aclName, new Acl(node, key, node.getString(key, "")));
 					}
 				}
 			}

@@ -56,5 +56,11 @@ public class NavNode {
 	public String toString() {
 		return type + " " + nav + " " + res;
 	}
+
+	public CaoNode getCurrent() {
+		if (type == TYPE.NAVIGATION)
+			return nav;
+		return res;
+	}
 	
 }

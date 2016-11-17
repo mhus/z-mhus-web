@@ -76,7 +76,7 @@ public interface CherryApi extends SApi {
 	
 	boolean hasResourceAccess(AaaContext context, CaoNode node, String aclName);
 
-	Map<String, String> getEffectiveAcls(CaoNode node);
+	Map<String, Acl> getEffectiveAcls(CaoNode node);
 
 	CaoNode getAclDefiningNode(CaoNode node, String aclName);
 
