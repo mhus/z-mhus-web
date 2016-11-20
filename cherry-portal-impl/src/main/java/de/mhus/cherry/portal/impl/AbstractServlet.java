@@ -16,6 +16,7 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.basics.Named;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
@@ -29,57 +30,14 @@ public abstract class AbstractServlet extends HttpServlet implements Named {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
-		
-		// check general security
-		SecurityApi sec = Sop.getApi(SecurityApi.class, false);
-		sec.checkHttpRequest(req, res);
-		if (res.isCommitted()) return;
-		
-		// load environment
-		InternalCherryApi cherry = Sop.getApi(InternalCherryApi.class);
-		CallContext call = cherry.createCall( this, req, res );
-		if (res.isCommitted()) return;
 
-		// check host specific security
-		// 1) host access general
-		{
-			List<String> list = call.getVirtualHost().getConfigurationList(CherryApi.CONFIG_HOST_ALLOWED);
-			if (list != null) {
-				String host = req.getRemoteHost();
-				boolean found = false;
-				for (String item : list)
-					if (host.matches(item)) {
-						found = true;
-						break;
-					}
-				if (!found) {
-					call.getVirtualHost().sendError(call, HttpServletResponse.SC_NOT_FOUND);
-					return;
-				}
-			}
-		}
-		// 2) Check access for this servlet
-		{
-			List<String> list = call.getVirtualHost().getConfigurationList(CherryApi.CONFIG_HOST_ALLOWED + "_" + getName());
-			if (list != null) {
-				String host = req.getRemoteHost();
-				boolean found = false;
-				for (String item : list)
-					if (host.matches(item)) {
-						found = true;
-						break;
-					}
-				if (!found) {
-					call.getVirtualHost().sendError(call, HttpServletResponse.SC_NOT_FOUND);
-					return;
-				}
-			}
-		}
+		CallContext call = CherryUtil.prepareHttpRequest(this, req, res);
+		if (call == null) return;
 		
         try {
         	doService(call, req, res);
         } finally {
-        	cherry.releaseCall(call);
+        	Sop.getApi(InternalCherryApi.class).releaseCall(call);
         }
 	}
 

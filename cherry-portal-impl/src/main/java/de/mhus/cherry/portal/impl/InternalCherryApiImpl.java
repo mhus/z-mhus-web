@@ -2,6 +2,7 @@ package de.mhus.cherry.portal.impl;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.lib.basics.Named;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
@@ -26,6 +28,7 @@ import de.mhus.lib.core.MTimeInterval;
 import de.mhus.lib.core.cfg.CfgBoolean;
 import de.mhus.lib.core.cfg.CfgInt;
 import de.mhus.lib.core.cfg.CfgLong;
+import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.util.TimeoutMap;
 import de.mhus.lib.core.util.TimeoutMap.Invalidator;
 import de.mhus.lib.servlet.HttpServletRequestWrapper;
@@ -33,6 +36,7 @@ import de.mhus.lib.servlet.HttpServletResponseWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
+import de.mhus.osgi.sop.api.security.SecurityApi;
 
 @Component
 public class InternalCherryApiImpl extends MLog implements InternalCherryApi, BundleListener {
@@ -70,6 +74,11 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 	@Override
 	public CallContext createCall(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res) throws IOException {
 
+		// check general security
+		SecurityApi sec = Sop.getApi(SecurityApi.class, false);
+		sec.checkHttpRequest(req, res);
+		if (res.isCommitted()) return null;
+		
 		CherryCallContext callContext = new CherryCallContext();
 		callContext.setHttpRequest(req);
 		callContext.setHttpResponse(new CherryResponseWrapper(res));
@@ -84,6 +93,41 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 		}
 		callContext.setVirtualHost(vHost);
 		
+		// check access
+		// check host specific security
+		// 1) host access general
+		{
+			List<String> list = vHost.getConfigurationList(CherryApi.CONFIG_HOST_ALLOWED);
+			if (list != null) {
+				boolean found = false;
+				for (String item : list)
+					if (host.matches(item)) {
+						found = true;
+						break;
+					}
+				if (!found) {
+					vHost.sendError(callContext, HttpServletResponse.SC_NOT_FOUND);
+					return null;
+				}
+			}
+		}
+		// 2) Check access for this servlet
+		if (servlet instanceof Named) {
+			List<String> list = vHost.getConfigurationList(CherryApi.CONFIG_HOST_ALLOWED + "_" + ((Named)servlet).getName());
+			if (list != null) {
+				boolean found = false;
+				for (String item : list)
+					if (host.matches(item)) {
+						found = true;
+						break;
+					}
+				if (!found) {
+					vHost.sendError(callContext, HttpServletResponse.SC_NOT_FOUND);
+					return null;
+				}
+			}
+		}
+		
 		// find logged in user and auto login
         AccessApi access = Sop.getApi(AccessApi.class);
         AaaContext context = getContext( req.getSession().getId() );
@@ -96,6 +140,16 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 
         // remember the current call for this request
 		CherryApiImpl.instance.setCallContext(callContext);
+		
+		// enable trail tracing
+		{
+			List<String> list = vHost.getConfigurationList(CherryApi.CONFIG_ACCOUNT_TRAIL_ENABLED);
+			if (list != null && list.contains(context.getAccountId())) {
+				MLogUtil.setTrailConfig();
+			}
+			log().d(">>>", context.getAccountId(), req.getPathInfo());
+		}
+		
 		
 		return callContext;
 	}
@@ -110,6 +164,9 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 		if (call.getSession().getBoolean(SESSION_DESTROY_ON_RELEASE, false)) {
 			globalSession.remove(call.getSessionId());
 		}
+		
+		log().d("<<<", call.getAaaContext().getAccountId(), call.getHttpRequest().getPathInfo());
+		MLogUtil.releaseTrailConfig();
 		
 	}
 

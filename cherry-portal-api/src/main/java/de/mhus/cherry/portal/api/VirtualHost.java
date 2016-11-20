@@ -1,6 +1,7 @@
 package de.mhus.cherry.portal.api;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -55,5 +56,9 @@ public interface VirtualHost {
 	public ContentNodeResolver getContentNodeResolver();
 
 	public ActionCallback getActionCallback(String actionName);
+
+	public Set<String> getConfigurationListName();
+
+	public void setConfigurationList(String name, List<String> list);
 	
 }

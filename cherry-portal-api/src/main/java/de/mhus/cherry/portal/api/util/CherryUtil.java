@@ -7,15 +7,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.basics.Named;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.logging.Log;
+import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
+import de.mhus.osgi.sop.api.security.SecurityApi;
 
 public class CherryUtil {
 
@@ -75,6 +82,22 @@ public class CherryUtil {
 		}
 
 		return list;
+	}
+
+	public static CallContext prepareHttpRequest(HttpServlet servlet, HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+		
+			CallContext call = Sop.getApi(InternalCherryApi.class).createCall(servlet, request, response);
+			if (response.isCommitted()) return null;
+			
+			return call;
+			
+		} catch (Throwable t) {
+			MLogUtil.log().d(t);
+			return null;
+		}
+		
 	}
 
 }

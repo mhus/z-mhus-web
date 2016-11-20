@@ -465,6 +465,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 		return configurationLists.get(name);
 	}
 	
+	@Override
 	public void setConfigurationList(String name, List<String> list) {
 		configurationLists.put(name, new ReadOnlyList<String>(list));
 	}
@@ -518,6 +519,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 			factory = MOsgi.getService(ActionCallback.class, MOsgi.filterServiceName("cherry_callback_" + actionName));
 		} catch (NotFoundException e) {}
 		return factory;
+	}
+
+	@Override
+	public Set<String> getConfigurationListName() {
+		return configurationLists.keySet();
 	}
 	
 }
