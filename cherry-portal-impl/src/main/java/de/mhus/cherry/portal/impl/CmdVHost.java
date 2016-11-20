@@ -11,6 +11,8 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.lib.core.console.ConsoleTable;
+import de.mhus.lib.karaf.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
 
 @Command(scope = "cherry", name = "vhost", description = "Virtual Host Management")
@@ -30,7 +32,13 @@ public class CmdVHost implements Action {
 	public Object execute() throws Exception {
 		
 		if (cmd.equals("list")) {
-			
+			ConsoleTable out = new ConsoleTable();
+			out.setHeaderValues("Name", "Type");
+			for ( de.mhus.lib.karaf.MOsgi.Service<VirtualHost> ref : MOsgi.getServiceRefs(VirtualHost.class, null)) {
+				VirtualHost vhost = ref.getService();
+				out.addRowValues(ref.getName(), vhost.getClass().getName());
+			}
+			out.print(System.out);
 			return null;
 		}
 		
