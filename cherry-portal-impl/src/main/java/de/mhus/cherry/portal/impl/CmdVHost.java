@@ -8,6 +8,8 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
@@ -33,10 +35,13 @@ public class CmdVHost implements Action {
 		
 		if (cmd.equals("list")) {
 			ConsoleTable out = new ConsoleTable();
-			out.setHeaderValues("Name", "Type");
+			out.setHeaderValues("Name", "Type","Bundle");
 			for ( de.mhus.lib.karaf.MOsgi.Service<VirtualHost> ref : MOsgi.getServiceRefs(VirtualHost.class, null)) {
 				VirtualHost vhost = ref.getService();
-				out.addRowValues(ref.getName(), vhost.getClass().getName());
+				String item = ref.getName();
+				if (item.startsWith("cherry_virtual_host_")) item = item.substring("cherry_virtual_host_".length());
+				Bundle bundle = FrameworkUtil.getBundle(vhost.getClass());
+				out.addRowValues(item, vhost.getClass().getName(), bundle.getSymbolicName());
 			}
 			out.print(System.out);
 			return null;
@@ -51,8 +56,9 @@ public class CmdVHost implements Action {
 		if (cmd.equals("config")) {
 			if (parameters == null || parameters.length == 0) {
 				Set<String> list = vhost.getConfigurationListName();
-				for (String item : list)
+				for (String item : list) {
 					System.out.println(item);
+				}
 			} else {
 				List<String> list = vhost.getConfigurationList(parameters[0]);
 				if (list != null) {
