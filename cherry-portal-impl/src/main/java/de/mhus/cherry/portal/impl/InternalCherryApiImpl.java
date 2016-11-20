@@ -22,6 +22,7 @@ import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.basics.Named;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.IReadProperties;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MTimeInterval;
@@ -144,9 +145,14 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 		
 		// enable trail tracing
 		{
-			boolean trailEnabled = context.getAccount().getAttributes().getBoolean(CherryApi.USER_ACCOUNT_TRAIL_ENABLED, false);
-			if (trailEnabled)
-				MLogUtil.setTrailConfig();
+			if (context != null && context.getAccount() != null) {
+				IReadProperties attr = context.getAccount().getAttributes();
+				if (attr != null) {
+					boolean trailEnabled = attr.getBoolean(CherryApi.USER_ACCOUNT_TRAIL_ENABLED, false);
+					if (trailEnabled)
+						MLogUtil.setTrailConfig();
+				}
+			}
 			log().d(">>>", callContext.getAaaContext().getAccountId(), req.getPathInfo());
 		}
 		
