@@ -7,6 +7,7 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 
+import de.mhus.cherry.portal.api.Container;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.impl.CherryApiImpl;
 import de.mhus.cherry.portal.impl.InternalCherryApiImpl;
@@ -38,7 +39,7 @@ public class CmdCache implements Action {
 		if (cmd.equals("info")) {
 			System.out.println("Enabled : " + CacheApiImpl.instance.isEnabled() );
 			System.out.println("Size    : " + CacheApiImpl.instance.size() );
-			System.out.println("Timeout : " + CacheApiImpl.timeout );
+			System.out.println("Timeout : " + Container.timeout );
 			System.out.println("Sessions: " + InternalCherryApiImpl.instance.globalSession.size() );
 			System.out.println("Bundles : " + InternalCherryApiImpl.instance.bundleStore.size() );
 		} else

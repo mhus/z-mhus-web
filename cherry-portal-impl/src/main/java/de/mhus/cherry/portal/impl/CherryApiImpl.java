@@ -14,6 +14,7 @@ import de.mhus.cherry.portal.api.Acl;
 import de.mhus.cherry.portal.api.CacheApi;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.Container;
 import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.FileDeployer;
 import de.mhus.cherry.portal.api.NavNode;
@@ -99,12 +100,15 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	@Override
 	public String getRecursiveString(CaoNode resource, String name) {
 		CacheApi cache = Sop.getApi(CacheApi.class);
-		String val = cache.getString(resource, "cherry_recursice_string_" + name);
-		if (val != null) return val;
+		Container val = cache.get(resource, "cherry_recursice_string_" + name);
+		if (val != null) return val.getString();
 		
 		CaoNode r = resource;
 		while (true) {
-			if (r == null) return null;
+			if (r == null) {
+				cache.put(resource, "cherry_recursice_string_" + name, null);
+				return null;
+			}
 			String value = r.getString(name, null);
 			if (value != null) {
 				cache.put(resource, "cherry_recursice_string_" + name, value);

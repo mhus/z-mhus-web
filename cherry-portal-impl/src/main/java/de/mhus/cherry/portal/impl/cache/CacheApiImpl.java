@@ -8,6 +8,7 @@ import aQute.bnd.annotation.component.Activate;
 import aQute.bnd.annotation.component.Component;
 import aQute.bnd.annotation.component.Deactivate;
 import de.mhus.cherry.portal.api.CacheApi;
+import de.mhus.cherry.portal.api.Container;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MTimeInterval;
@@ -19,7 +20,6 @@ public class CacheApiImpl extends MLog implements CacheApi {
 	WeakHashMap<String, Container> cache = new WeakHashMap<>();
 	private boolean enabled = true;
 	static CacheApiImpl instance;
-	public static long timeout = MTimeInterval.MINUTE_IN_MILLISECOUNDS * 5;
 	
     @Activate
     public void activate(ComponentContext ctx) {
@@ -32,7 +32,7 @@ public class CacheApiImpl extends MLog implements CacheApi {
     }
     
 	@Override
-	public Object get(CaoNode node, String name) {
+	public Container get(CaoNode node, String name) {
 		if (!enabled) return null;
 		try {
 			String key = getName(node, name);
@@ -43,7 +43,7 @@ public class CacheApiImpl extends MLog implements CacheApi {
 				cache.remove(key);
 				return null;
 			}
-			return cont.object;
+			return cont;
 		} catch (MException e) {
 			log().d(e);
 		}
@@ -89,9 +89,9 @@ public class CacheApiImpl extends MLog implements CacheApi {
 
 	@Override
 	public String getString(CaoNode node, String name) {
-		Object ret = get(node, name);
+		Container ret = get(node, name);
 		if (ret == null) return null;
-		return ret.toString();
+		return ret.getString();
 	}
 	
 }
