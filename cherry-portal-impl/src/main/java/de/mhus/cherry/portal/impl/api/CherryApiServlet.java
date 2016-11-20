@@ -45,6 +45,11 @@ public class CherryApiServlet extends AbstractServlet {
 			throws ServletException, IOException {
 		call.getVirtualHost().processApiRequest(call);
 	}
+
+	@Override
+	public String getName() {
+		return "api";
+	}
 	
 
 }
