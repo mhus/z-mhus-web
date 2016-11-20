@@ -144,10 +144,9 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 		
 		// enable trail tracing
 		{
-			List<String> list = vHost.getConfigurationList(CherryApi.CONFIG_ACCOUNT_TRAIL_ENABLED);
-			if (list != null && list.contains(context.getAccountId())) {
+			boolean trailEnabled = context.getAccount().getAttributes().getBoolean(CherryApi.USER_ACCOUNT_TRAIL_ENABLED, false);
+			if (trailEnabled)
 				MLogUtil.setTrailConfig();
-			}
 			log().d(">>>", callContext.getAaaContext().getAccountId(), req.getPathInfo());
 		}
 		
