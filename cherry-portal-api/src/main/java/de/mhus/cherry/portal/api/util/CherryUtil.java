@@ -94,7 +94,7 @@ public class CherryUtil {
 			return call;
 			
 		} catch (Throwable t) {
-			MLogUtil.log().d(t);
+			MLogUtil.log().w(t);
 			return null;
 		}
 		

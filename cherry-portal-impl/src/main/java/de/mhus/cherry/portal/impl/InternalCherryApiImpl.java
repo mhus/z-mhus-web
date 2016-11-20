@@ -76,9 +76,10 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 
 		// check general security
 		SecurityApi sec = Sop.getApi(SecurityApi.class, false);
-		sec.checkHttpRequest(req, res);
-		if (res.isCommitted()) return null;
-		
+		if (sec != null) {
+			sec.checkHttpRequest(req, res);
+			if (res.isCommitted()) return null;
+		}
 		CherryCallContext callContext = new CherryCallContext();
 		callContext.setHttpRequest(req);
 		callContext.setHttpResponse(new CherryResponseWrapper(res));
@@ -147,7 +148,7 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 			if (list != null && list.contains(context.getAccountId())) {
 				MLogUtil.setTrailConfig();
 			}
-			log().d(">>>", context.getAccountId(), req.getPathInfo());
+			log().d(">>>", callContext.getAaaContext().getAccountId(), req.getPathInfo());
 		}
 		
 		
