@@ -7,6 +7,7 @@ import com.vaadin.ui.AbstractComponent;
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.cherry.portal.api.control.LayoutPanel;
+import de.mhus.cherry.portal.impl.AbstractEditorFactory;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.ResourceProvider;
 import de.mhus.cherry.portal.api.VirtualHost;
@@ -21,12 +22,17 @@ import de.mhus.lib.cao.action.CaoConfiguration;
 import de.mhus.lib.cao.action.CreateConfiguration;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.lang.MObject;
 import de.mhus.lib.core.strategy.OperationResult;
+import de.mhus.lib.core.util.MNls;
+import de.mhus.lib.core.util.MNlsProvider;
 import de.mhus.osgi.sop.api.Sop;
 
-@Component(provide = EditorFactory.class, name="cherry_editor_de.mhus.cherry.portal.demo.simpleeditorfactory")
-public class SimpleEditorFactory extends MLog implements EditorFactory {
+@Component(provide = EditorFactory.class, name="cherry_editor_" + SimpleEditorFactory.NAME)
+public class SimpleEditorFactory extends AbstractEditorFactory implements EditorFactory {
 
+	public final static String NAME = "de.mhus.cherry.portal.demo.simpleeditorfactory";
+	
 	@Override
 	public EditorPanel createEditor(CaoWritableElement data) {
 		return new SimpleEditor(data);

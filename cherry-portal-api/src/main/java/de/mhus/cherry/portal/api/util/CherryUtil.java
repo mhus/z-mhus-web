@@ -31,18 +31,33 @@ public class CherryUtil {
 	public static ScriptRenderer getScriptRenderer(CallContext call, File file) {
 		return  call.getVirtualHost().getScriptRenderer(MFile.getFileSuffix(file));
 	}
-
+	
 	public static <T extends Named> List<T> orderServices(Class<?> where, Class<T> what) {
 		return order(where, what, MOsgi.getServices(what, null));
 	}
+	
 	public static <T extends Named> List<T> order(Class<?> where, Class<?> what, List<T> list) {
 		return order(where.getCanonicalName() + ":" + what.getCanonicalName(), list);
 	}
+
+	public static <T extends Named> List<T> orderServices(Class<?> where, Class<T> what, VirtualHost vHost) {
+		return order(where, what, MOsgi.getServices(what, null), vHost);
+	}
+	
+	public static <T extends Named> List<T> order(Class<?> where, Class<?> what, List<T> list, VirtualHost vHost) {
+		return order(where.getCanonicalName() + ":" + what.getCanonicalName(), list, vHost);
+	}
+	
 	public static <T extends Named> List<T> order(String configListName, List<T> list) {
 		CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
 		if (call == null) return list;
 		VirtualHost vHost = call.getVirtualHost();
 		if (vHost == null) return list;
+		return order(configListName, list, vHost);
+	}
+	
+	public static <T extends Named> List<T> order(String configListName, List<T> list, VirtualHost vHost) {
+
 		List<String> conf = vHost.getConfigurationList(configListName);
 		if (conf == null) {
 			log.d("Configuration list not found", configListName, vHost);

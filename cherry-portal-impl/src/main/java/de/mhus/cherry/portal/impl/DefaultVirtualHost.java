@@ -1,6 +1,7 @@
 package de.mhus.cherry.portal.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +24,7 @@ import de.mhus.cherry.portal.api.ResourceResolver;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.control.EditorFactory;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.basics.Named;
 import de.mhus.lib.cao.CaoDataSource;
 import de.mhus.lib.cao.CaoNode;
@@ -395,6 +397,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 		return "text/html";
 	}
 
+	@Override
 	public EditorFactory getControlEditorFactory(String name) {
 		name = name.toLowerCase();
 		EditorFactory factory = null;
@@ -524,6 +527,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 	@Override
 	public Set<String> getConfigurationListName() {
 		return configurationLists.keySet();
+	}
+
+	@Override
+	public Collection<EditorFactory> getAvailablePageTypes(CaoNode nav) {
+		return CherryUtil.orderServices(VirtualHost.class, EditorFactory.class, this);
 	}
 	
 }

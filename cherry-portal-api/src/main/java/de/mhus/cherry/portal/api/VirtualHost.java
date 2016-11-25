@@ -1,6 +1,7 @@
 package de.mhus.cherry.portal.api;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -60,5 +61,14 @@ public interface VirtualHost {
 	public Set<String> getConfigurationListName();
 
 	public void setConfigurationList(String name, List<String> list);
+
+
+	/**
+	 * Return a list ov available EditorFactories for the given Host.
+	 * The list is a combination of deployed and configured page types.
+	 * @param nav
+	 * @return 
+	 */
+	public Collection<EditorFactory> getAvailablePageTypes(CaoNode nav);
 	
 }
