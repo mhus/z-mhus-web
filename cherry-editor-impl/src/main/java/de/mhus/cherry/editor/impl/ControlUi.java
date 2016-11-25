@@ -17,6 +17,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
+import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinRequest;
@@ -52,6 +53,7 @@ import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 @Theme("cherrytheme")
 @Widgetset("de.mhus.cherry.editor.theme.CherryWidgetset")
+@JavaScript({"https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"})
 public class ControlUi extends UI implements GuiApi {
 
 	private static final long serialVersionUID = 1L;
