@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.InternalCherryApi;
+import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
@@ -21,7 +22,7 @@ public class CherryCallContext implements CallContext {
 	private HttpServletRequest httpRequest;
 	private HttpServletResponse httpResponse;
 	private String httpPath;
-	private CaoNode navigationResource;
+	private NavNode navigationResource;
 	private CaoNode resource;
 	private VirtualHost virtualHost;
 	private HttpServlet httpServlet;
@@ -45,7 +46,7 @@ public class CherryCallContext implements CallContext {
 		httpResponse = res;
 	}
 
-	public void setNavigationResource(CaoNode resource) {
+	public void setNavigationResource(NavNode resource) {
 		navigationResource = resource;
 	}
 
@@ -69,7 +70,7 @@ public class CherryCallContext implements CallContext {
 	}
 
 	@Override
-	public CaoNode getNavigationResource() {
+	public NavNode getNavigationResource() {
 		return navigationResource;
 	}
 

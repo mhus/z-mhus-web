@@ -171,7 +171,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 				sendError(call, HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
-			call.setNavigationResource(navResource.getNav());
+			call.setNavigationResource(navResource);
 
 			String subPath = "";
 			String control = "";

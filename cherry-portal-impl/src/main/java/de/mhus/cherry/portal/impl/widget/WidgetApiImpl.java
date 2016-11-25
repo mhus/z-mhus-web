@@ -84,7 +84,7 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 		
 		collectHtmlResources(call,res, cssList, jsList, 0);
 		
-		String themeName = api.getRecursiveString(call.getNavigationResource(), WidgetApi.THEME);
+		String themeName = api.getRecursiveString(call.getNavigationResource().getNav(), WidgetApi.THEME);
 		if (themeName != null) {
 			ResourceRenderer renderer = call.getVirtualHost().getResourceRenderer(themeName);
 			if (renderer != null) {

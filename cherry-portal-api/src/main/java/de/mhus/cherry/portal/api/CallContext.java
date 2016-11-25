@@ -18,7 +18,7 @@ public interface CallContext {
 
 	String getHttpPath();
 
-	CaoNode getNavigationResource();
+	NavNode getNavigationResource();
 
 	CaoNode getResource();
 

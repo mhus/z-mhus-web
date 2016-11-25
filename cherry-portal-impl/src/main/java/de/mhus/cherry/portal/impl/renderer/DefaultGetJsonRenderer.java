@@ -39,7 +39,7 @@ public class DefaultGetJsonRenderer extends MLog implements ResourceRenderer {
 					level = Math.min( s.getInt("0", 0), maxLevel.value());
 				
 				if (s != null && "nav".equals(s.getString("resource", "")) )
-					node = call.getNavigationResource();
+					node = call.getNavigationResource().getNav();
 				
 			}
 			doFill(node, out, level);

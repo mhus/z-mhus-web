@@ -24,7 +24,7 @@ public class DefaultPutRenderer extends AbstractActionRenderer implements Resour
 		CaoNode res = call.getResource();
 		IProperties s = call.getSelectors();
 		if (s != null && "nav".equals(s.getString("resource", "")) )
-			res = call.getNavigationResource();
+			res = call.getNavigationResource().getNav();
 
 		CaoWritableElement wRes = res.getWritableNode();
 		

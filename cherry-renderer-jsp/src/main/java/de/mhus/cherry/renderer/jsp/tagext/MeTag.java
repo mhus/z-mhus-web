@@ -15,7 +15,7 @@ public class MeTag extends TagSupport {
 		
 		try {
 			CallContext call = (CallContext)pageContext.getAttribute("call");
-			CaoNode nav = call.getNavigationResource();
+			CaoNode nav = call.getNavigationResource().getNav();
 			pageContext.getOut().print(nav.getName());
 		} catch (Exception e) {
 			e.printStackTrace();

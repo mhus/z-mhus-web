@@ -40,7 +40,8 @@ public class SimplePage extends MLog implements ResourceRenderer {
 //			}
 //		}
 		
-		String themeName = Sop.getApi(CherryApi.class).getRecursiveString(call.getNavigationResource(), WidgetApi.THEME );
+// no fall back		String themeName = Sop.getApi(CherryApi.class).getRecursiveString(call.getNavigationResource(), WidgetApi.THEME );
+		String themeName = call.getVirtualHost().getContentNodeResolver().getRecursiveString(call.getNavigationResource(), WidgetApi.THEME );
 		ResourceRenderer theme = null;
 		if (MString.isSet(themeName)) {
 			theme = call.getVirtualHost().getResourceRenderer(themeName);

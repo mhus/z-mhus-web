@@ -22,7 +22,7 @@ public class DefaultDeleteRenderer extends AbstractActionRenderer implements Res
 		CaoNode res = call.getResource();
 		IProperties s = call.getSelectors();
 		if (s != null && "nav".equals(s.getString("resource", "")) )
-			res = call.getNavigationResource();
+			res = call.getNavigationResource().getNav();
 
 		CaoAction action = res.getConnection().getActions().getAction(CaoAction.DELETE);
 		CaoList list = new CaoList(null);

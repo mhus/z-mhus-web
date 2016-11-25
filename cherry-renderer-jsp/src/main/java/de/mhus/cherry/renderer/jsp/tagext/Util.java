@@ -15,7 +15,7 @@ public class Util {
 			} else
 			if (name.equals("#nav")) {
 				CallContext call = (CallContext)pageContext.getAttribute("call");
-				res = call.getNavigationResource();
+				res = call.getNavigationResource().getNav();
 			} else
 			if (name.equals("#mainres")) {
 				CallContext call = (CallContext)pageContext.getAttribute("call");
