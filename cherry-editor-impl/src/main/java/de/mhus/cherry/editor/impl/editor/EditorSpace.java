@@ -1,5 +1,15 @@
 package de.mhus.cherry.editor.impl.editor;
 
+import java.util.Date;
+
+import org.vaadin.addon.borderlayout.BorderLayout;
+import org.vaadin.sliderpanel.SliderPanel;
+import org.vaadin.sliderpanel.SliderPanelBuilder;
+import org.vaadin.sliderpanel.SliderPanelStyles;
+import org.vaadin.sliderpanel.client.SliderMode;
+import org.vaadin.sliderpanel.client.SliderPanelListener;
+import org.vaadin.sliderpanel.client.SliderTabPosition;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
@@ -40,6 +50,11 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private Button bSave;
 	private Button bCancel;
 	private TabSheet tabs;
+	private SliderPanel navigationSlider;
+	private BorderLayout navigationContent;
+	private BorderLayout createContent;
+	private SliderPanel createSlider;
+	private NavigationView navigation;
 
 	@Override
 	public String navigateTo(String selection, String filter) {
@@ -58,11 +73,73 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		panel.setSizeFull();
 		tabs = new TabSheet();
 		
-		panel.setContent(tabs);
+		HorizontalLayout sub = new HorizontalLayout();
+		sub.setSizeFull();
+		sub.addComponent(tabs);
+		sub.setExpandRatio(tabs, 1);
+		panel.setContent(sub);
 		
 		contentLayout = new VerticalLayout();
 //		contentLayout.addComponent(l);
 
+		navigationContent = new BorderLayout();
+		navigationContent.setWidth("800px");
+		navigationContent.setHeight("100%");
+		
+        navigationSlider =
+                new SliderPanelBuilder(navigationContent, "Navigation")
+	                .mode(SliderMode.RIGHT)
+	                .tabPosition(SliderTabPosition.MIDDLE)
+                    .flowInContent(true)
+                    .autoCollapseSlider(true)
+                    .zIndex(9980)
+                    .animationDuration(500)
+                    .style(SliderPanelStyles.COLOR_GRAY)
+                    .listener(new SliderPanelListener() {
+                        @Override
+                        public void onToggle(final boolean expand) {
+                       	 if (expand)
+                    		 doResetNavigationContent();
+                        }
+                    }).build();
+         sub.addComponent(navigationSlider);
+         
+ 		createContent = new BorderLayout();
+ 		createContent.setWidth("500px");
+ 		createContent.setHeight("100%");
+ 		
+ 		createSlider =
+                 new SliderPanelBuilder(createContent, "Create")
+ 	                .mode(SliderMode.RIGHT)
+ 	                .tabPosition(SliderTabPosition.BEGINNING)
+                     .flowInContent(true)
+                     .autoCollapseSlider(true)
+                     .zIndex(9980)
+                     .animationDuration(500)
+                     .style(SliderPanelStyles.COLOR_BLUE)
+                     .listener(new SliderPanelListener() {
+                         @Override
+                         public void onToggle(final boolean expand) {
+                        	 if (expand)
+                        		 doResetCreateContent();
+                         }
+                     }).build();
+          sub.addComponent(createSlider);
+         
+         
+	}
+
+	protected void doResetCreateContent() {
+		createContent.addComponent(new Label("Create"));
+	}
+
+	protected void doResetNavigationContent() {
+		if (navigation == null) {
+			navigation = new NavigationView();
+			navigationContent.addComponent(navigation, BorderLayout.Constraint.CENTER);
+			// navigation.doSelect()
+		}
+		
 	}
 
 	private synchronized String doShow(String resId) {

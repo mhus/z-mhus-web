@@ -8,4 +8,6 @@
     
 
     <inherits name="org.vaadin.easyuploads.Widgetset" />
+
+    <inherits name="org.vaadin.sliderpanel.WidgetSet" />
 </module>

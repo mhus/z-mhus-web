@@ -29,6 +29,13 @@
 			<artifactId>vaadin-easyuploads</artifactId>
 			<version>${ports.version}</version>
 		</dependency>
+		
+        <dependency>
+			<groupId>de.mhus.ports</groupId>
+			<artifactId>vaadin-sliderpanel</artifactId>
+			<version>${ports.version}</version>
+        </dependency>
+		
     </dependencies>
 
     <build>
@@ -131,12 +138,5 @@
             </plugins>
         </pluginManagement>
     </build>
-
-	<repositories>
-		<repository>
-		   <id>vaadin-addons</id>
-		   <url>http://maven.vaadin.com/vaadin-addons</url>
-		</repository>
-	</repositories>
 	
 </project>
