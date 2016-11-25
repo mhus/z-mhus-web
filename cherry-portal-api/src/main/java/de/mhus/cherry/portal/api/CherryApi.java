@@ -40,6 +40,7 @@ public interface CherryApi extends SApi {
 	public static final String REF_RES = "res";
 	public static final String CONFIG_HOST_ALLOWED = "servlet_host_allowed";
 	public static final String USER_ACCOUNT_TRAIL_ENABLED = "control:trailEnabled";
+	public static final String PAGE_ALTERNATIVES_LIST = "content_page_alternatives";
 
 	VirtualHost findVirtualHost(String host);
 	

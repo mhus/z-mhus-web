@@ -32,6 +32,13 @@ The following list (comma seperated) is defined: edit,compose,acl,!debug,*
 
 This will result in: edit,compose,acl,actions,parameters,versions
 
+### content_page_alternatives
+
+Used by the default content node resolver to resolve content in the specified order. Element contains
+technical name and display name separated by colon. The technical name must contain the prefix '_'
+
+Default configuration: _content:Default Content,_public:Public Page
+
 ### de.mhus.cherry.editor.impl.pages.PageControlControl:de.mhus.cherry.portal.api.control.EditorFactory
 
 ### de.mhus.cherry.editor.impl.editor.EditorSpace:de.mhus.cherry.portal.api.control.EditorControlFactory
