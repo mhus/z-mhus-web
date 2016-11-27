@@ -181,8 +181,10 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 				@Override
 				public List<Pair<String, Object>> getAddOptions() {
 					selectedNode = navigation.getSelectedNode();
-					if (selectedNode != null)
+					if (selectedNode != null) {
 						createSlider.expand();
+						navigationSlider.collapse();
+					}
 					return null;
 				}
 
@@ -218,8 +220,8 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 				protected void doModify(Object action) {
 					System.out.println("Modify: " + action);
 					if (".".equals(action)) {
-						VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost( GuiUtil.getApi().getHost() );
-						GuiUtil.getApi().navigateToEditor(resource);
+						GuiUtil.getApi().navigateToEditor(selectedNode.getCurrent());
+						navigationSlider.collapse();
 //						doShow(vHost,selectedNode.getCurrent());
 					}
 				}
@@ -242,15 +244,16 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 				@Override
 				public void valueChange(ValueChangeEvent event) {
 					NavNode node = navigation.getSelectedNode();
+					// System.out.println("Selected: " + node);
 					if (node == null) {
 						navigationToolBar.setEnabled(false);
 					} else {
-						navigationToolBar.setEnabled(false);
+						navigationToolBar.setEnabled(true);
 						
 					}
 				}
 			});
-			navigationToolBar.setEnabled(true);
+			navigationToolBar.setEnabled(false);
 			navigation.setSelected(resource);
 		}
 		
