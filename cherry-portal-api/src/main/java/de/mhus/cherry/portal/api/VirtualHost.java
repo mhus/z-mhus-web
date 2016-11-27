@@ -13,6 +13,7 @@ import de.mhus.lib.core.security.AuthorizationSource;
 import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.lib.servlet.ResponseWrapper;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
+import de.mhus.osgi.sop.api.action.ActionDescriptor;
 
 public interface VirtualHost {
 
@@ -70,5 +71,16 @@ public interface VirtualHost {
 	 * @return 
 	 */
 	public Collection<EditorFactory> getAvailablePageTypes(CaoNode nav);
+
+	/**
+	 * Returns a list of actions from ActionApi with the given type.
+	 * The list is filtered and ordered for the current virtual host using
+	 * the corresponding configurtion list.
+	 * 
+	 * @param type
+	 * @param node
+	 * @return 
+	 */
+	public Collection<ActionDescriptor> getActions(String type, CaoNode node);
 	
 }

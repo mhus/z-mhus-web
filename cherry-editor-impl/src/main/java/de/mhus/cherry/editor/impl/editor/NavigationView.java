@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -33,6 +34,7 @@ import de.mhus.osgi.sop.api.Sop;
 
 public class NavigationView extends VerticalLayout implements ControlParent {
 
+	private static final long serialVersionUID = 1L;
 	private TreeTable tree;
 	private Action actionReload;
 
@@ -229,6 +231,31 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 		}
 		item.getItemProperty("pageType").setValue( pageType );
 			
+	}
+
+	public NavNode getSelectedNode() {
+		String id = (String)tree.getValue();
+		if (id != null) {
+			return (NavNode) tree.getContainerProperty(id, "object").getValue();
+		}
+		return null;
+	}
+
+	public void addValueChangedListener(Property.ValueChangeListener listener) {
+		tree.addValueChangeListener(listener);
+	}
+
+	public void setSelected(CaoNode resource) {
+		LinkedList<CaoNode> path = new LinkedList<>();
+		CaoNode p = resource;
+		while (p != null || path.size() > 100) {
+			path.addFirst(p);
+			p = p.getParent();
+		}
+		for (CaoNode n : path) {
+			tree.setCollapsed(n.getId(), false);
+		}
+		tree.select(resource.getId());
 	}
 	
 }

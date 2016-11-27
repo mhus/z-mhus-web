@@ -1,5 +1,6 @@
 package de.mhus.cherry.editor.impl.editor;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,8 @@ import org.vaadin.sliderpanel.client.SliderPanelListener;
 import org.vaadin.sliderpanel.client.SliderTabPosition;
 
 import com.vaadin.server.Page;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.ClientConnector.AttachEvent;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
@@ -27,6 +30,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorPanel;
@@ -47,6 +51,8 @@ import de.mhus.lib.karaf.MOsgi;
 import de.mhus.lib.vaadin.VWorkBar;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
+import de.mhus.osgi.sop.api.action.ActionApi;
+import de.mhus.osgi.sop.api.action.ActionDescriptor;
 
 public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecycle {
 
@@ -65,6 +71,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private SliderPanel createSlider;
 	private NavigationView navigation;
 	private VWorkBar navigationToolBar;
+	protected NavNode selectedNode;
 
 	@Override
 	public String navigateTo(String selection, String filter) {
@@ -172,47 +179,79 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			navigationToolBar = new VWorkBar() {
 
 				@Override
-				public List<Pair<String, String>> getAddOptions() {
-					LinkedList<Pair<String,String>> list = new LinkedList<>();
-					list.add(new Pair<String, String>("Navigation", "...ddd.nav"));
-					list.add(new Pair<String, String>("Page", "ddd.page"));
+				public List<Pair<String, Object>> getAddOptions() {
+					selectedNode = navigation.getSelectedNode();
+					if (selectedNode != null)
+						createSlider.expand();
+					return null;
+				}
+
+				@Override
+				public List<Pair<String, Object>> getModifyOptions() {
+					selectedNode = navigation.getSelectedNode();
+					if (selectedNode == null) return null;
+					
+					LinkedList<Pair<String,Object>> list = new LinkedList<>();
+					list.add(new Pair<String, Object>("Edit", "."));
+					
+					Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_MODIFY, selectedNode.getCurrent());
+					for (ActionDescriptor action :actions) {
+						list.add(new Pair<String,Object>(action.getCaption(), action ) );
+					}
+					
 					return list;
 				}
 
 				@Override
-				public List<Pair<String, String>> getModifyOptions() {
-					LinkedList<Pair<String,String>> list = new LinkedList<>();
-					list.add(new Pair<String, String>("Navigation", "...ddd.nav"));
-					list.add(new Pair<String, String>("Page", "ddd.page"));
+				public List<Pair<String, Object>> getDeleteOptions() {
+					selectedNode = navigation.getSelectedNode();
+					if (selectedNode == null) return null;
+					LinkedList<Pair<String,Object>> list = new LinkedList<>();
+					Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, selectedNode.getCurrent());
+					for (ActionDescriptor action :actions) {
+						list.add(new Pair<String,Object>(action.getCaption(), action ) );
+					}
 					return list;
 				}
 
 				@Override
-				public List<Pair<String, String>> getDeleteOptions() {
-					LinkedList<Pair<String,String>> list = new LinkedList<>();
-					list.add(new Pair<String, String>("Navigation", "...ddd.nav"));
-					list.add(new Pair<String, String>("Page", "ddd.page"));
-					return list;
-				}
-
-				@Override
-				protected void doModify(String action) {
+				protected void doModify(Object action) {
 					System.out.println("Modify: " + action);
+					if (".".equals(action)) {
+						VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost( GuiUtil.getApi().getHost() );
+						GuiUtil.getApi().navigateToEditor(resource);
+//						doShow(vHost,selectedNode.getCurrent());
+					}
 				}
 
 				@Override
-				protected void doDelete(String action) {
+				protected void doDelete(Object action) {
 					System.out.println("Delete: " + action);
 				}
 
 				@Override
-				protected void doAdd(String action) {
-					System.out.println("Add: " + action);
+				protected void doAdd(Object action) {
 				}
 
 			};
+			navigationToolBar.setButtonStyleName("flatbutton");
 			navigationContent.addComponent(navigationToolBar, BorderLayout.Constraint.SOUTH);
 
+			navigation.addValueChangedListener(new Property.ValueChangeListener() {
+				
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					NavNode node = navigation.getSelectedNode();
+					if (node == null) {
+						navigationToolBar.setEnabled(false);
+					} else {
+						navigationToolBar.setEnabled(false);
+						
+					}
+				}
+			});
+			navigationToolBar.setEnabled(true);
+			navigation.setSelected(resource);
 		}
 		
 	}
@@ -226,18 +265,23 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		contentLayout.removeAllComponents();
 		
 		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost( GuiUtil.getApi().getHost() );
-		resource = vHost.getResourceResolver().getResource(vHost, resId);
+		CaoNode resource = vHost.getResourceResolver().getResource(vHost, resId);
 		if (resource == null) {
 			// resource not found
 			return null;
 		}
-		
+		return doShow(vHost, resource);
+	}
+	
+	private synchronized String doShow(VirtualHost vHost, CaoNode resource) {
+
 		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost,resource);
 		if (factory == null) {
 			// editor not found
 			return null;
 		}
 		
+		this.resource = resource;
 		doFillTabs(resource, factory);
 		
 		

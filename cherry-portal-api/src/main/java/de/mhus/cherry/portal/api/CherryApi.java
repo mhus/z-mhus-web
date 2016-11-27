@@ -41,6 +41,8 @@ public interface CherryApi extends SApi {
 	public static final String CONFIG_HOST_ALLOWED = "servlet_host_allowed";
 	public static final String USER_ACCOUNT_TRAIL_ENABLED = "control:trailEnabled";
 	public static final String PAGE_ALTERNATIVES_LIST = "content_page_alternatives";
+	public static final String ACTION_MODIFY = "modify";
+	public static final String ACTION_DELETE = "delete";
 
 	VirtualHost findVirtualHost(String host);
 	

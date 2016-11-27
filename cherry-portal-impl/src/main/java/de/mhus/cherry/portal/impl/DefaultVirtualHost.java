@@ -41,6 +41,8 @@ import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.lib.servlet.ResponseWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
+import de.mhus.osgi.sop.api.action.ActionApi;
+import de.mhus.osgi.sop.api.action.ActionDescriptor;
 
 public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 
@@ -532,6 +534,20 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 	@Override
 	public Collection<EditorFactory> getAvailablePageTypes(CaoNode nav) {
 		return CherryUtil.orderServices(VirtualHost.class, EditorFactory.class, this);
+	}
+
+	@Override
+	public Collection<ActionDescriptor> getActions(String type, CaoNode node) {
+		LinkedList<String> tags = new LinkedList<>();
+		tags.add( "vaadin" );
+		tags.add( "caonode" );
+		tags.add( type );
+		
+		MProperties properties = new MProperties();
+		List<ActionDescriptor> actions = Sop.getApi(ActionApi.class).getActions(tags, properties);
+		
+		actions = CherryUtil.order("control_action_" + type, actions, this);
+		return actions;
 	}
 	
 }

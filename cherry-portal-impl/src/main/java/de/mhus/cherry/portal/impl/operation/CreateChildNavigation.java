@@ -73,8 +73,8 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 
 	@Override
 	protected OperationDescription createDescription() {
-		return new OperationDescription(this.getClass(), "name=Create Child Navigation", new DefRoot(
-					new FmText("pageType", "pageType.caption=Page Type", "pageType.description=Type of the new page")
+		return new OperationDescription(this, "Create Child Navigation", new DefRoot(
+					new FmText("pageType", "Page Type", "Type of the new page")
 				));
 	}
 
