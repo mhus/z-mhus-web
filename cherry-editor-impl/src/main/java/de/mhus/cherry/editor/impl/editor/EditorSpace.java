@@ -104,7 +104,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		panel.setCaption("Editor");
 		panel.setSizeFull();
 		tabs = new TabSheet();
-		
+
 		BorderLayout borders = new BorderLayout();
 		borders.setSizeFull();
 		
@@ -113,13 +113,15 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		MVaadin.handleEnter(breadcrumb, (sender, target) -> { doSelectFromBreadcrumb(); } );
 		borders.addComponent(breadcrumb, BorderLayout.Constraint.NORTH);
 		
-		HorizontalLayout sub = new HorizontalLayout();
-		sub.setSizeFull();
-		sub.addComponent(tabs);
-		sub.setExpandRatio(tabs, 1);
-		borders.addComponent(sub, BorderLayout.Constraint.CENTER);
+		HorizontalLayout sliders = new HorizontalLayout();
+		sliders.setSizeFull();
 		
-		panel.setContent(borders);
+		borders.addComponent(tabs, BorderLayout.Constraint.CENTER);
+		borders.addComponent(new Label("   "),BorderLayout.Constraint.EAST);
+		sliders.addComponent(borders);
+		sliders.setExpandRatio(borders, 1);
+		
+		panel.setContent(sliders);
 		
 		contentLayout = new VerticalLayout();
 //		contentLayout.addComponent(l);
@@ -144,7 +146,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
                     		 doResetNavigationContent();
                         }
                     }).build();
-         sub.addComponent(navigationSlider);
+        sliders.addComponent(navigationSlider);
  		navigationSlider.setFixedContentSize(800);
       
  		createContent = new VerticalLayout();
@@ -167,7 +169,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
                         		 doResetCreateContent();
                          }
                      }).build();
-          sub.addComponent(createSlider);
+ 		sliders.addComponent(createSlider);
          
         this.addAttachListener(new ClientConnector.AttachListener() {
 			
@@ -245,25 +247,10 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			b.setData(action);
 			b.addClickListener((event) -> {
 				ActionDescriptor a = (ActionDescriptor)event.getButton().getData();
-				doExecuteAction(a, parentFinal);
+				ActionDialog.doExecuteAction(a, parentFinal);
 				createSlider.collapse();
 			});
 			createContent.addComponent(b);
-		}
-	}
-
-	private void doExecuteAction(ActionDescriptor action, CaoNode node) {
-		Operation oper = action.getAction().adaptTo(Operation.class);
-		
-		if (oper != null && oper instanceof VaadinOperation) {
-			final VaadinOperation o = (VaadinOperation)oper;
-			try {
-				ActionDialog dialog = new ActionDialog(o, node);
-				dialog.show(getUI());
-			} catch (Exception e) {
-				MLogUtil.log().i(e);
-			}
-			
 		}
 	}
 

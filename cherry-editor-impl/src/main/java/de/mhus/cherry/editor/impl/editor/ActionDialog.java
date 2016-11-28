@@ -3,16 +3,21 @@ package de.mhus.cherry.editor.impl.editor;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.logging.MLogUtil;
+import de.mhus.lib.core.strategy.DefaultTaskContext;
+import de.mhus.lib.core.strategy.Operation;
 import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.lib.vaadin.DialogControl;
 import de.mhus.lib.vaadin.ModalDialog;
 import de.mhus.lib.vaadin.ModalDialog.Action;
 import de.mhus.lib.vaadin.operation.VaadinOperation;
+import de.mhus.osgi.sop.api.action.ActionDescriptor;
 
 public class ActionDialog extends ModalDialog implements DialogControl {
 
@@ -30,7 +35,7 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		confirm = new Action("confirm", operation.nls("btn.execute=Execute"));
 		confirm.setDefaultAction(true);
 		cancel = new Action("cancel", operation.nls("btn.cancel=Cancel"));
-		actions = new Action[] {confirm,cancel};
+		actions = new Action[] {cancel,confirm};
 		this.node = node;
 		
 		setWidth("500px");
@@ -42,7 +47,10 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 	protected void initContent(VerticalLayout layout) throws Exception {
 		setCaption(operation.getDescription().getCaption());
 		{
-			Label label = new Label(node.getPath());
+			TextField label = new TextField();
+			label.setEnabled(false);
+			label.setValue(node.getPath());
+			label.setWidth("100%");
 			layout.addComponent(label);
 		}
 		editor = operation.createEditor(editorProperties, this);
@@ -58,11 +66,7 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		if (action == confirm) {
 			try {
 				OperationResult result = operation.doExecute(editor);
-				if (result.isSuccessful()) {
-					Notification.show(result.getMsg(), Notification.TYPE_HUMANIZED_MESSAGE);
-				} else {
-					Notification.show(result.getMsg(), Notification.TYPE_ERROR_MESSAGE);
-				}
+				showResult(operation.getDescription().getCaption(), result);
 			} catch (Exception e) {
 				MLogUtil.log().d(this,e);
 				Notification.show(e.toString(), Notification.TYPE_ERROR_MESSAGE);
@@ -71,9 +75,56 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		return true;
 	}
 
+	private static void showResult(String caption, OperationResult result) {
+		if (result.isSuccessful()) {
+			Notification.show(caption, result.getMsg(), Notification.TYPE_HUMANIZED_MESSAGE);
+		} else {
+			Notification.show(caption, result.getMsg(), Notification.TYPE_ERROR_MESSAGE);
+		}
+	}
+
 	@Override
 	public void canSave(boolean saveable) {
 		confirm.setEnabled(saveable);
+	}
+
+	public static void doExecuteAction(ActionDescriptor action, CaoNode node) {
+		Operation oper = action.getAction().adaptTo(Operation.class);
+		
+		
+		if (oper != null && oper instanceof VaadinOperation) {
+			final VaadinOperation o = (VaadinOperation)oper;
+			try {
+				ActionDialog dialog = new ActionDialog(o, node);
+				dialog.show(UI.getCurrent());
+			} catch (Exception e) {
+				MLogUtil.log().i(e);
+			}
+			
+		} else
+		if (oper != null) {
+			DefaultTaskContext context = new DefaultTaskContext(oper.getClass());
+			MProperties parameters = new MProperties();
+			parameters.put("caonode", node);
+			context.setParameters(parameters);
+			try {
+				OperationResult result = oper.doExecute(context);
+				showResult(oper.getDescription().getCaption(), result);
+			} catch (Exception e) {
+				MLogUtil.log().d(e);
+				Notification.show(e.toString(), Notification.TYPE_ERROR_MESSAGE);
+			}
+		} else {
+			MProperties parameters = new MProperties();
+			parameters.put("caonode", node);
+			try {
+				OperationResult result = action.getAction().doExecute(parameters, null);
+				showResult(action.getCaption(), result);
+			} catch (Exception e) {
+				MLogUtil.log().d(e);
+				Notification.show(e.toString(), Notification.TYPE_ERROR_MESSAGE);
+			}
+		}
 	}
 
 }

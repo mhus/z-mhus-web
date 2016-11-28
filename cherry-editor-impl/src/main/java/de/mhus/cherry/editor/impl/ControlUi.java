@@ -54,7 +54,7 @@ import de.mhus.osgi.sop.api.aaa.AccessApi;
 @Theme("cherrytheme")
 @Widgetset("de.mhus.cherry.editor.theme.CherryWidgetset")
 //@JavaScript({"https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"})
-@JavaScript({"/.pub/base/jquery-3.1.1.min.js"})
+@JavaScript({"../../../.pub/base/sys/jquery-3.1.1.min.js"})
 public class ControlUi extends UI implements GuiApi {
 
 	private static final long serialVersionUID = 1L;

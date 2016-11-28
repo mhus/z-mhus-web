@@ -27,15 +27,13 @@ public class DeleteNode extends AbstractVaadinOperation {
 
 			@Override
 			protected void initUI() {
-				VerticalLayout layout = new VerticalLayout();
 				cbRecursive = new CheckBox("Recursive?");
 				cbRecursive.setValue(false);
-				layout.addComponent(cbRecursive);
+				addComponent(cbRecursive);
 				
 				Label dummy = new Label(" ");
-				layout.addComponent(dummy);
-				layout.setExpandRatio(dummy, 1);
-				setContent(layout);
+				addComponent(dummy);
+				setExpandRatio(dummy, 1);
 			}
 			
 			@Override

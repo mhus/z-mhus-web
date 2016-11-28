@@ -40,19 +40,19 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 				CaoNode nav = (CaoNode) editorProperties.get(NODE);
 				// page type
 				pageType = new ComboBox(nls("pageType.caption=Page Type"));
+				pageType.setNullSelectionAllowed(false);
+				pageType.setTextInputAllowed(false);
 				CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
 				Collection<EditorFactory> list = call.getVirtualHost().getAvailablePageTypes(nav);
 				Object first = null;
 				for (EditorFactory editor : list) {
-					Pair<String, String> pair = new Pair<String,String>(editor.getIdent(), editor.getCaption() );
+					Pair<String, String> pair = new Pair<String,String>(editor.getCaption(), editor.getIdent() );
 					if (first != null) first = pair;
 					pageType.addItem(pair);
 				}
 				
-				VerticalLayout vert = new VerticalLayout();
-				vert.setWidth("100%");
-				vert.addComponent(pageType);
-				setContent(vert);
+				pageType.setWidth("100%");
+				addComponent(pageType);
 				if (first != null) {
 					pageType.select(first);
 					control.canSave(true);
@@ -64,7 +64,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 			public void fillOperationParameters(MProperties param) {
 				Object v = pageType.getValue();
 				if (v != null)
-					param.setString("pageTpe", ((Pair<String,String>)v).getValue() );
+					param.setString("pageType", ((Pair<String,String>)v).getValue() );
 			}
 			
 		};
