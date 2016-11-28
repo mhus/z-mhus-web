@@ -43,6 +43,7 @@ public interface CherryApi extends SApi {
 	public static final String PAGE_ALTERNATIVES_LIST = "content_page_alternatives";
 	public static final String ACTION_MODIFY = "modify";
 	public static final String ACTION_DELETE = "delete";
+	public static final String ACTION_CREATE = "create";
 
 	VirtualHost findVirtualHost(String host);
 	

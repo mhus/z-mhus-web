@@ -10,6 +10,7 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.TreeTable;
@@ -256,6 +257,10 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 			tree.setCollapsed(n.getId(), false);
 		}
 		tree.select(resource.getId());
+	}
+
+	public void addItemClickListener(ItemClickListener listener) {
+		tree.addItemClickListener(listener);
 	}
 	
 }

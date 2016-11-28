@@ -539,7 +539,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 	@Override
 	public Collection<ActionDescriptor> getActions(String type, CaoNode node) {
 		LinkedList<String> tags = new LinkedList<>();
-		tags.add( "vaadin" );
+		tags.add( "control" );
 		tags.add( "caonode" );
 		tags.add( type );
 		

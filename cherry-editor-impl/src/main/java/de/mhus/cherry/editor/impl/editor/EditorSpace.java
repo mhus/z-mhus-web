@@ -16,8 +16,11 @@ import org.vaadin.sliderpanel.client.SliderTabPosition;
 import com.vaadin.server.Page;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.ClientConnector.AttachEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -26,11 +29,13 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.NavNode;
+import de.mhus.cherry.portal.api.ResourceProvider;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorPanel;
@@ -42,13 +47,22 @@ import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.Log;
+import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.Account;
+import de.mhus.lib.core.strategy.Operation;
 import de.mhus.lib.core.util.Pair;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.karaf.MOsgi;
+import de.mhus.lib.vaadin.DialogControl;
+import de.mhus.lib.vaadin.MVaadin;
+import de.mhus.lib.vaadin.ModalDialog;
 import de.mhus.lib.vaadin.VWorkBar;
+import de.mhus.lib.vaadin.ModalDialog.Action;
+import de.mhus.lib.vaadin.operation.VaadinOperation;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
 import de.mhus.osgi.sop.api.action.ActionApi;
@@ -67,11 +81,12 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private TabSheet tabs;
 	private SliderPanel navigationSlider;
 	private BorderLayout navigationContent;
-	private BorderLayout createContent;
+	private VerticalLayout createContent;
 	private SliderPanel createSlider;
 	private NavigationView navigation;
 	private VWorkBar navigationToolBar;
-	protected NavNode selectedNode;
+	private TextField breadcrumb;
+	private HorizontalLayout actionButtons;
 
 	@Override
 	public String navigateTo(String selection, String filter) {
@@ -90,11 +105,21 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		panel.setSizeFull();
 		tabs = new TabSheet();
 		
+		BorderLayout borders = new BorderLayout();
+		borders.setSizeFull();
+		
+		breadcrumb = new TextField();
+		breadcrumb.setSizeFull();
+		MVaadin.handleEnter(breadcrumb, (sender, target) -> { doSelectFromBreadcrumb(); } );
+		borders.addComponent(breadcrumb, BorderLayout.Constraint.NORTH);
+		
 		HorizontalLayout sub = new HorizontalLayout();
 		sub.setSizeFull();
 		sub.addComponent(tabs);
 		sub.setExpandRatio(tabs, 1);
-		panel.setContent(sub);
+		borders.addComponent(sub, BorderLayout.Constraint.CENTER);
+		
+		panel.setContent(borders);
 		
 		contentLayout = new VerticalLayout();
 //		contentLayout.addComponent(l);
@@ -122,7 +147,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
          sub.addComponent(navigationSlider);
  		navigationSlider.setFixedContentSize(800);
       
- 		createContent = new BorderLayout();
+ 		createContent = new VerticalLayout();
  		createContent.setWidth("500px");
  		createContent.setHeight("100%");
  		
@@ -163,10 +188,83 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			}
 		});
 		
+		actionButtons = new HorizontalLayout();
+		actionButtons.setSizeFull();
+		borders.addComponent(actionButtons, BorderLayout.Constraint.SOUTH);
+		
+		Label dummy = new Label(" ");
+		actionButtons.addComponent(dummy);
+		
+		bCancel = new Button("Cancel", new Button.ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				doCancel();
+			}
+		});
+		actionButtons.addComponent(bCancel);
+		actionButtons.setExpandRatio(dummy, 1f);
+		bSave = new Button("Save", new Button.ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				doSave();
+			}
+		});
+		actionButtons.addComponent(bSave);
+
+	}
+
+	private void doSelectFromBreadcrumb() {
+		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		String path = breadcrumb.getValue();
+		CaoNode res = vHost.getResourceResolver().getResource(vHost, path);
+		doShow(vHost, res);
 	}
 
 	protected void doResetCreateContent() {
-		createContent.addComponent(new Label("Create"));
+		createContent.removeAllComponents();
+		
+		CaoNode parent = resource;
+		if (navigationSlider.isExpanded()) {
+			NavNode p = navigation.getSelectedNode();
+			if (p != null) parent = p.getCurrent();
+		}
+		if (parent == null) {
+			createSlider.collapse();
+			return;
+		}
+		final CaoNode parentFinal = parent;
+		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		Collection<ActionDescriptor> actions = vHost.getActions(CherryApi.ACTION_CREATE, parent);
+		for (ActionDescriptor action : actions) {
+			Button b = new Button(action.getCaption());
+			b.setWidth("100%");
+			b.setStyleName("flatbutton");
+			b.setIcon(FontAwesome.ARROW_RIGHT);
+			b.setData(action);
+			b.addClickListener((event) -> {
+				ActionDescriptor a = (ActionDescriptor)event.getButton().getData();
+				doExecuteAction(a, parentFinal);
+				createSlider.collapse();
+			});
+			createContent.addComponent(b);
+		}
+	}
+
+	private void doExecuteAction(ActionDescriptor action, CaoNode node) {
+		Operation oper = action.getAction().adaptTo(Operation.class);
+		
+		if (oper != null && oper instanceof VaadinOperation) {
+			final VaadinOperation o = (VaadinOperation)oper;
+			try {
+				ActionDialog dialog = new ActionDialog(o, node);
+				dialog.show(getUI());
+			} catch (Exception e) {
+				MLogUtil.log().i(e);
+			}
+			
+		}
 	}
 
 	protected void doResetNavigationContent() {
@@ -180,7 +278,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 				@Override
 				public List<Pair<String, Object>> getAddOptions() {
-					selectedNode = navigation.getSelectedNode();
+					NavNode selectedNode = navigation.getSelectedNode();
 					if (selectedNode != null) {
 						createSlider.expand();
 						navigationSlider.collapse();
@@ -190,7 +288,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 				@Override
 				public List<Pair<String, Object>> getModifyOptions() {
-					selectedNode = navigation.getSelectedNode();
+					NavNode selectedNode = navigation.getSelectedNode();
 					if (selectedNode == null) return null;
 					
 					LinkedList<Pair<String,Object>> list = new LinkedList<>();
@@ -206,7 +304,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 				@Override
 				public List<Pair<String, Object>> getDeleteOptions() {
-					selectedNode = navigation.getSelectedNode();
+					NavNode selectedNode = navigation.getSelectedNode();
 					if (selectedNode == null) return null;
 					LinkedList<Pair<String,Object>> list = new LinkedList<>();
 					Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, selectedNode.getCurrent());
@@ -219,6 +317,8 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 				@Override
 				protected void doModify(Object action) {
 					System.out.println("Modify: " + action);
+					NavNode selectedNode = navigation.getSelectedNode();
+					if (selectedNode == null) return;
 					if (".".equals(action)) {
 						GuiUtil.getApi().navigateToEditor(selectedNode.getCurrent());
 						navigationSlider.collapse();
@@ -253,6 +353,19 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 					}
 				}
 			});
+			navigation.addItemClickListener( new ItemClickListener() {
+				
+				@Override
+				public void itemClick(ItemClickEvent event) {
+					if (event.isDoubleClick()) {
+						NavNode selectedNode = navigation.getSelectedNode();
+						if (selectedNode == null) return;
+						GuiUtil.getApi().navigateToEditor(selectedNode.getCurrent());
+						navigationSlider.collapse();
+					}
+				}
+			} );
+			
 			navigationToolBar.setEnabled(false);
 			navigation.setSelected(resource);
 		}
@@ -285,6 +398,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		}
 		
 		this.resource = resource;
+		breadcrumb.setValue( resource.getConnection().getName() + ":" + resource.getPath() );
 		doFillTabs(resource, factory);
 		
 		
@@ -304,28 +418,6 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			return null;
 		}
 		
-		HorizontalLayout buttonPanel = new HorizontalLayout();
-		bCancel = new Button("Cancel", new Button.ClickListener() {
-			
-			@Override
-			public void buttonClick(ClickEvent event) {
-				doCancel();
-			}
-		});
-		buttonPanel.addComponent(bCancel);
-		Label dummy = new Label(" ");
-		buttonPanel.addComponent(dummy);
-		buttonPanel.setExpandRatio(dummy, 1f);
-		bSave = new Button("Save", new Button.ClickListener() {
-			
-			@Override
-			public void buttonClick(ClickEvent event) {
-				doSave();
-			}
-		});
-		buttonPanel.addComponent(bSave);
-		buttonPanel.setSizeFull();
-		contentLayout.addComponent(buttonPanel);
 		contentLayout.setExpandRatio(editorPanel, 1f);
 		contentLayout.setMargin(true);
 		contentLayout.setSpacing(true);
