@@ -252,6 +252,9 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			});
 			createContent.addComponent(b);
 		}
+		Label dummy = new Label();
+		createContent.addComponent(dummy);
+		createContent.setExpandRatio(dummy, 1);
 	}
 
 	protected void doResetNavigationContent() {

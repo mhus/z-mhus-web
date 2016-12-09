@@ -1,6 +1,7 @@
 package de.mhus.cherry.portal.impl.operation;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.VerticalLayout;
@@ -19,52 +20,42 @@ import de.mhus.lib.core.strategy.OperationDescription;
 import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.lib.core.strategy.TaskContext;
 import de.mhus.lib.core.util.Pair;
+import de.mhus.lib.form.DataSource;
+import de.mhus.lib.form.Item;
+import de.mhus.lib.form.PropertiesDataSource;
+import de.mhus.lib.form.definition.FmCombobox;
+import de.mhus.lib.form.definition.FmOptions;
 import de.mhus.lib.form.definition.FmText;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperation;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperationEditor;
+import de.mhus.lib.vaadin.operation.AbstractVaadinOperationForm;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(properties="tags=control|caonode|create",provide=Operation.class)
-public class CreateChildNavigation extends AbstractVaadinOperation {
+public class CreateSiblingNavigation extends AbstractVaadinOperation {
 
 	public static final Object NODE = "caonode";
 
 	@Override
 	protected AbstractVaadinOperationEditor createEditor() {
-		return new AbstractVaadinOperationEditor() {
-			
-			private ComboBox pageType;
+		return new AbstractVaadinOperationForm(this) {
 
 			@Override
-			protected void initUI() {
+			protected void initDataSource(PropertiesDataSource ds) {
+				MProperties properties = new MProperties();
+				ds.setProperties(properties);
+				
 				CaoNode nav = (CaoNode) editorProperties.get(NODE);
-				// page type
-				pageType = new ComboBox(nls("pageType.caption=Page Type"));
-				pageType.setNullSelectionAllowed(false);
-				pageType.setTextInputAllowed(false);
 				CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
 				Collection<EditorFactory> list = call.getVirtualHost().getAvailablePageTypes(nav);
-				Object first = null;
+				LinkedList<Item> pageTypeTypes = new LinkedList<>();
 				for (EditorFactory editor : list) {
-					Pair<String, String> pair = new Pair<String,String>(editor.getCaption(), editor.getIdent() );
-					if (first != null) first = pair;
-					pageType.addItem(pair);
+					pageTypeTypes.add(new Item(editor.getIdent(), editor.getCaption() ));
 				}
-				
-				pageType.setWidth("100%");
-				addComponent(pageType);
-				if (first != null) {
-					pageType.select(first);
-					control.canSave(true);
-				}
-			}
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public void fillOperationParameters(MProperties param) {
-				Object v = pageType.getValue();
-				if (v != null)
-					param.setString("pageType", ((Pair<String,String>)v).getValue() );
+				Item[] pageTypeTypesArray = pageTypeTypes.toArray(new Item[pageTypeTypes.size()]);
+				properties.put("pageType." + DataSource.ITEMS, pageTypeTypesArray);
+				
 			}
 			
 		};
@@ -77,8 +68,8 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 
 	@Override
 	protected OperationDescription createDescription() {
-		return new OperationDescription(this, "Create Child Navigation", new DefRoot(
-					new FmText("pageType", "Page Type", "Type of the new page"),
+		return new OperationDescription(this, "Create Sibling Navigation", new DefRoot(
+					new FmCombobox("pageType", "Page Type", "Type of the new page"),
 					new FmText("title", "Page Title", "Title of the new page"),
 					new FmText("name", "Node Name", "Technical node name shown in path, leave blank for default")
 				));
