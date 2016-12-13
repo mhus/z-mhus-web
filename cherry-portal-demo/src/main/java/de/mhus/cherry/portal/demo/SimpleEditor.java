@@ -33,6 +33,7 @@ public class SimpleEditor extends EditorPanel {
 		text.setValue(data.getString("text", ""));
 		text.setSizeFull();
 		addComponent(text);
+
 	}
 	
 	@Override
