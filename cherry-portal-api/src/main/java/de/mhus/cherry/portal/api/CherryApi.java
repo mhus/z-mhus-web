@@ -8,6 +8,7 @@ import org.osgi.framework.Bundle;
 
 import de.mhus.lib.cao.CaoException;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.aspect.StructureControl.Behavior;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.osgi.sop.api.SApi;
@@ -25,7 +26,7 @@ public interface CherryApi extends SApi {
 	public static final String DEFAULT_NAVIGATION_PROVIDER = "navigation";
 	public static final String NAV_CONTENT_NODE_PREFIX = "_";
 	public static final String ACL_READ =  "read";
-	public static final String ACL_WRITE =  "read";
+	public static final String ACL_WRITE =  "write";
 	public static final String ACL_CREATE =  "create";
 	public static final String ACL_DELETE =  "delete";
 	public static final String ACL_VERSION =  "version";

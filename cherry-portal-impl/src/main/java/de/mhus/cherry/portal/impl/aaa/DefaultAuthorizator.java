@@ -12,6 +12,7 @@ import de.mhus.lib.cao.CaoList;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.action.CaoConfiguration;
 import de.mhus.lib.cao.auth.Authorizator;
+import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MCollection;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.sop.api.Sop;
@@ -34,7 +35,7 @@ public class DefaultAuthorizator implements Authorizator {
 	@Override
 	public boolean hasWriteAccess(CaoNode node) {
 		try {
-			return Sop.getApi(CherryApi.class).hasResourceAccess(node, "write" );
+			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_WRITE);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;
@@ -53,18 +54,63 @@ public class DefaultAuthorizator implements Authorizator {
 	}
 
 	@Override
-	public boolean hasContentAccess(CaoNode node, String rendition) {
-		return true;
+	public boolean hasStructureAccess(CaoNode node) {
+		try {
+			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_STRUCTURE);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override
+	public boolean hasDeleteAccess(CaoNode node) {
+		try {
+			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_DELETE);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public boolean hasCreateAccess(CaoNode node, String name, IProperties properties) {
+		try {
+			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_CREATE);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean hasContentAccess(CaoNode node, String rendition) {
+		try {
+			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_READ);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public boolean hasContentWriteAccess(CaoNode node, String rendition) {
+		try {
+			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_RENDITION);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	@Override
 	public boolean hasWriteAccess(CaoNode node, String name) {
-		return true;
+		return hasWriteAccess(node);
 	}
 
 	@Override
 	public boolean hasAspectAccess(CaoNode node, Class<? extends CaoAspect> ifc) {
-		return true;
+		return false;
 	}
 
 	@Override

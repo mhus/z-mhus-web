@@ -10,6 +10,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
 
 public class NavigationTag extends TagSupport {
@@ -18,7 +19,7 @@ public class NavigationTag extends TagSupport {
 	private CaoNode res;
 	private Collection<CaoNode> nodes;
 	private boolean showHidden = false;
-	private String order = null;
+	private String order = WidgetApi.SORT;
 	private String resName;
 
 	public void setResource(String resName) {
