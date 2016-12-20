@@ -41,7 +41,7 @@ import de.mhus.osgi.sop.api.Sop;
 @Component(properties="tags=control|caonode|create",provide=Operation.class)
 public class CreateSiblingNavigation extends AbstractVaadinOperation {
 
-	public static final Object NODE = "caonode";
+	public static final String NODE = "caonode";
 
 	@Override
 	protected AbstractVaadinOperationEditor createEditor() {

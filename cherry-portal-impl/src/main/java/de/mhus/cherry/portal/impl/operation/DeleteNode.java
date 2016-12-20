@@ -5,6 +5,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.definition.DefRoot;
 import de.mhus.lib.core.strategy.Operation;
@@ -37,7 +38,7 @@ public class DeleteNode extends AbstractVaadinOperation {
 			}
 			
 			@Override
-			public void fillOperationParameters(MProperties param) {
+			public void fillOperationParameters(IProperties param) {
 				param.setBoolean("recursive", cbRecursive.getValue());
 			}
 		};

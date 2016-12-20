@@ -21,6 +21,7 @@ import de.mhus.osgi.sop.api.action.ActionDescriptor;
 
 public class ActionDialog extends ModalDialog implements DialogControl {
 
+	public static final String NODE = "caonode";
 	private VaadinOperation operation;
 	private MProperties editorProperties;
 	private Action confirm;
@@ -31,7 +32,7 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 	public ActionDialog(VaadinOperation operation, CaoNode node) throws Exception {
 		this.operation = operation;
 		editorProperties = new MProperties();
-		editorProperties.put("caonode", node);
+		editorProperties.put(NODE, node);
 		confirm = new Action("confirm", operation.nls("btn.execute=Execute"));
 		confirm.setDefaultAction(true);
 		cancel = new Action("cancel", operation.nls("btn.cancel=Cancel"));
@@ -65,10 +66,10 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		if (action == cancel) return true;
 		if (action == confirm) {
 			try {
-				OperationResult result = operation.doExecute(editor);
+				OperationResult result = operation.doExecute(editorProperties, editor);
 				showResult(operation.getDescription().getCaption(), result);
 			} catch (Exception e) {
-				MLogUtil.log().d(this,e);
+				MLogUtil.log().i(this,e);
 				Notification.show(e.toString(), Notification.TYPE_ERROR_MESSAGE);
 			}
 		}
