@@ -49,6 +49,7 @@ public class CutNode extends AbstractVaadinOperation {
 
 		@Override
 		public OperationResult doExecute(TaskContext context) throws Exception {
+			System.out.println("Cut Action");
 			CaoNode[] targetArray = CherryUtil.getNodeFromProperties(context.getParameters());
 			if (targetArray == null || targetArray.length != 1) return new NotSuccessful("", "Target not set", -2);
 			CaoNode target = targetArray[0];
