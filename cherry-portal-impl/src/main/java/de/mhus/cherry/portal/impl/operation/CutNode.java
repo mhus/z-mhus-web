@@ -4,9 +4,12 @@ import com.vaadin.ui.Label;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.util.CherryUtil;
+import de.mhus.lib.cao.CaoAspect;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.definition.DefRoot;
+import de.mhus.lib.core.strategy.NotSuccessful;
 import de.mhus.lib.core.strategy.Operation;
 import de.mhus.lib.core.strategy.OperationDescription;
 import de.mhus.lib.core.strategy.OperationResult;
@@ -17,9 +20,7 @@ import de.mhus.lib.vaadin.operation.AbstractVaadinOperationEditor;
 
 @Component(properties="tags=control|caonode|modify",provide=Operation.class)
 public class CutNode extends AbstractVaadinOperation {
-
-	public static CaoNode remember;
-
+	
 	@Override
 	protected AbstractVaadinOperationEditor createEditor() {
 		return null;
@@ -34,9 +35,34 @@ public class CutNode extends AbstractVaadinOperation {
 	@Override
 	protected OperationResult doExecute2(TaskContext context) throws Exception {
 		CaoNode[] navArray = CherryUtil.getNodeFromProperties(context.getParameters());
-		CaoNode nav = navArray[0];
-		remember = nav;
+		PasteNode.setAction(new CutAction(navArray));
 		return new Successful(this);
 	}
 
+	private static class CutAction implements PasteAction {
+
+		private CaoNode[] selected;
+
+		public CutAction(CaoNode[] nav) {
+			this.selected = nav;
+		}
+
+		@Override
+		public OperationResult doExecute(TaskContext context) throws Exception {
+			CaoNode[] targetArray = CherryUtil.getNodeFromProperties(context.getParameters());
+			if (targetArray == null || targetArray.length != 1) return new NotSuccessful("", "Target not set", -2);
+			CaoNode target = targetArray[0];
+			boolean res = true;
+			for (CaoNode sel : selected) {
+				StructureControl control = sel.adaptTo(StructureControl.class);
+				if (control != null) {
+					if (!control.moveTo(target))
+						res = false;
+				}
+			}
+			
+			return res ? new Successful("") : new NotSuccessful("", "", -4);
+		}
+		
+	}
 }

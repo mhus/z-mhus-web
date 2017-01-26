@@ -42,6 +42,7 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		setWidth("500px");
 		setHeight("90%");
 		initUI();
+		
 	}
 
 	@Override
@@ -87,6 +88,9 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 	}
 
 	private static void showResult(String caption, OperationResult result) {
+		if (result == null) {
+			Notification.show(caption, "No result", Notification.TYPE_ERROR_MESSAGE);
+		} else
 		if (result.isSuccessful()) {
 			Notification.show(caption, result.getMsg(), Notification.TYPE_HUMANIZED_MESSAGE);
 		} else {
@@ -136,6 +140,15 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 				Notification.show(e.toString(), Notification.TYPE_ERROR_MESSAGE);
 			}
 		}
+	}
+
+	@Override
+	public void show(UI ui) throws Exception {
+		if (editor == null) {
+			doAction(confirm);
+			return;
+		}
+		super.show(ui);
 	}
 
 }
