@@ -15,9 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.InternalCherryApi;
+import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.basics.Named;
+import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
@@ -29,6 +32,12 @@ import de.mhus.osgi.sop.api.security.SecurityApi;
 public class CherryUtil {
 
 	private static Log log = Log.getLog(CherryUtil.class);
+
+	public static final String NODE = "caonode";
+	
+	public static CaoNode[] getNodeFromProperties(IProperties prop) {
+		return (CaoNode[])prop.get(NODE);
+	}
 	
 	public static ScriptRenderer getScriptRenderer(CallContext call, File file) {
 		return  call.getVirtualHost().getScriptRenderer(MFile.getFileSuffix(file));
@@ -115,6 +124,14 @@ public class CherryUtil {
 			return null;
 		}
 		
+	}
+
+	public static CaoNode[] getCurrent(NavNode[] navNode) {
+		if (navNode == null) return null;
+		CaoNode[] out = new CaoNode[navNode.length];
+		for (int i = 0; i < out.length; i++)
+			out[i] = navNode[i].getCurrent();
+		return out;
 	}
 
 }

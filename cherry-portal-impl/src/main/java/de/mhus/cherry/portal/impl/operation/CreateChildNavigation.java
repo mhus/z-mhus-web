@@ -12,6 +12,7 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorFactory;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.core.MFile;
@@ -37,8 +38,6 @@ import de.mhus.osgi.sop.api.Sop;
 @Component(properties="tags=control|caonode|create",provide=Operation.class)
 public class CreateChildNavigation extends AbstractVaadinOperation {
 
-	public static final Object NODE = "caonode";
-
 	@Override
 	protected AbstractVaadinOperationEditor createEditor() {
 		return new AbstractVaadinOperationForm(this) {
@@ -48,7 +47,8 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 				MProperties properties = new MProperties();
 				ds.setProperties(properties);
 				
-				CaoNode nav = (CaoNode) editorProperties.get(NODE);
+				CaoNode[] navArray = CherryUtil.getNodeFromProperties(editorProperties);
+				CaoNode nav = navArray[0];
 				CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
 				Collection<EditorFactory> list = call.getVirtualHost().getAvailablePageTypes(nav);
 				LinkedList<Item> pageTypeTypes = new LinkedList<>();
@@ -66,7 +66,8 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 
 	@Override
 	protected OperationResult doExecute2(TaskContext context) throws Exception {
-		CaoNode nav = (CaoNode) context.getParameters().get(NODE);
+		CaoNode[] navArray = CherryUtil.getNodeFromProperties(context.getParameters());
+		CaoNode nav = navArray[0];
 		String title = context.getParameters().getString("title");
 		String name = context.getParameters().getString("name", MFile.normalize(title));
 		boolean hidden = context.getParameters().getBoolean("hidden", true);

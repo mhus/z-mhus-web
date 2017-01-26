@@ -75,12 +75,12 @@ public interface VirtualHost {
 	/**
 	 * Returns a list of actions from ActionApi with the given type.
 	 * The list is filtered and ordered for the current virtual host using
-	 * the corresponding configurtion list.
+	 * the corresponding configuration list.
 	 * 
 	 * @param type
 	 * @param node
 	 * @return 
 	 */
-	public Collection<ActionDescriptor> getActions(String type, CaoNode node);
+	public Collection<ActionDescriptor> getActions(String type, CaoNode[] node);
 	
 }

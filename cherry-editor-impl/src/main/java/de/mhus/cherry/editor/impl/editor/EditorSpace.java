@@ -74,7 +74,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private static final long serialVersionUID = 1L;
 	private Panel panel;
 	private VerticalLayout contentLayout;
-	private CaoNode resource;
+	private CaoNode[] resource;
 	private EditorPanel editor;
 	private Button bSave;
 	private Button bCancel;
@@ -227,16 +227,16 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	protected void doResetCreateContent() {
 		createContent.removeAllComponents();
 		
-		CaoNode parent = resource;
+		CaoNode[] parent = resource;
 		if (navigationSlider.isExpanded()) {
-			NavNode p = navigation.getSelectedNode();
-			if (p != null) parent = p.getCurrent();
+			NavNode[] p = navigation.getSelectedNode();
+			if (p != null) parent = CherryUtil.getCurrent(p);
 		}
 		if (parent == null) {
 			createSlider.collapse();
 			return;
 		}
-		final CaoNode parentFinal = parent;
+		final CaoNode[] parentFinal = parent;
 		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
 		Collection<ActionDescriptor> actions = vHost.getActions(CherryApi.ACTION_CREATE, parent);
 		for (ActionDescriptor action : actions) {
@@ -268,7 +268,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 				@Override
 				public List<Pair<String, Object>> getAddOptions() {
-					NavNode selectedNode = navigation.getSelectedNode();
+					NavNode[] selectedNode = navigation.getSelectedNode();
 					if (selectedNode != null) {
 						createSlider.expand();
 						navigationSlider.collapse();
@@ -278,13 +278,13 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 				@Override
 				public List<Pair<String, Object>> getModifyOptions() {
-					NavNode selectedNode = navigation.getSelectedNode();
+					NavNode[] selectedNode = navigation.getSelectedNode();
 					if (selectedNode == null) return null;
 					
 					LinkedList<Pair<String,Object>> list = new LinkedList<>();
 					list.add(new Pair<String, Object>("Edit", "."));
 					
-					Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_MODIFY, selectedNode.getCurrent());
+					Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_MODIFY, CherryUtil.getCurrent(selectedNode));
 					for (ActionDescriptor action :actions) {
 						list.add(new Pair<String,Object>(action.getCaption(), action ) );
 					}
@@ -294,10 +294,10 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 				@Override
 				public List<Pair<String, Object>> getDeleteOptions() {
-					NavNode selectedNode = navigation.getSelectedNode();
+					NavNode[] selectedNode = navigation.getSelectedNode();
 					if (selectedNode == null) return null;
 					LinkedList<Pair<String,Object>> list = new LinkedList<>();
-					Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, selectedNode.getCurrent());
+					Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, CherryUtil.getCurrent(selectedNode));
 					for (ActionDescriptor action :actions) {
 						list.add(new Pair<String,Object>(action.getCaption(), action ) );
 					}
@@ -307,18 +307,28 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 				@Override
 				protected void doModify(Object action) {
 					System.out.println("Modify: " + action);
-					NavNode selectedNode = navigation.getSelectedNode();
+					NavNode[] selectedNode = navigation.getSelectedNode();
 					if (selectedNode == null) return;
 					if (".".equals(action)) {
-						GuiUtil.getApi().navigateToEditor(selectedNode.getCurrent());
-						navigationSlider.collapse();
-//						doShow(vHost,selectedNode.getCurrent());
+						if (selectedNode != null && selectedNode.length == 1) {
+							GuiUtil.getApi().navigateToEditor(selectedNode[0].getCurrent());
+							navigationSlider.collapse();
+	//						doShow(vHost,selectedNode.getCurrent());
+						}
+					} else {
+						final CaoNode[] parentFinal = CherryUtil.getCurrent(selectedNode);
+						ActionDialog.doExecuteAction((ActionDescriptor) action, parentFinal);
 					}
 				}
 
 				@Override
 				protected void doDelete(Object action) {
 					System.out.println("Delete: " + action);
+					NavNode[] selectedNode = navigation.getSelectedNode();
+					if (selectedNode == null) return;
+					final CaoNode[] parentFinal = CherryUtil.getCurrent(selectedNode);
+					System.out.println("Node: " + parentFinal);
+					ActionDialog.doExecuteAction((ActionDescriptor) action, parentFinal);
 				}
 
 				@Override
@@ -333,7 +343,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 				
 				@Override
 				public void valueChange(ValueChangeEvent event) {
-					NavNode node = navigation.getSelectedNode();
+					NavNode[] node = navigation.getSelectedNode();
 					// System.out.println("Selected: " + node);
 					if (node == null) {
 						navigationToolBar.setEnabled(false);
@@ -348,16 +358,18 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 				@Override
 				public void itemClick(ItemClickEvent event) {
 					if (event.isDoubleClick()) {
-						NavNode selectedNode = navigation.getSelectedNode();
-						if (selectedNode == null) return;
-						GuiUtil.getApi().navigateToEditor(selectedNode.getCurrent());
+						NavNode[] selectedNode = navigation.getSelectedNode();
+						if (selectedNode == null || selectedNode.length != 1) return;
+						GuiUtil.getApi().navigateToEditor(selectedNode[0].getCurrent());
 						navigationSlider.collapse();
 					}
 				}
 			} );
 			
-			navigationToolBar.setEnabled(false);
-			navigation.setSelected(resource);
+			if (resource != null && resource.length > 0) {
+				navigationToolBar.setEnabled(false);
+				navigation.setSelected(resource[0]);
+			}
 		}
 		
 	}
@@ -387,7 +399,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			return null;
 		}
 		
-		this.resource = resource;
+		this.resource = new CaoNode[] {resource};
 		breadcrumb.setValue( resource.getConnection().getName() + ":" + resource.getPath() );
 		doFillTabs(resource, factory);
 		

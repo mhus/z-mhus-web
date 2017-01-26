@@ -7,6 +7,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.logging.MLogUtil;
@@ -21,18 +22,17 @@ import de.mhus.osgi.sop.api.action.ActionDescriptor;
 
 public class ActionDialog extends ModalDialog implements DialogControl {
 
-	public static final String NODE = "caonode";
 	private VaadinOperation operation;
 	private MProperties editorProperties;
 	private Action confirm;
 	private Action cancel;
-	private CaoNode node;
+	private CaoNode[] node;
 	private Component editor;
 
-	public ActionDialog(VaadinOperation operation, CaoNode node) throws Exception {
+	public ActionDialog(VaadinOperation operation, CaoNode[] node) throws Exception {
 		this.operation = operation;
 		editorProperties = new MProperties();
-		editorProperties.put(NODE, node);
+		editorProperties.put(CherryUtil.NODE, node);
 		confirm = new Action("confirm", operation.nls("btn.execute=Execute"));
 		confirm.setDefaultAction(true);
 		cancel = new Action("cancel", operation.nls("btn.cancel=Cancel"));
@@ -50,7 +50,7 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		{
 			TextField label = new TextField();
 			label.setEnabled(false);
-			label.setValue(node.getPath());
+			label.setValue(nodePaths());
 			label.setWidth("100%");
 			layout.addComponent(label);
 		}
@@ -59,6 +59,16 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 			layout.addComponent(editor);
 			layout.setExpandRatio(editor, 1);
 		}
+	}
+
+	private String nodePaths() {
+		StringBuilder out = new StringBuilder();
+		for (CaoNode n : node) {
+			if (out.length() != 0)
+				out.append("; ");
+			out.append(n.getPath());
+		}
+		return out.toString();
 	}
 
 	@Override
@@ -89,7 +99,7 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		confirm.setEnabled(saveable);
 	}
 
-	public static void doExecuteAction(ActionDescriptor action, CaoNode node) {
+	public static void doExecuteAction(ActionDescriptor action, CaoNode[] node) {
 		Operation oper = action.getAction().adaptTo(Operation.class);
 		
 		
@@ -106,7 +116,7 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		if (oper != null) {
 			DefaultTaskContext context = new DefaultTaskContext(oper.getClass());
 			MProperties parameters = new MProperties();
-			parameters.put("caonode", node);
+			parameters.put(CherryUtil.NODE, node);
 			context.setParameters(parameters);
 			try {
 				OperationResult result = oper.doExecute(context);
@@ -117,7 +127,7 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 			}
 		} else {
 			MProperties parameters = new MProperties();
-			parameters.put("caonode", node);
+			parameters.put(CherryUtil.NODE, node);
 			try {
 				OperationResult result = action.getAction().doExecute(parameters, null);
 				showResult(action.getCaption(), result);

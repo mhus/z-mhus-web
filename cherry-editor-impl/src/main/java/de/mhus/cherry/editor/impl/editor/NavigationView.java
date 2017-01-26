@@ -74,6 +74,7 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 		
 		tree.setSizeFull();
 		tree.setSelectable(true);
+		tree.setMultiSelect(true);
 		tree.setItemIconPropertyId("icon");
 		tree.setVisibleColumns("name","tecName","hidden","acl","theme","pageType");
 		tree.setColumnHeaders("Navigation","Name","Hidden","ACL","Theme","Type");
@@ -84,10 +85,21 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 			@Override
 			public void handleAction(Action action, Object sender, Object target) {
 				if (action == actionReload) {
-					String id = (String) tree.getValue();
-            		if (id != null ) {
-            			doRefreshNode(id);
-            		}
+					Object v = tree.getValue();
+					if (v == null) return;
+					if (v instanceof String) {
+						String id = (String)v;
+						if (id != null) {
+	            			doRefreshNode(id);
+						}
+					} else
+					if (v instanceof Collection) {
+						Collection<String> list = (Collection<String>)v;
+						if (list == null || list.size() == 0) return;
+						for (String id : list) {
+	            			doRefreshNode(id);
+						}
+					}
 				}
 			}
 			
@@ -107,17 +119,21 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 	}
 
 	public void doRefreshNode(String id) {
-		Item item = tree.getItem(id);
-		if (item == null) return;
-		boolean collapsed = tree.isCollapsed(id);
-		HierarchicalContainer container = (HierarchicalContainer)tree.getContainerDataSource();
-		for (Object child : new LinkedList<>( container.getChildren(id)) ) {
-			container.removeItemRecursively(child);
+		try {
+			Item item = tree.getItem(id);
+			if (item == null) return;
+			boolean collapsed = tree.isCollapsed(id);
+			HierarchicalContainer container = (HierarchicalContainer)tree.getContainerDataSource();
+			for (Object child : new LinkedList<>( container.getChildren(id)) ) {
+				container.removeItemRecursively(child);
+			}
+			if (!collapsed) {
+				doExpand(id);
+			}
+			tree.markAsDirty();
+		} catch (Throwable t) {
+			MLogUtil.log().d("doRefreshNode",id,t);
 		}
-		if (!collapsed) {
-			doExpand(id);
-		}
-		tree.markAsDirty();
 	}
 
 	protected void doUpdateControl() {
@@ -234,11 +250,28 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 			
 	}
 
-	public NavNode getSelectedNode() {
-		String id = (String)tree.getValue();
-		if (id != null) {
-			return (NavNode) tree.getContainerProperty(id, "object").getValue();
+	@SuppressWarnings("unchecked")
+	public NavNode[] getSelectedNode() {
+		Object v = tree.getValue();
+		if (v == null) return null;
+		if (v instanceof String) {
+			String id = (String)v;
+			if (id != null) {
+				return new NavNode[] { (NavNode) tree.getContainerProperty(id, "object").getValue() };
+			}
+		} else
+		if (v instanceof Collection) {
+			Collection<String> list = (Collection<String>)v;
+			if (list == null || list.size() == 0) return null;
+			NavNode[] out = new NavNode[list.size()];
+			int cnt = 0;
+			for (String id : list) {
+				out[cnt] = (NavNode) tree.getContainerProperty(id, "object").getValue();
+				cnt++;
+			}
+			return out;
 		}
+		
 		return null;
 	}
 

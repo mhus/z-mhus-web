@@ -5,12 +5,17 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.util.CherryUtil;
+import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.definition.DefRoot;
+import de.mhus.lib.core.strategy.NotSuccessful;
 import de.mhus.lib.core.strategy.Operation;
 import de.mhus.lib.core.strategy.OperationDescription;
 import de.mhus.lib.core.strategy.OperationResult;
+import de.mhus.lib.core.strategy.Successful;
 import de.mhus.lib.core.strategy.TaskContext;
 import de.mhus.lib.form.definition.FmCheckbox;
 import de.mhus.lib.form.definition.FmText;
@@ -46,8 +51,15 @@ public class DeleteNode extends AbstractVaadinOperation {
 
 	@Override
 	protected OperationResult doExecute2(TaskContext context) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CaoNode[] navArray = CherryUtil.getNodeFromProperties(context.getParameters());
+		boolean recursive = context.getParameters().getBoolean("recursive");
+		boolean res = true;
+		for (CaoNode nav : navArray) {
+			StructureControl control = nav.adaptTo(StructureControl.class);
+			if (! control.delete(recursive) )
+				res = false; // TODO collect not successful
+		}
+		return res ? new Successful(this) : new NotSuccessful(this, "Not", -1);
 	}
 
 	@Override
