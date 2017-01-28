@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.vaadin.addon.borderlayout.BorderLayout;
+import org.vaadin.peter.contextmenu.ContextMenu;
+import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import org.vaadin.sliderpanel.SliderPanel;
 import org.vaadin.sliderpanel.SliderPanelBuilder;
 import org.vaadin.sliderpanel.SliderPanelStyles;
@@ -22,6 +24,7 @@ import com.vaadin.server.ClientConnector;
 import com.vaadin.server.ClientConnector.AttachEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
+import com.vaadin.shared.MouseEventDetails.MouseButton;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
@@ -268,67 +271,28 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 				@Override
 				public List<Pair<String, Object>> getAddOptions() {
-					NavNode[] selectedNode = navigation.getSelectedNode();
-					if (selectedNode != null) {
-						createSlider.expand();
-						navigationSlider.collapse();
-					}
+					EditorSpace.this.openCreateSlider();
 					return null;
 				}
 
 				@Override
 				public List<Pair<String, Object>> getModifyOptions() {
-					NavNode[] selectedNode = navigation.getSelectedNode();
-					if (selectedNode == null) return null;
-					
-					LinkedList<Pair<String,Object>> list = new LinkedList<>();
-					list.add(new Pair<String, Object>("Edit", "."));
-					
-					Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_MODIFY, CherryUtil.getCurrent(selectedNode));
-					for (ActionDescriptor action :actions) {
-						list.add(new Pair<String,Object>(action.getCaption(), action ) );
-					}
-					
-					return list;
+					return getModifyOptionsList();
 				}
 
 				@Override
 				public List<Pair<String, Object>> getDeleteOptions() {
-					NavNode[] selectedNode = navigation.getSelectedNode();
-					if (selectedNode == null) return null;
-					LinkedList<Pair<String,Object>> list = new LinkedList<>();
-					Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, CherryUtil.getCurrent(selectedNode));
-					for (ActionDescriptor action :actions) {
-						list.add(new Pair<String,Object>(action.getCaption(), action ) );
-					}
-					return list;
+					return getDeleteOptionsList();
 				}
 
 				@Override
 				protected void doModify(Object action) {
-					System.out.println("Modify: " + action);
-					NavNode[] selectedNode = navigation.getSelectedNode();
-					if (selectedNode == null) return;
-					if (".".equals(action)) {
-						if (selectedNode != null && selectedNode.length == 1) {
-							GuiUtil.getApi().navigateToEditor(selectedNode[0].getCurrent());
-							navigationSlider.collapse();
-	//						doShow(vHost,selectedNode.getCurrent());
-						}
-					} else {
-						final CaoNode[] parentFinal = CherryUtil.getCurrent(selectedNode);
-						ActionDialog.doExecuteAction((ActionDescriptor) action, parentFinal);
-					}
+					EditorSpace.this.doModify(action);
 				}
 
 				@Override
 				protected void doDelete(Object action) {
-					System.out.println("Delete: " + action);
-					NavNode[] selectedNode = navigation.getSelectedNode();
-					if (selectedNode == null) return;
-					final CaoNode[] parentFinal = CherryUtil.getCurrent(selectedNode);
-					System.out.println("Node: " + parentFinal);
-					ActionDialog.doExecuteAction((ActionDescriptor) action, parentFinal);
+					EditorSpace.this.doDelete(action);
 				}
 
 				@Override
@@ -353,6 +317,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 					}
 				}
 			});
+			
 			navigation.addItemClickListener( new ItemClickListener() {
 				
 				@Override
@@ -362,16 +327,108 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 						if (selectedNode == null || selectedNode.length != 1) return;
 						GuiUtil.getApi().navigateToEditor(selectedNode[0].getCurrent());
 						navigationSlider.collapse();
+					} else
+					if (event.getButton() == MouseButton.RIGHT) {
+						
+						ContextMenu cmMenu = new ContextMenu();
+						ContextMenuItem cmRefresh = cmMenu.addItem("Refresh");
+						cmRefresh.setSeparatorVisible(true);
+						cmRefresh.addItemClickListener(p -> { navigation.doRefreshSelection(); });
+						ContextMenuItem cmEdit = cmMenu.addItem("Edit");
+						cmEdit.setSeparatorVisible(true);
+						ContextMenuItem cmCreate = cmMenu.addItem("New");
+						cmCreate.addItemClickListener(p -> { openCreateSlider(); });
+						ContextMenuItem cmDelete = cmMenu.addItem("Delete");
+						cmDelete.addItemClickListener(p -> { doDelete(null);});
+						cmMenu.setAsContextMenuOf(navigation.getTree());
+
+						List<Pair<String, Object>> list = getModifyOptionsList();
+						for (Pair<String, Object> p : list) {
+							ContextMenuItem cmItem = cmEdit.addItem(p.getKey());
+							cmItem.setData(p.getValue());
+							cmItem.addItemClickListener(x -> { doModify( ((ContextMenuItem)x.getSource()).getData() ); } );
+							if (".".equals(p.getValue()) )
+								cmItem.setSeparatorVisible(true);
+						}
+						
+						cmMenu.open(event.getClientX(),event.getClientY());
+//						cmMenu.open(0,0);
 					}
 				}
 			} );
-			
+
 			if (resource != null && resource.length > 0) {
 				navigationToolBar.setEnabled(false);
 				navigation.setSelected(resource[0]);
 			}
 		}
 		
+	}
+
+	protected void openCreateSlider() {
+		NavNode[] selectedNode = navigation.getSelectedNode();
+		if (selectedNode != null) {
+			createSlider.expand();
+			navigationSlider.collapse();
+		}
+	}
+
+	protected void doDelete(Object action) {
+		System.out.println("Delete: " + action);
+		NavNode[] selectedNode = navigation.getSelectedNode();
+		if (selectedNode == null) return;
+		final CaoNode[] parentFinal = CherryUtil.getCurrent(selectedNode);
+		System.out.println("Node: " + parentFinal);
+		
+		if (action == null) {
+			List<Pair<String, Object>> list = getDeleteOptionsList();
+			if (list.size() < 1) return;
+			action = list.get(0).getValue();
+		}
+		
+		ActionDialog.doExecuteAction((ActionDescriptor) action, parentFinal);
+	}
+
+	protected void doModify(Object action) {
+		System.out.println("Modify: " + action);
+		NavNode[] selectedNode = navigation.getSelectedNode();
+		if (selectedNode == null) return;
+		if (".".equals(action)) {
+			if (selectedNode != null && selectedNode.length == 1) {
+				GuiUtil.getApi().navigateToEditor(selectedNode[0].getCurrent());
+				navigationSlider.collapse();
+//						doShow(vHost,selectedNode.getCurrent());
+			}
+		} else {
+			final CaoNode[] parentFinal = CherryUtil.getCurrent(selectedNode);
+			ActionDialog.doExecuteAction((ActionDescriptor) action, parentFinal);
+		}
+	}
+
+	protected List<Pair<String, Object>> getDeleteOptionsList() {
+		NavNode[] selectedNode = navigation.getSelectedNode();
+		if (selectedNode == null) return null;
+		LinkedList<Pair<String,Object>> list = new LinkedList<>();
+		Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, CherryUtil.getCurrent(selectedNode));
+		for (ActionDescriptor action :actions) {
+			list.add(new Pair<String,Object>(action.getCaption(), action ) );
+		}
+		return list;
+	}
+
+	protected List<Pair<String, Object>> getModifyOptionsList() {
+		NavNode[] selectedNode = navigation.getSelectedNode();
+		if (selectedNode == null) return null;
+		
+		LinkedList<Pair<String,Object>> list = new LinkedList<>();
+		list.add(new Pair<String, Object>("Open", "."));
+		
+		Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_MODIFY, CherryUtil.getCurrent(selectedNode));
+		for (ActionDescriptor action :actions) {
+			list.add(new Pair<String,Object>(action.getCaption(), action ) );
+		}
+		
+		return list;
 	}
 
 	private synchronized String doShow(String resId) {

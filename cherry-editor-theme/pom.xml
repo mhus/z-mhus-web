@@ -35,6 +35,11 @@
 			<artifactId>vaadin-sliderpanel</artifactId>
 			<version>${ports.version}</version>
         </dependency>
+        <dependency>
+			<groupId>de.mhus.ports</groupId>
+			<artifactId>vaadin-contextmenu</artifactId>
+			<version>${ports.version}</version>
+        </dependency>
 		
     </dependencies>
 

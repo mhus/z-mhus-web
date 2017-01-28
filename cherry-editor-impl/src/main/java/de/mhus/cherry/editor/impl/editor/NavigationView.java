@@ -11,6 +11,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.TreeTable;
@@ -28,6 +29,7 @@ import de.mhus.cherry.portal.api.NavNode.TYPE;
 import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
@@ -37,7 +39,6 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 
 	private static final long serialVersionUID = 1L;
 	private TreeTable tree;
-	private Action actionReload;
 
 	public NavigationView() {
 		tree = new TreeTable("Navigation");
@@ -79,36 +80,6 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 		tree.setVisibleColumns("name","tecName","hidden","acl","theme","pageType");
 		tree.setColumnHeaders("Navigation","Name","Hidden","ACL","Theme","Type");
 		
-		actionReload = new Action("Reload");
-		tree.addActionHandler(new Action.Handler() {
-			
-			@Override
-			public void handleAction(Action action, Object sender, Object target) {
-				if (action == actionReload) {
-					Object v = tree.getValue();
-					if (v == null) return;
-					if (v instanceof String) {
-						String id = (String)v;
-						if (id != null) {
-	            			doRefreshNode(id);
-						}
-					} else
-					if (v instanceof Collection) {
-						Collection<String> list = (Collection<String>)v;
-						if (list == null || list.size() == 0) return;
-						for (String id : list) {
-	            			doRefreshNode(id);
-						}
-					}
-				}
-			}
-			
-			@Override
-			public Action[] getActions(Object target, Object sender) {
-				return new Action[] { actionReload };
-			}
-		});
-		
 		this.addComponent(tree);
 		this.setSizeFull();
 	}
@@ -116,6 +87,24 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 	@Override
 	public void doRefreshNode(CaoNode node) {
 		doRefreshNode(node.getId());
+	}
+	
+	public void doRefreshSelection() {
+		Object v = tree.getValue();
+		if (v == null) return;
+		if (v instanceof String) {
+			String id = (String)v;
+			if (id != null) {
+    			doRefreshNode(id);
+			}
+		} else
+		if (v instanceof Collection) {
+			Collection<String> list = (Collection<String>)v;
+			if (list == null || list.size() == 0) return;
+			for (String id : list) {
+    			doRefreshNode(id);
+			}
+		}
 	}
 
 	public void doRefreshNode(String id) {
@@ -279,6 +268,10 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 		tree.addValueChangeListener(listener);
 	}
 
+    public void addItemClickListener(ItemClickListener listener) {
+    	tree.addItemClickListener(listener);
+    }
+	
 	public void setSelected(CaoNode resource) {
 		LinkedList<CaoNode> path = new LinkedList<>();
 		CaoNode p = resource;
@@ -292,8 +285,8 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 		tree.select(resource.getId());
 	}
 
-	public void addItemClickListener(ItemClickListener listener) {
-		tree.addItemClickListener(listener);
+	public TreeTable getTree() {
+		return tree;
 	}
 	
 }

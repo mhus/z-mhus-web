@@ -11,7 +11,9 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.core.console.ConsoleTable;
 import de.mhus.lib.karaf.MOsgi;
@@ -24,7 +26,7 @@ public class CmdVHost implements Action {
 	@Argument(index=0, name="vhost", required=true, description="Virtual Host name or *", multiValued=false)
     String host;
 	
-	@Argument(index=1, name="cmd", required=true, description="Command: list,config", multiValued=false)
+	@Argument(index=1, name="cmd", required=true, description="Command: list,config, use, release, current", multiValued=false)
     String cmd;
 
 	@Argument(index=2, name="parameters", required=false, description="Parameters", multiValued=true)
@@ -34,6 +36,7 @@ public class CmdVHost implements Action {
 	public Object execute() throws Exception {
 		
 		if (cmd.equals("list")) {
+
 			ConsoleTable out = new ConsoleTable();
 			out.setHeaderValues("Name", "Type","Bundle");
 			for ( de.mhus.lib.karaf.MOsgi.Service<VirtualHost> ref : MOsgi.getServiceRefs(VirtualHost.class, null)) {
@@ -80,10 +83,35 @@ public class CmdVHost implements Action {
 					list.add(parameters[i]);
 				vhost.setConfigurationList(name, list);
 			}
+		} else
+		if (cmd.equals("use")) {
+			CherryCallContext callContext = new CherryCallContext();
+			callContext.setHttpRequest(null);
+			callContext.setHttpResponse(new CherryResponseWrapper(null));
+			callContext.setHttpServlet(null);
+			callContext.setVirtualHost(vhost);
+			CherryApiImpl.instance.setCallContext(callContext);
+			printCurrentVHost();
+		} else
+		if (cmd.equals("release")) {
+			CherryApiImpl.instance.setCallContext(null);
+			printCurrentVHost();
+		} else
+		if (cmd.equals("current")) {
+			printCurrentVHost();
 		}
 		
 		
 		return null;
+	}
+
+	private void printCurrentVHost() {
+		CallContext currentCall = CherryApiImpl.instance.getCurrentCall();
+		if (currentCall != null) {
+			System.out.println(currentCall.getVirtualHost());
+		} else {
+			System.out.println("*undefined*");
+		}
 	}
 
 	

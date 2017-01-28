@@ -101,4 +101,9 @@ public class ResourceAccount extends MLog implements Account {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 }
