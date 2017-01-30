@@ -3,6 +3,7 @@ package de.mhus.cherry.editor.impl;
 import java.util.LinkedList;
 import java.util.Map;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button.ClickEvent;
@@ -38,6 +39,7 @@ public class Desktop extends CssLayout {
 	private MenuItem menuTrace;
 	private MenuItem menuHistory;
 	private MenuItem menuBack;
+	private Refresher refresher;
 	private static Log log = Log.getLog(Desktop.class);
 
 	public Desktop(ControlUi cherryUi) {
@@ -47,6 +49,17 @@ public class Desktop extends CssLayout {
 
 	private void initGui() {
 		
+		refresher = new Refresher();
+		refresher.setRefreshInterval(1000);
+		refresher.addListener(new Refresher.RefreshListener() {
+			
+			@Override
+			public void refresh(Refresher source) {
+				doTick();
+			}
+		});
+		addExtension(refresher);
+
 		overView = new GridLayout();
 		overView.setSizeFull();
 		overView.setMargin(true);
@@ -139,6 +152,10 @@ public class Desktop extends CssLayout {
 		setSizeFull();
 		
 		showOverview();
+	}
+
+	protected void doTick() {
+		
 	}
 
 	public void refreshSpaceList(Map<String, GuiSpaceService> spaceList) {

@@ -26,19 +26,23 @@ import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.NavNode.TYPE;
+import de.mhus.cherry.portal.api.StructureChangesListener;
 import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.aspect.Changes;
+import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.sop.api.Sop;
 
-public class NavigationView extends VerticalLayout implements ControlParent {
+public class NavigationView extends VerticalLayout implements ControlParent, StructureChangesListener {
 
 	private static final long serialVersionUID = 1L;
 	private TreeTable tree;
+	private VirtualHost vHost;
 
 	public NavigationView() {
 		tree = new TreeTable("Navigation");
@@ -82,6 +86,8 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 		
 		this.addComponent(tree);
 		this.setSizeFull();
+		
+		vHost.getStructureRegistry().registerWeak(this);
 	}
 	
 	@Override
@@ -179,7 +185,7 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 		container.addContainerProperty("icon", FontAwesome.class, null);
 		
 		String host = ((ControlUi)GuiUtil.getApi()).getHost();
-		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
+		vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
 		NavNode navRoot = vHost.getNavigationProvider().getNode("/");
 		
 		try {
@@ -287,6 +293,43 @@ public class NavigationView extends VerticalLayout implements ControlParent {
 
 	public TreeTable getTree() {
 		return tree;
+	}
+
+	@Override
+	public void navigationChanges(Change[] changes) {
+//		if (tree == null || tree.getUI() == null) return;
+//		tree.getUI().access(new Runnable() {
+//			@Override
+//			public void run() {
+				for (Change c : changes)
+					switch (c.getEvent()) {
+					case BIG_CHANGE:
+		//				doRefreshNode( ); all
+						break;
+					case CREATED:
+						doRefreshNode(c.getParent());
+						break;
+					case DELETED:
+						doRefreshNode(c.getParent());
+						break;
+					case LINK:
+						doRefreshNode(c.getParent());
+						break;
+					case MODIFIED:
+						doRefreshNode(c.getNode());
+						break;
+					case MOVED:
+						doRefreshNode(c.getParent());
+						break;
+					case UNLINK:
+						doRefreshNode(c.getParent());
+						break;
+					default:
+						MLogUtil.log().e("Unknown Change Event",c.getEvent());
+						break;
+					}
+//			}
+//			});
 	}
 	
 }

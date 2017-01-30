@@ -63,6 +63,8 @@ public class ControlServlet extends VaadinServlet implements Named {
 		    				((ControlUi)ui).requestEnd();
 		    		}
 				}
+				// remember the last call object
+//				vaadinSession.setAttribute("__vc", call);
     		} catch (Throwable t) {
     			
     		}

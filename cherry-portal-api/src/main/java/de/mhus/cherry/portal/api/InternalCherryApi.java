@@ -23,6 +23,8 @@ public interface InternalCherryApi extends SApi {
 
 	void releaseCall(CallContext call);
 
+	void setCallContext(CallContext callContext);
+
 //	IProperties getCherrySession(RequestWrapper request);
 	IProperties getCherrySession(String sessionId);
 	

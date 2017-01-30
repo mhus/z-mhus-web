@@ -19,11 +19,13 @@ import de.mhus.cherry.portal.impl.aaa.ReadAllAuthorizator;
 import de.mhus.cherry.portal.impl.aaa.ResourceAccountSource;
 import de.mhus.cherry.portal.impl.aaa.ResourceAuthorizationSource;
 import de.mhus.cherry.portal.impl.api.DefaultBaseApi;
+import de.mhus.lib.cao.aspect.Changes;
 import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.cao.auth.AuthCore;
 import de.mhus.lib.cao.auth.AuthStructureControl;
 import de.mhus.lib.cao.fdb.FdbCore;
 import de.mhus.lib.cao.fs.FsCore;
+import de.mhus.lib.cao.util.DefaultChangesQueue;
 import de.mhus.lib.cao.util.DefaultStructureControl;
 import de.mhus.lib.cao.util.SharedDataSource;
 import de.mhus.lib.core.MThread;
@@ -53,6 +55,7 @@ public class DemoVirtualHost extends DefaultVirtualHost {
 							new AuthCore( 
 								new FdbCore(CherryApi.DEFAULT_NAVIGATION_PROVIDER, new File(priv, "webcontent/nav"), false)
 									.registerAspectFactory(StructureControl.class, new DefaultStructureControl(WidgetApi.SORT))
+									.registerAspectFactory(Changes.class, new DefaultChangesQueue())
 								, new DefaultAuthorizator()
 							)
 							.registerAspectFactory(StructureControl.class, new AuthStructureControl() )

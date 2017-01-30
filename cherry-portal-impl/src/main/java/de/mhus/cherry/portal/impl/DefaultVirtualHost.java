@@ -6,10 +6,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.MethodNotSupportedException;
+
+import aQute.bnd.annotation.component.Reference;
 import de.mhus.cherry.portal.api.ActionCallback;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
@@ -22,6 +26,7 @@ import de.mhus.cherry.portal.api.ResourceProvider;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ResourceResolver;
 import de.mhus.cherry.portal.api.ScriptRenderer;
+import de.mhus.cherry.portal.api.StructureChangesListener;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorFactory;
@@ -30,12 +35,17 @@ import de.mhus.lib.basics.Named;
 import de.mhus.lib.cao.CaoCore;
 import de.mhus.lib.cao.CaoDataSource;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.aspect.Changes;
 import de.mhus.lib.cao.aspect.StructureControl;
+import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 import de.mhus.lib.cao.util.DefaultStructureControl;
+import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MSystem;
+import de.mhus.lib.core.base.service.TimerFactory;
+import de.mhus.lib.core.base.service.TimerIfc;
 import de.mhus.lib.core.security.AccountSource;
 import de.mhus.lib.core.security.AuthorizationSource;
 import de.mhus.lib.core.util.ReadOnlyList;
@@ -61,14 +71,19 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 	private HashMap<String, List<String>> configurationLists = new HashMap<>();
 	private HashMap<String, ResourceProvider> hostResourceProviders = new HashMap<>();
 	private ContentNodeResolver contentNodeResolver;
-
+	private MEventHandler<StructureChangesListener> structureHandler = new MEventHandler<>();
+	
 	private AccountSource accountSource;
 
 	private AuthorizationSource authorizationSource;
 
 	private String name;
 
+	private TimerIfc timer;
+
 	public DefaultVirtualHost() {
+//		TimerFactory timerFactory = MOsgi.getService(TimerFactory.class);
+//		setTimerFactory(timerFactory);
 	}
 	
 	@Override
@@ -85,6 +100,32 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 			e.printStackTrace();
 		}
 		return;
+	}
+	
+	@Reference(service=TimerFactory.class)
+	public void setTimerFactory(TimerFactory factory) {
+		timer = factory.getTimer();
+		timer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				doUpdates();
+			}
+		}, 1000, 1000);
+	}
+	
+	protected void doUpdates() {
+		if (navigationProvider != null) {
+			Change[] changes = navigationProvider.getChanges();
+			if (changes != null && changes.length != 0) {
+				log().t("fire navigation changes",changes.length);
+				try {
+					structureHandler.fireMethod(StructureChangesListener.class.getMethod("navigationChanges", Change[].class), new Object[] {changes} );
+				} catch(NoSuchMethodException e) {
+					log().e(e);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -552,6 +593,10 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 		
 		actions = CherryUtil.order("control_action_" + type, actions, this);
 		return actions;
+	}
+
+	public MEventHandler<StructureChangesListener> getStructureRegistry() {
+		return structureHandler;
 	}
 	
 }

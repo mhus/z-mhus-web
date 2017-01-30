@@ -3,6 +3,7 @@ package de.mhus.cherry.portal.api;
 import java.util.Collection;
 
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 
 public interface NavigationProvider {
 
@@ -31,5 +32,7 @@ public interface NavigationProvider {
 	 * @return
 	 */
 	public Collection<NavNode> getAllChildren(NavNode navNode);
+	
+	Change[] getChanges();
 	
 }

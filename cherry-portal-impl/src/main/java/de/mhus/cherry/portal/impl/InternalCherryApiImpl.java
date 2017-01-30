@@ -79,18 +79,20 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 		SecurityApi sec = Sop.getApi(SecurityApi.class, false);
 		if (sec != null) {
 			sec.checkHttpRequest(req, res);
-			if (res.isCommitted()) return null;
+			if (res != null && res.isCommitted()) return null;
 		}
 		CherryCallContext callContext = new CherryCallContext();
 		callContext.setHttpRequest(req);
-		callContext.setHttpResponse(new CherryResponseWrapper(res));
+		if (res != null)
+			callContext.setHttpResponse(new CherryResponseWrapper(res));
 		callContext.setHttpServlet(servlet);
 
 		// find virtual host
 		String host = req.getHeader("Host");
 		VirtualHost vHost = CherryApiImpl.instance.findVirtualHost(host);
 		if (vHost == null) {
-			res.sendError(HttpServletResponse.SC_BAD_GATEWAY);
+			if (res != null)
+				res.sendError(HttpServletResponse.SC_BAD_GATEWAY);
 			return callContext; // is commited ?
 		}
 		callContext.setVirtualHost(vHost);
@@ -135,7 +137,7 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
         AaaContext context = getContext( req.getSession().getId() );
         if (context == null) {
         	context = vHost.doLogin(new HttpServletRequestWrapper(req), new HttpServletResponseWrapper(res) );
-        	if (res.isCommitted()) return callContext;
+        	if (res != null && res.isCommitted()) return callContext;
         }
         //callContext.setCurrentAaaContext(context);
         access.process(context);
@@ -160,6 +162,14 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 		return callContext;
 	}
 
+	@Override
+	public void setCallContext(CallContext callContext) {
+		if (callContext != null && callContext instanceof CherryCallContext) {
+			CherryCallContext call = (CherryCallContext) callContext;
+			CherryApiImpl.instance.setCallContext(call);
+		}
+	}
+	
 	@Override
 	public void releaseCall(CallContext call) {
 		

@@ -53,10 +53,12 @@
     <service interface="de.mhus.osgi.sop.api.aaa.AccessApi" ref="impl">
     </service>	
 	
+    <reference interface="de.mhus.lib.core.base.service.TimerFactory" id="timerFactory" />
 	
 	<!-- The demo vHost automatically load all resources -->
     <bean id="defaultVirtualHost" class="de.mhus.cherry.portal.demo.DemoVirtualHost">
 	    <property name="name" value="default"/>
+	    <property name="timerFactory" ref="timerFactory" />
     </bean>
 
     <service interface="de.mhus.cherry.portal.api.VirtualHost" ref="defaultVirtualHost" id="cherry_virtual_host_default">

@@ -115,7 +115,7 @@ public class CherryUtil {
 		try {
 		
 			CallContext call = Sop.getApi(InternalCherryApi.class).createCall(servlet, request, response);
-			if (response.isCommitted()) return null;
+			if (response != null && response.isCommitted()) return null;
 			
 			return call;
 			

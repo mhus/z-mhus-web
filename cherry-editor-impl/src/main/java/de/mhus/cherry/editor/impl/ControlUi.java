@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.TreeMap;
 
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.framework.BundleContext;
@@ -18,14 +17,20 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinResponse;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.util.CurrentInstance;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
@@ -33,6 +38,7 @@ import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.control.GuiApi;
 import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiSpaceService;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MFile;
@@ -55,6 +61,7 @@ import de.mhus.osgi.sop.api.aaa.AccessApi;
 @Widgetset("de.mhus.cherry.editor.theme.CherryWidgetset")
 //@JavaScript({"https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"})
 @JavaScript({"../../../.pub/base/sys/jquery-3.1.1.min.js"})
+//@Push
 public class ControlUi extends UI implements GuiApi {
 
 	private static final long serialVersionUID = 1L;
@@ -320,4 +327,73 @@ public class ControlUi extends UI implements GuiApi {
 		openSpace(parts[1], parts[2], parts[3], false, true);
 	}
 	
+//    @Override
+//	public VaadinSession getSession() {
+//        VaadinSession s = super.getSession();
+//        CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
+//        if (call == null) {
+//        	call = (CallContext) s.getAttribute("__vc");
+//        	if (call != null) {
+//        		Sop.getApi(InternalCherryApi.class).setCallContext(call);
+//        	}
+//        }
+//        return s;
+//    }
+    
+/*
+    @Override
+    public VaadinSession getSession() {
+    	// fix a problem with PUSH servlet ... the push will not call the default vaadin servlet and call is not initialized
+        VaadinSession s = super.getSession();
+//        log.i("GET SESSION",s);
+//        VaadinRequest request = CurrentInstance.get(VaadinRequest.class);
+//        VaadinResponse response = CurrentInstance.get(VaadinResponse.class);
+        VaadinServletRequest cur = (VaadinServletRequest) VaadinService.getCurrentRequest();
+        HttpServletRequest hreq = null;
+        CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
+        if (cur != null) {
+	        hreq = (cur).getHttpServletRequest();
+	//        log.i("CURRENT Request", hreq, call);
+	//				call = Sop.getApi(InternalCherryApi.class).createCall(ControlServlet.getCurrent(), hreq, null);
+        }
+        if (call == null) {
+        	call = CherryUtil.prepareHttpRequest(ControlServlet.getCurrent(), hreq, null);
+        	if (call != null) log.i("Create call on the fly");
+        }
+        return s;
+    }
+*/
+	
+	/*
+java.lang.NullPointerException
+	at de.mhus.cherry.portal.impl.InternalCherryApiImpl.createCall(InternalCherryApiImpl.java:91)
+	at de.mhus.cherry.portal.api.util.CherryUtil.prepareHttpRequest(CherryUtil.java:117)
+	at de.mhus.cherry.editor.impl.ControlUi.getSession(ControlUi.java:346)
+	at com.vaadin.server.communication.PushHandler$1.run(PushHandler.java:83)
+	at com.vaadin.server.communication.PushHandler.callWithUi(PushHandler.java:240)
+	at com.vaadin.server.communication.PushHandler.onConnect(PushHandler.java:483)
+	at com.vaadin.server.communication.PushAtmosphereHandler.onConnect(PushAtmosphereHandler.java:99)
+	at com.vaadin.server.communication.PushAtmosphereHandler.onRequest(PushAtmosphereHandler.java:75)
+	at org.atmosphere.cpr.AsynchronousProcessor.action(AsynchronousProcessor.java:199)
+	at org.atmosphere.cpr.AsynchronousProcessor.suspended(AsynchronousProcessor.java:107)
+	at org.atmosphere.container.Jetty9AsyncSupportWithWebSocket.service(Jetty9AsyncSupportWithWebSocket.java:180)
+	at org.atmosphere.cpr.AtmosphereFramework.doCometSupport(AtmosphereFramework.java:2075)
+	at org.atmosphere.websocket.DefaultWebSocketProcessor.dispatch(DefaultWebSocketProcessor.java:571)
+	at org.atmosphere.websocket.DefaultWebSocketProcessor.open(DefaultWebSocketProcessor.java:215)
+	at org.atmosphere.container.Jetty9WebSocketHandler.onWebSocketConnect(Jetty9WebSocketHandler.java:110)
+	at org.eclipse.jetty.websocket.common.events.JettyListenerEventDriver.onConnect(JettyListenerEventDriver.java:87)
+	at org.eclipse.jetty.websocket.common.events.AbstractEventDriver.openSession(AbstractEventDriver.java:227)
+	at org.eclipse.jetty.websocket.common.WebSocketSession.open(WebSocketSession.java:421)
+	at org.eclipse.jetty.websocket.server.WebSocketServerConnection.onOpen(WebSocketServerConnection.java:72)
+	at org.eclipse.jetty.io.AbstractEndPoint.upgrade(AbstractEndPoint.java:185)
+	at org.eclipse.jetty.server.HttpConnection.completed(HttpConnection.java:345)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:436)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:257)
+	at org.eclipse.jetty.io.AbstractConnection$2.run(AbstractConnection.java:544)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:635)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:555)
+	at java.lang.Thread.run(Thread.java:745)
+2017-01-30T14:44:52 WARN : de.mhus.lib.core.logging.MLogUtil [672]
+
+	 */
 }

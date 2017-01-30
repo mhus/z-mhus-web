@@ -9,8 +9,12 @@ import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.NavNode.TYPE;
 import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.lib.cao.CaoAspectFactory;
 import de.mhus.lib.cao.CaoConnection;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.aspect.Changes;
+import de.mhus.lib.cao.util.DefaultChangesQueue;
+import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
 import de.mhus.osgi.sop.api.Sop;
@@ -120,6 +124,16 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 		for (CaoNode node : parent.getType() == TYPE.NAVIGATION ? parent.getNav().getNodes() : parent.getRes().getNodes())
 			out.add( prepare(parent, node) );
 		return out;
+	}
+
+	@Override
+	public Change[] getChanges() {
+		if (connection == null) return null;
+		CaoAspectFactory<Changes> factory = connection.getAspectFactory(Changes.class);
+		if (factory != null && factory instanceof DefaultChangesQueue) {
+			return ((DefaultChangesQueue)factory).clearEventQueue();
+		}
+		return null;
 	}
 
 }

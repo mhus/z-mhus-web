@@ -8,6 +8,7 @@ import java.util.Set;
 
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.security.AccountSource;
 import de.mhus.lib.core.security.AuthorizationSource;
 import de.mhus.lib.servlet.RequestWrapper;
@@ -83,4 +84,6 @@ public interface VirtualHost {
 	 */
 	public Collection<ActionDescriptor> getActions(String type, CaoNode[] node);
 	
+	public MEventHandler<StructureChangesListener> getStructureRegistry();
+
 }
