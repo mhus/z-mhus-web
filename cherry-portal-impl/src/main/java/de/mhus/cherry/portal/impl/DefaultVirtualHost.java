@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
@@ -79,11 +80,20 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 
 	private String name;
 
-	private TimerIfc timer;
+	private Timer timer;
 
 	public DefaultVirtualHost() {
 //		TimerFactory timerFactory = MOsgi.getService(TimerFactory.class);
 //		setTimerFactory(timerFactory);
+		timer = new Timer(true);
+		timer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				doUpdates();
+			}
+		}, 5000, 1000);
+
 	}
 	
 	@Override
@@ -102,23 +112,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 		return;
 	}
 	
-	@Reference(service=TimerFactory.class)
-	public void setTimerFactory(TimerFactory factory) {
-		timer = factory.getTimer();
-		timer.schedule(new TimerTask() {
-			
-			@Override
-			public void run() {
-				doUpdates();
-			}
-		}, 1000, 1000);
-	}
-	
 	protected void doUpdates() {
 		if (navigationProvider != null) {
 			Change[] changes = navigationProvider.getChanges();
 			if (changes != null && changes.length != 0) {
-				log().t("fire navigation changes",changes.length);
+				log().d("fire navigation changes",changes.length);
 				try {
 					structureHandler.fireMethod(StructureChangesListener.class.getMethod("navigationChanges", Change[].class), new Object[] {changes} );
 				} catch(NoSuchMethodException e) {
