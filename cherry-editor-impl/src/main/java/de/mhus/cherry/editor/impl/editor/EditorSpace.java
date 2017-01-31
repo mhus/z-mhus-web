@@ -25,6 +25,7 @@ import com.vaadin.server.ClientConnector.AttachEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
 import com.vaadin.shared.MouseEventDetails.MouseButton;
+import com.vaadin.shared.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
@@ -49,7 +50,9 @@ import de.mhus.cherry.portal.api.control.GuiLifecycle;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.cherry.portal.api.util.CherryUtil;
+import de.mhus.lib.cao.CaoAspect;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
@@ -262,7 +265,30 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 	protected void doResetNavigationContent() {
 		if (navigation == null) {
-			navigation = new NavigationView();
+			navigation = new NavigationView() {
+
+				@Override
+				public void move(NavNode source, NavNode target, VerticalDropLocation location) {
+					CaoNode s = source.getCurrent();
+					CaoNode t = target.getCurrent();
+					StructureControl control = s.adaptTo(StructureControl.class);
+					
+					switch (location) {
+					case MIDDLE:
+						control.moveTo(t);
+						break;
+					case TOP:
+						control.moveBefore(t);
+						break;
+					case BOTTOM:
+						control.moveAfter(t);
+						break;
+					default:
+						break;
+					}
+				}
+				
+			};
 			navigationContent.addComponent(navigation, BorderLayout.Constraint.CENTER);
 			navigationContent.setWidth( "100%" );
 			navigationSlider.setFixedContentSize(Page.getCurrent().getBrowserWindowWidth() - 200);

@@ -1,6 +1,7 @@
 package de.mhus.cherry.portal.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import de.mhus.cherry.portal.api.CherryApi;
@@ -9,6 +10,7 @@ import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.NavNode.TYPE;
 import de.mhus.cherry.portal.api.NavigationProvider;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoAspectFactory;
 import de.mhus.lib.cao.CaoConnection;
 import de.mhus.lib.cao.CaoNode;
@@ -98,6 +100,7 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 				if (!node.getName().startsWith(CherryApi.NAV_CONTENT_NODE_PREFIX))
 					out.add( prepare(parent, node) );
 		}
+		out.sort( (NavNode a,NavNode b) -> Integer.compare(a.getCurrent().getInt(WidgetApi.SORT, -1), b.getCurrent().getInt(WidgetApi.SORT, -1)) );
 		return out;
 	}
 
@@ -123,6 +126,7 @@ public class DefaultNavigationProvider extends MLog implements NavigationProvide
 		LinkedList<NavNode> out = new LinkedList<>();
 		for (CaoNode node : parent.getType() == TYPE.NAVIGATION ? parent.getNav().getNodes() : parent.getRes().getNodes())
 			out.add( prepare(parent, node) );
+		out.sort( (NavNode a,NavNode b) -> Integer.compare(a.getCurrent().getInt(WidgetApi.SORT, -1), b.getCurrent().getInt(WidgetApi.SORT, -1)) );
 		return out;
 	}
 
