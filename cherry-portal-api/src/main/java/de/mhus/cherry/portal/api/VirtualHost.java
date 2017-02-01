@@ -86,4 +86,8 @@ public interface VirtualHost {
 	
 	public MEventHandler<StructureChangesListener> getStructureRegistry();
 
+	void doUpdates();
+
+	public void doPrepareCreatedWidget(CaoNode res, EditorFactory factory);
+
 }

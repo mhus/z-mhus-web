@@ -44,10 +44,9 @@ public class SimpleEditorFactory extends AbstractEditorFactory implements Editor
 	}
 
 	@Override
-	public boolean doPrepareCreateWidget(CaoNode content, String title) {
+	public boolean doPrepareCreatedWidget(CaoNode content) {
 		try {
 			CaoWritableElement w = content.getWritableNode();
-			w.setString(WidgetApi.RES_TITLE, title);
 			w.setString(CherryApi.RES_RET_TYPE, CherryApi.RET_TYPE_PAGE);
 			w.setString(WidgetApi.RENDERER, "de.mhus.cherry.portal.impl.page.SimplePage");
 			w.setString(WidgetApi.EDITOR, "de.mhus.cherry.portal.demo.simpleeditorfactory");

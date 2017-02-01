@@ -10,8 +10,10 @@ import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.NavNode;
+import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorFactory;
+import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
@@ -29,6 +31,7 @@ import de.mhus.lib.form.DataSource;
 import de.mhus.lib.form.Item;
 import de.mhus.lib.form.PropertiesDataSource;
 import de.mhus.lib.form.definition.FmCheckbox;
+import de.mhus.lib.form.definition.FmCombobox;
 import de.mhus.lib.form.definition.FmText;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperation;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperationEditor;
@@ -71,19 +74,31 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 		String title = context.getParameters().getString("title");
 		String name = context.getParameters().getString("name", MFile.normalize(title));
 		boolean hidden = context.getParameters().getBoolean("hidden", true);
+		String pageType = context.getParameters().getString("pageType");
+		
 		StructureControl control = nav.adaptTo(StructureControl.class);
 		MProperties properties = new MProperties();
 		properties.setString(WidgetApi.RES_TITLE, title);
 		properties.setBoolean(CherryApi.NAV_HIDDEN, hidden);
+		properties.setString(WidgetApi.RENDERER, pageType);
+		
 		CaoNode res = control.createChildNode(name, properties);
 		if (res == null) return new NotSuccessful(this, "not created", "error=Can't create node", -1);
+		
+		StructureControl controlNew = res.adaptTo(StructureControl.class);
+		controlNew.moveToBottom();
+
+		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost,res);
+		vHost.doPrepareCreatedWidget(res, factory);
+		
 		return new Successful(this, "ok", res);
 	}
 
 	@Override
 	protected OperationDescription createDescription() {
 		return new OperationDescription(this, "Create Child Navigation", new DefRoot(
-					new FmText("pageType", "Page Type", "Type of the new page"),
+					new FmCombobox("pageType", "Page Type", "Type of the new page"),
 					new FmText("title", "Page Title", "Title of the new page"),
 					new FmText("name", "Node Name", "Technical node name shown in path, leave blank for default"),
 					new FmCheckbox("hidden", "Hidden", "Set node to hidden")

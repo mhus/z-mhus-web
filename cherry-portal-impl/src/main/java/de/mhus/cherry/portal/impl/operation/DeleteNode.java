@@ -5,6 +5,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
@@ -21,6 +22,7 @@ import de.mhus.lib.form.definition.FmCheckbox;
 import de.mhus.lib.form.definition.FmText;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperation;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperationEditor;
+import de.mhus.osgi.sop.api.Sop;
 
 @Component(properties="tags=control|caonode|delete",provide=Operation.class)
 public class DeleteNode extends AbstractVaadinOperation {
@@ -59,6 +61,9 @@ public class DeleteNode extends AbstractVaadinOperation {
 			if (! control.delete(recursive) )
 				res = false; // TODO collect not successful
 		}
+		
+		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+
 		return res ? new Successful(this) : new NotSuccessful(this, "Not", -1);
 	}
 

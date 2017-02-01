@@ -181,7 +181,7 @@ public class PageControlControl extends MLog implements PageControlFactory {
 							VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
 							NavNode newNode = Sop.getApi(CherryApi.class).createNavNode(vHost, nav.getNav(), null, name, title);
 
-							boolean success = editor.doPrepareCreateWidget(newNode.getRes(), title);
+							boolean success = editor.doPrepareCreatedWidget(newNode.getRes());
 							if (success)
 								UI.getCurrent().showNotification("Page Created");
 							else

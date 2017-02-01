@@ -37,8 +37,8 @@ public class SimpleWidgetEditor extends AbstractEditorFactory implements EditorF
 	}
 
 	@Override
-	public boolean doPrepareCreateWidget(CaoNode content, String title) {
-		return false;
+	public boolean doPrepareCreatedWidget(CaoNode content) {
+		return true;
 	}
 
 	@Override

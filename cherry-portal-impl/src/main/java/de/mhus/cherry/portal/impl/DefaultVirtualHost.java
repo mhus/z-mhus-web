@@ -39,6 +39,7 @@ import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.Changes;
 import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
+import de.mhus.lib.cao.util.DefaultChangesQueue.EVENT;
 import de.mhus.lib.cao.util.DefaultStructureControl;
 import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.MLog;
@@ -112,9 +113,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 		return;
 	}
 	
-	protected void doUpdates() {
+	@Override
+	public synchronized void doUpdates() {
 		if (navigationProvider != null) {
 			Change[] changes = navigationProvider.getChanges();
+						
 			if (changes != null && changes.length != 0) {
 				log().d("fire navigation changes",changes.length);
 				try {
@@ -593,8 +596,15 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 		return actions;
 	}
 
+	@Override
 	public MEventHandler<StructureChangesListener> getStructureRegistry() {
 		return structureHandler;
+	}
+
+	@Override
+	public void doPrepareCreatedWidget(CaoNode res, EditorFactory factory) {
+		if (factory != null)
+			factory.doPrepareCreatedWidget(res);
 	}
 	
 }

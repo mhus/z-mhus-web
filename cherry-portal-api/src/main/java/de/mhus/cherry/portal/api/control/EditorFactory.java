@@ -15,7 +15,7 @@ public interface EditorFactory extends Named, Nls {
 	AbstractComponent createPreview(CaoNode res);
 	LayoutPanel createLayoutPanel(CaoNode res);
 	
-	boolean doPrepareCreateWidget(CaoNode content, String title);
+	boolean doPrepareCreatedWidget(CaoNode content);
 	boolean doDeleteWidget(CaoNode res);
 	
 	TYPE getType();

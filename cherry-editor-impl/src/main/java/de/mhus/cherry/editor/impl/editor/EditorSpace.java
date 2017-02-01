@@ -286,6 +286,9 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 					default:
 						break;
 					}
+					
+					Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+
 				}
 				
 			};
@@ -362,6 +365,20 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 						cmRefresh.addItemClickListener(p -> { navigation.doRefreshSelection(); });
 						ContextMenuItem cmEdit = cmMenu.addItem("Edit");
 						cmEdit.setSeparatorVisible(true);
+						
+						NavNode[] selectedNode = navigation.getSelectedNode();
+						if (selectedNode != null && selectedNode.length == 1) {
+							ContextMenuItem cmMove = cmMenu.addItem("Move");
+							ContextMenuItem cmMoveUp = cmMove.addItem("Up");
+							cmMoveUp.addItemClickListener(p -> { moveUp(); });
+							ContextMenuItem cmMoveDown = cmMove.addItem("Down");
+							cmMoveDown.addItemClickListener(p -> { moveDown(); });
+							ContextMenuItem cmMoveTop = cmMove.addItem("To top");
+							cmMoveTop.addItemClickListener(p -> { moveTop(); });
+							ContextMenuItem cmMoveBottom = cmMove.addItem("To bottom");
+							cmMoveBottom.addItemClickListener(p -> { moveBottom(); });
+						}
+						
 						ContextMenuItem cmCreate = cmMenu.addItem("New");
 						cmCreate.addItemClickListener(p -> { openCreateSlider(); });
 						ContextMenuItem cmDelete = cmMenu.addItem("Delete");
@@ -377,6 +394,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 								cmItem.setSeparatorVisible(true);
 						}
 						
+						
 						cmMenu.open(event.getClientX(),event.getClientY());
 //						cmMenu.open(0,0);
 					}
@@ -389,6 +407,42 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			}
 		}
 		
+	}
+
+	protected void moveBottom() {
+		NavNode[] selectedNode = navigation.getSelectedNode();
+		if (selectedNode == null || selectedNode.length != 1) return;
+		StructureControl control = selectedNode[0].getCurrent().adaptTo(StructureControl.class);
+		if (control == null) return;
+		control.moveToBottom();
+		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+	}
+
+	protected void moveTop() {
+		NavNode[] selectedNode = navigation.getSelectedNode();
+		if (selectedNode == null || selectedNode.length != 1) return;
+		StructureControl control = selectedNode[0].getCurrent().adaptTo(StructureControl.class);
+		if (control == null) return;
+		control.moveToTop();
+		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+	}
+
+	protected void moveDown() {
+		NavNode[] selectedNode = navigation.getSelectedNode();
+		if (selectedNode == null || selectedNode.length != 1) return;
+		StructureControl control = selectedNode[0].getCurrent().adaptTo(StructureControl.class);
+		if (control == null) return;
+		control.moveDown();
+		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+	}
+
+	protected void moveUp() {
+		NavNode[] selectedNode = navigation.getSelectedNode();
+		if (selectedNode == null || selectedNode.length != 1) return;
+		StructureControl control = selectedNode[0].getCurrent().adaptTo(StructureControl.class);
+		if (control == null) return;
+		control.moveUp();
+		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
 	}
 
 	protected void openCreateSlider() {

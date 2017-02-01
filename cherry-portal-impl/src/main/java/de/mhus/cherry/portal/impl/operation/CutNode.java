@@ -3,6 +3,7 @@ package de.mhus.cherry.portal.impl.operation;
 import com.vaadin.ui.Label;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoAspect;
 import de.mhus.lib.cao.CaoNode;
@@ -17,6 +18,7 @@ import de.mhus.lib.core.strategy.Successful;
 import de.mhus.lib.core.strategy.TaskContext;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperation;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperationEditor;
+import de.mhus.osgi.sop.api.Sop;
 
 @Component(properties="tags=control|caonode|modify",provide=Operation.class)
 public class CutNode extends AbstractVaadinOperation {
@@ -62,6 +64,8 @@ public class CutNode extends AbstractVaadinOperation {
 				}
 			}
 			
+			Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+
 			return res ? new Successful("") : new NotSuccessful("", "", -4);
 		}
 		
