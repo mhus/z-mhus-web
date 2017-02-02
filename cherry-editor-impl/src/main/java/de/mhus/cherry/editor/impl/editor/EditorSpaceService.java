@@ -6,10 +6,11 @@ import com.vaadin.ui.MenuBar.MenuItem;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.lib.core.security.AccessControl;
+import de.mhus.lib.vaadin.desktop.GuiSpace;
 import de.mhus.lib.vaadin.desktop.GuiSpaceService;
 
 @Component(immediate=true,provide=GuiSpaceService.class)
-public class EditorSpaceService implements GuiSpaceService {
+public class EditorSpaceService extends GuiSpace {
 
 	@Override
 	public String getName() {
@@ -24,11 +25,6 @@ public class EditorSpaceService implements GuiSpaceService {
 	@Override
 	public AbstractComponent createSpace() {
 		return new EditorSpace();
-	}
-
-	@Override
-	public boolean hasAccess(AccessControl control) {
-		return true;
 	}
 
 	@Override
@@ -56,17 +52,6 @@ public class EditorSpaceService implements GuiSpaceService {
 	@Override
 	public boolean isHiddenSpace() {
 		return true;
-	}
-
-	@Override
-	public AbstractComponent createTile() {
-		return null;
-	}
-
-	@Override
-	public int getTileSize() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }

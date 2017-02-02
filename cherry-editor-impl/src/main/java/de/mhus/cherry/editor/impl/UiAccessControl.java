@@ -97,7 +97,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 			AaaContext current = Sop.getApi(CherryApi.class).getCurrentCall().getAaaContext();
 			return current.getAccount();
 		} catch (Throwable t) {
-			log().d(t);
+			log().d("getAccount",t.toString());
 			return null;
 		}
 	}

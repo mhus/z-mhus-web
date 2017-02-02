@@ -18,10 +18,11 @@ import aQute.bnd.annotation.component.Deactivate;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.security.AccessControl;
+import de.mhus.lib.vaadin.desktop.GuiSpace;
 import de.mhus.lib.vaadin.desktop.GuiSpaceService;
 
 @Component(immediate=true,provide=GuiSpaceService.class)
-public class DataSpaceService implements GuiSpaceService {
+public class DataSpaceService extends GuiSpace {
 
 	private VerticalLayout tile;
 	private Label mem;
@@ -81,13 +82,13 @@ public class DataSpaceService implements GuiSpaceService {
 	public AbstractComponent createTile() {
 		if (tile == null) {
 			tile = new VerticalLayout();
-			tile.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
-				
-				@Override
-				public void layoutClick(LayoutClickEvent event) {
-					GuiUtil.getApi().openSpace(getName(), null, null);
-				}
-			});
+//			tile.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+//				
+//				@Override
+//				public void layoutClick(LayoutClickEvent event) {
+//					GuiUtil.getApi().openSpace(getName(), null, null);
+//				}
+//			});
 			tile.addComponent(new Label("Data") );
 			mem = new Label();
 			tile.addComponent(mem);
