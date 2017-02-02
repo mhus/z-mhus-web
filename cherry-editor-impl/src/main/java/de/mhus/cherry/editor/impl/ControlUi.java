@@ -16,6 +16,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
@@ -82,10 +83,22 @@ public class ControlUi extends UI implements CherryGuiApi {
 		
         desktop = new Desktop(this) {
         	private MenuItem menuTrace;
+			private Refresher refresher;
         	
         	protected void initGui() {
         		super.initGui();
         		
+        		refresher = new Refresher();
+        		refresher.setRefreshInterval(1000);
+        		refresher.addListener(new Refresher.RefreshListener() {
+        			
+        			@Override
+        			public void refresh(Refresher source) {
+        				doTick();
+        			}
+        		});
+        		addExtension(refresher);
+
         		menuTrace = menuUser.addItem("Trace An", new MenuBar.Command() {
         			
         			@Override
@@ -101,6 +114,11 @@ public class ControlUi extends UI implements CherryGuiApi {
         		});
         		
         	}
+        	
+        	protected void doTick() {
+        		
+        	}
+
         };
 
 		VerticalLayout content = new VerticalLayout();
