@@ -62,6 +62,9 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 				Item[] pageTypeTypesArray = pageTypeTypes.toArray(new Item[pageTypeTypes.size()]);
 				properties.put("pageType." + DataSource.ITEMS, pageTypeTypesArray);
 				
+				VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+//				for (vHost.getContentNodeResolver().getDefaultPages();
+
 			}
 			
 		};
@@ -89,6 +92,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 		controlNew.moveToBottom();
 
 		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		
 		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost,res);
 		vHost.doPrepareCreatedWidget(res, factory);
 		

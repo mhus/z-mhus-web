@@ -8,8 +8,8 @@ import de.mhus.osgi.sop.api.Sop;
 
 public class GuiUtil {
 
-	public static GuiApi getApi() {
-		return (GuiApi) UI.getCurrent();
+	public static CherryGuiApi getApi() {
+		return (CherryGuiApi) UI.getCurrent();
 	}
 
 	public static VirtualHost getVirtualHost() {

@@ -12,6 +12,7 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MSystem;
 
 public class NavigationTag extends TagSupport {
 
@@ -72,7 +73,7 @@ public class NavigationTag extends TagSupport {
 					String s2 = o2.getString(order, null);
 					if (s1 == null && s2 == null) return 0;
 					if (s1 == null) return -1;
-					return s1.compareTo(s2);
+					return MSystem.compareTo(s1,s2);
 				}
 			});
 			nodes = list;

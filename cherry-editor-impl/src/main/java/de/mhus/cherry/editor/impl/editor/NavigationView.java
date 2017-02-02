@@ -335,6 +335,7 @@ public abstract class NavigationView extends VerticalLayout implements ControlPa
 						doRefreshNode(c.getParent());
 						break;
 					case MODIFIED:
+					case RENAMED:
 						doRefreshNode(c.getNode());
 						break;
 					case MOVED:
@@ -342,6 +343,9 @@ public abstract class NavigationView extends VerticalLayout implements ControlPa
 						break;
 					case UNLINK:
 						doRefreshNode(c.getParent());
+						break;
+					case RENDITION_DELETED:
+					case RENDITION_MODIFIED:
 						break;
 					default:
 						MLogUtil.log().e("Unknown Change Event",c.getEvent());

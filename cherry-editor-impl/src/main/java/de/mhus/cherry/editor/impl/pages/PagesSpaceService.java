@@ -4,8 +4,8 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.MenuBar.MenuItem;
 
 import aQute.bnd.annotation.component.Component;
-import de.mhus.cherry.portal.api.control.GuiSpaceService;
 import de.mhus.lib.core.security.AccessControl;
+import de.mhus.lib.vaadin.desktop.GuiSpaceService;
 
 @Component(immediate=true,provide=GuiSpaceService.class)
 public class PagesSpaceService implements GuiSpaceService {
@@ -43,6 +43,12 @@ public class PagesSpaceService implements GuiSpaceService {
 	@Override
 	public AbstractComponent createTile() {
 		return null;
+	}
+
+	@Override
+	public int getTileSize() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

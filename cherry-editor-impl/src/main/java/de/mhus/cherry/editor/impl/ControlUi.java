@@ -29,15 +29,14 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.CurrentInstance;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.InternalCherryApi;
-import de.mhus.cherry.portal.api.control.GuiApi;
-import de.mhus.cherry.portal.api.control.GuiLifecycle;
-import de.mhus.cherry.portal.api.control.GuiSpaceService;
+import de.mhus.cherry.portal.api.control.CherryGuiApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.IProperties;
@@ -53,6 +52,10 @@ import de.mhus.lib.core.security.AccessControl;
 import de.mhus.lib.core.security.Account;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.vaadin.VaadinAccessControl;
+import de.mhus.lib.vaadin.desktop.Desktop;
+import de.mhus.lib.vaadin.desktop.GuiApi;
+import de.mhus.lib.vaadin.desktop.GuiSpaceService;
+import de.mhus.lib.vaadin.login.LoginScreen;
 import de.mhus.lib.vaadin.servlet.VaadinRequestWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
@@ -62,7 +65,7 @@ import de.mhus.osgi.sop.api.aaa.AccessApi;
 //@JavaScript({"https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"})
 @JavaScript({"../../../.pub/base/sys/jquery-3.1.1.min.js"})
 //@Push
-public class ControlUi extends UI implements GuiApi {
+public class ControlUi extends UI implements CherryGuiApi {
 
 	private static final long serialVersionUID = 1L;
 	private static Log log = Log.getLog(ControlUi.class);
@@ -70,15 +73,36 @@ public class ControlUi extends UI implements GuiApi {
 	private AccessControl accessControl;
 	private Desktop desktop;
 	private ServiceTracker<GuiSpaceService,GuiSpaceService> spaceTracker;
-	private TreeMap<String,GuiSpaceService> spaceList = new TreeMap<String, GuiSpaceService>();
-	private HashMap<String, AbstractComponent> spaceInstanceList = new HashMap<String, AbstractComponent>(); 
 	private BundleContext context;
 	private String trailConfig = null;
 	private String host;
-	private LinkedList<String> history = new LinkedList<>();
 
 	@Override
 	protected void init(VaadinRequest request) {
+		
+        desktop = new Desktop(this) {
+        	private MenuItem menuTrace;
+        	
+        	protected void initGui() {
+        		super.initGui();
+        		
+        		menuTrace = menuUser.addItem("Trace An", new MenuBar.Command() {
+        			
+        			@Override
+        			public void menuSelected(MenuItem selectedItem) {
+        				if (getTrailConfig() == null) {
+        					setTrailConfig("MAP");
+        					menuTrace.setText("Trace Aus (" + MLogUtil.getTrailConfig() + ")");
+        				} else {
+        					setTrailConfig(null);
+        					menuTrace.setText("Trace An");
+        				}
+        			}
+        		});
+        		
+        	}
+        };
+
 		VerticalLayout content = new VerticalLayout();
 		setContent(content);
 		content.setSizeFull();
@@ -110,11 +134,8 @@ public class ControlUi extends UI implements GuiApi {
 
 	private void showMainView() {
         addStyleName(ValoTheme.UI_WITH_MENU);
-        desktop = new Desktop(this);
         setContent(desktop);
-		synchronized (this) {
-			desktop.refreshSpaceList(spaceList);
-		}
+		desktop.refreshSpaceList();
 				
 		String nav = UI.getCurrent().getPage().getUriFragment();
 		
@@ -126,7 +147,7 @@ public class ControlUi extends UI implements GuiApi {
 				String backLink = MString.beforeIndex(nav, ':');
 				nav = MString.afterIndex(nav, ':');
 				if (MString.isSet(backLink))
-					rememberNavigation("Webseite", "site", "", backLink, false );
+					desktop.rememberNavigation("Webseite", "site", "", backLink, false );
 			}
 			
 			String[] parts = nav.split("/", 3);
@@ -135,7 +156,7 @@ public class ControlUi extends UI implements GuiApi {
 				String subSpace = parts.length > 1 ? parts[1] : null;
 				String filter = parts.length > 2 ? parts[2] : null;
 				
-				openSpace(space, subSpace, filter, true, false);
+				desktop.openSpace(space, subSpace, filter, true, false);
 
 			}
 			
@@ -144,23 +165,11 @@ public class ControlUi extends UI implements GuiApi {
 		
 	}
 
-	public void rememberNavigation(String caption, String space, String subSpace, String search, boolean navLink) {
-		String newEntry = caption.replace('|', ' ') + "|" + space + "|" + subSpace + "|" + search;
-		while (this.history.remove(newEntry) ) {} // move up
-		this.history.add(newEntry);
-		doUpdateHistoryMenu();
-		if (navLink)
-			UI.getCurrent().getPage().setUriFragment("!:" + space + "/" + (subSpace == null ? "" : subSpace) + "/" + (search == null ? "" : search));
-	}
-
 	@Override
 	public void close() {
 		synchronized (this) {
 			spaceTracker.close();
-			spaceList.clear();
-			for (AbstractComponent v : spaceInstanceList.values())
-				if (v instanceof GuiLifecycle) ((GuiLifecycle)v).doDestroy();
-			spaceInstanceList.clear();
+			desktop.close();
 		}
 		super.close();
 	}
@@ -172,8 +181,7 @@ public class ControlUi extends UI implements GuiApi {
 				ServiceReference<GuiSpaceService> reference) {
 			synchronized (this) {
 				GuiSpaceService service = context.getService(reference);
-				spaceList.put(service.getName(),service);
-				if (desktop != null) desktop.refreshSpaceList(spaceList);
+				desktop.addSpace(service);
 				return service;
 			}
 		}
@@ -183,12 +191,9 @@ public class ControlUi extends UI implements GuiApi {
 				ServiceReference<GuiSpaceService> reference,
 				GuiSpaceService service) {
 			synchronized (this) {
-				spaceList.remove(service.getName());
-				AbstractComponent v = spaceInstanceList.remove(service.getName());
-				if (v instanceof GuiLifecycle) ((GuiLifecycle)v).doDestroy();
+				desktop.removeSpace(service);
 				service = context.getService(reference);
-				spaceList.put(service.getName(),service);
-				if (desktop != null) desktop.refreshSpaceList(spaceList);
+				desktop.addSpace(service);
 			}
 		}
 
@@ -196,42 +201,17 @@ public class ControlUi extends UI implements GuiApi {
 		public void removedService(ServiceReference<GuiSpaceService> reference,
 				GuiSpaceService service) {
 			synchronized (this) {
-				spaceList.remove(service.getName());
-				AbstractComponent v = spaceInstanceList.remove(service.getName());
-				if (v instanceof GuiLifecycle) ((GuiLifecycle)v).doDestroy();
-				if (desktop != null) desktop.refreshSpaceList(spaceList);
+				desktop.removeSpace(service);
 			}
 		}
-	}
-
-	public AbstractComponent getSpaceComponent(String name) {
-		GuiSpaceService space = spaceList.get(name);
-		if (space == null) return null;
-		AbstractComponent instance = spaceInstanceList.get(name);
-		if (instance == null) {
-			instance = space.createSpace();
-			if (instance == null) return null;
-			if (instance instanceof GuiLifecycle) ((GuiLifecycle)instance).doInitialize();
-			spaceInstanceList.put(name, instance);
-		}
-		return instance;
 	}
 
 	public BundleContext getContext() {
 		return context;
 	}
-	
-	public GuiSpaceService getSpace(String name) {
-		return spaceList.get(name);
-	}
-	
+		
 	public AccessControl getAccessControl() {
 		return accessControl;
-	}
-
-	public void removeSpaceComponent(String name) {
-		AbstractComponent c = spaceInstanceList.remove(name);
-		if (c != null && c instanceof GuiLifecycle) ((GuiLifecycle)c).doDestroy();
 	}
 
 	@Override
@@ -243,32 +223,8 @@ public class ControlUi extends UI implements GuiApi {
 		
 	}
 	
-	@Override
-	public boolean openSpace(String spaceId, String subSpace, String search) {
-		return openSpace(spaceId, subSpace, search, true, true);
-	}
-	
-	public boolean openSpace(String spaceId, String subSpace, String search, boolean history, boolean navLink) {
-		GuiSpaceService space = getSpace(spaceId);
-		if (space == null) return false;
-		if (!hasAccess(space.getName()) || !space.hasAccess(getAccessControl())) return false;
-
-		String ret = desktop.showSpace(space, subSpace, search);
-		if (ret != null && history) {
-			String newEntry = ret.replace('|', ' ') + "|" + spaceId + "|" + subSpace + "|" + search;
-			while (this.history.remove(newEntry) ) {} // move up
-			this.history.add(newEntry);
-			doUpdateHistoryMenu();
-		}
-		if (navLink)
-			UI.getCurrent().getPage().setUriFragment("!:" + spaceId + "/" + (subSpace == null ? "" : subSpace) + "/" + (search == null ? "" : search));
-		return ret != null;
-	}
 
 	
-	private void doUpdateHistoryMenu() {
-		desktop.doUpdateHistoryMenu(history);
-	}
 
 	@Override
 	public Subject getCurrentUser() {
@@ -311,20 +267,17 @@ public class ControlUi extends UI implements GuiApi {
 
 	@Override
 	public void navigateToEditor(CaoNode content) {
-		openSpace("editor", null, content.getConnection().getName() + ":" + content.getId() );
+		desktop.openSpace("editor", null, content.getConnection().getName() + ":" + content.getId() );
+	}
+
+	@Override
+	public boolean openSpace(String spaceId, String subSpace, String search) {
+		return desktop.openSpace(spaceId, subSpace, search);
 	}
 
 	@Override
 	public void navigateBack() {
-		if (history.size() == 0) return;
-		String link = history.removeLast();
-		if (history.size() == 0) return;
-		link = history.getLast();
-		doUpdateHistoryMenu();
-		String[] parts = link.split("\\|", 4);
-		if (parts[2].equals("null")) parts[2] = null;
-		if (parts[3].equals("null")) parts[3] = null;
-		openSpace(parts[1], parts[2], parts[3], false, true);
+		desktop.navigateBack();
 	}
 	
 //    @Override
