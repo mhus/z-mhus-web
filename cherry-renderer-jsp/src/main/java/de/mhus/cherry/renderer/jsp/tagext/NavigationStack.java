@@ -4,8 +4,6 @@ import java.util.LinkedList;
 
 import javax.servlet.jsp.PageContext;
 
-import de.mhus.lib.core.AbstractProperties;
-
 public class NavigationStack {
 
 	private static final String NAVIGATION_STACK = "navigation_stack";

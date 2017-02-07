@@ -4,17 +4,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.VerticalLayout;
-
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorFactory;
-import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
@@ -27,7 +22,6 @@ import de.mhus.lib.core.strategy.OperationDescription;
 import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.lib.core.strategy.Successful;
 import de.mhus.lib.core.strategy.TaskContext;
-import de.mhus.lib.core.util.Pair;
 import de.mhus.lib.form.DataSource;
 import de.mhus.lib.form.Item;
 import de.mhus.lib.form.PropertiesDataSource;

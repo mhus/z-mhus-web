@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.servlet.ServletConfig;
@@ -25,9 +24,9 @@ import org.xml.sax.SAXException;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.ProcessorContext;
 import de.mhus.cherry.portal.api.VirtualHost;
-import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.lang.DelegateClassLoader;
 import de.mhus.osgi.sop.api.Sop;

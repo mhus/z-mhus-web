@@ -5,7 +5,6 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 
 import aQute.bnd.annotation.component.Component;
-import de.mhus.lib.core.security.AccessControl;
 import de.mhus.lib.vaadin.desktop.GuiSpace;
 import de.mhus.lib.vaadin.desktop.GuiSpaceService;
 

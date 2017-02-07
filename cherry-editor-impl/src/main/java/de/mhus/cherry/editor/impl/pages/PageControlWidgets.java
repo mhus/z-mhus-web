@@ -1,10 +1,9 @@
 package de.mhus.cherry.editor.impl.pages;
 
-import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.NavNode;
@@ -13,7 +12,6 @@ import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
-import de.mhus.lib.cao.CaoAction;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MXml;

@@ -5,10 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.CallContext;
-import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.NavNode;
-import de.mhus.cherry.portal.api.SessionContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.IProperties;

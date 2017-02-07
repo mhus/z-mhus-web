@@ -1,15 +1,11 @@
 package de.mhus.cherry.renderer.jsp.tagext;
 
-import java.awt.List;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.osgi.sop.api.Sop;

@@ -1,7 +1,6 @@
 package de.mhus.cherry.editor.impl;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -20,12 +19,10 @@ import com.vaadin.ui.UI;
 import aQute.bnd.annotation.component.Activate;
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
-import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.basics.Named;
 import de.mhus.osgi.sop.api.Sop;
-import de.mhus.osgi.sop.api.security.SecurityApi;
 
 @Component(provide = Servlet.class, properties = { "alias=/.control" }, name="CHERRYGUI",servicefactory=true)
 @VaadinServletConfiguration(ui=ControlUi.class, productionMode=true)

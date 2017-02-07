@@ -1,7 +1,6 @@
 package de.mhus.cherry.portal.api;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import de.mhus.lib.cao.CaoNode;
 

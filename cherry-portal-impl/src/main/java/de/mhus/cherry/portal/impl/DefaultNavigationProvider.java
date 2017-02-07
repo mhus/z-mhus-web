@@ -1,7 +1,6 @@
 package de.mhus.cherry.portal.impl;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 import de.mhus.cherry.portal.api.CherryApi;
@@ -19,7 +18,6 @@ import de.mhus.lib.cao.util.DefaultChangesQueue;
 import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
-import de.mhus.osgi.sop.api.Sop;
 
 public class DefaultNavigationProvider extends MLog implements NavigationProvider {
 

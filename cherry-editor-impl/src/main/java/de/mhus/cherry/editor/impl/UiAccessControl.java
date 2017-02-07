@@ -1,7 +1,5 @@
 package de.mhus.cherry.editor.impl;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.vaadin.server.VaadinRequest;
 
 import de.mhus.cherry.portal.api.CherryApi;
@@ -11,12 +9,9 @@ import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.security.AccessControl;
 import de.mhus.lib.core.security.Account;
-import de.mhus.lib.servlet.HttpServletRequestWrapper;
-import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.lib.vaadin.servlet.VaadinRequestWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
-import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 public class UiAccessControl extends MLog implements AccessControl {
 

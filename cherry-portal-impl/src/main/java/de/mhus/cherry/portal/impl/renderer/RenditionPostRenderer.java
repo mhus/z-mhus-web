@@ -2,9 +2,7 @@ package de.mhus.cherry.portal.impl.renderer;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
@@ -13,14 +11,11 @@ import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.lib.cao.CaoAction;
-import de.mhus.lib.cao.CaoException;
 import de.mhus.lib.cao.CaoList;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.action.CaoConfiguration;
-import de.mhus.lib.cao.action.DeleteRenditionConfiguration;
 import de.mhus.lib.cao.action.UploadRenditionConfiguration;
 import de.mhus.lib.core.MFile;
-import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.cfg.CfgLong;
 import de.mhus.lib.core.strategy.DefaultMonitor;
 import de.mhus.lib.core.strategy.OperationResult;

@@ -9,7 +9,6 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import de.mhus.cherry.portal.api.Container;
 import de.mhus.cherry.portal.api.InternalCherryApi;
-import de.mhus.cherry.portal.impl.CherryApiImpl;
 import de.mhus.cherry.portal.impl.InternalCherryApiImpl;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.console.ConsoleTable;

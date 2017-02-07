@@ -9,7 +9,6 @@ import de.mhus.lib.core.strategy.Operation;
 import de.mhus.lib.core.strategy.OperationDescription;
 import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.lib.core.strategy.TaskContext;
-import de.mhus.lib.form.definition.FmCheckbox;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperation;
 import de.mhus.lib.vaadin.operation.AbstractVaadinOperationEditor;
 import de.mhus.osgi.sop.api.Sop;

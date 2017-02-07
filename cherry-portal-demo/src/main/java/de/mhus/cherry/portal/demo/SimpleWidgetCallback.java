@@ -5,10 +5,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.ActionCallback;
 import de.mhus.cherry.portal.api.CallContext;
-import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.util.JsonActionCallback;
-import de.mhus.lib.cao.CaoNode;
-import de.mhus.lib.core.MLog;
 import de.mhus.osgi.sop.api.rest.JsonResult;
 
 @Component(provide = ActionCallback.class, name="cherry_callback_de.mhus.cherry.portal.impl.page.simplewidget")

@@ -1,32 +1,17 @@
 package de.mhus.cherry.portal.demo;
 
-import java.util.UUID;
-
 import com.vaadin.ui.AbstractComponent;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.WidgetApi;
+import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.cherry.portal.api.control.LayoutPanel;
 import de.mhus.cherry.portal.impl.AbstractEditorFactory;
-import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.ResourceProvider;
-import de.mhus.cherry.portal.api.VirtualHost;
-import de.mhus.cherry.portal.api.WidgetApi;
-import de.mhus.cherry.portal.api.control.EditorFactory;
-import de.mhus.lib.cao.CaoAction;
-import de.mhus.lib.cao.CaoConst;
 import de.mhus.lib.cao.CaoNode;
-import de.mhus.lib.cao.CaoUtil;
 import de.mhus.lib.cao.CaoWritableElement;
-import de.mhus.lib.cao.action.CaoConfiguration;
-import de.mhus.lib.cao.action.CreateConfiguration;
-import de.mhus.lib.core.MFile;
-import de.mhus.lib.core.MLog;
-import de.mhus.lib.core.lang.MObject;
 import de.mhus.lib.core.strategy.OperationResult;
-import de.mhus.lib.core.util.MNls;
-import de.mhus.lib.core.util.MNlsProvider;
-import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = EditorFactory.class, name="cherry_editor_" + SimpleEditorFactory.NAME)
 public class SimpleEditorFactory extends AbstractEditorFactory implements EditorFactory {

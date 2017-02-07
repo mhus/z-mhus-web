@@ -3,7 +3,6 @@ package de.mhus.cherry.editor.impl.pages;
 import java.util.LinkedList;
 
 import org.vaadin.easyuploads.ImagePreviewField;
-import org.vaadin.easyuploads.UploadField;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;

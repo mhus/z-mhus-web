@@ -1,6 +1,5 @@
 package de.mhus.cherry.renderer.jsp.tagext;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import javax.servlet.jsp.JspException;

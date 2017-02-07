@@ -6,8 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.portal.api.AuthResourceRenderer;
 import de.mhus.cherry.portal.api.CallContext;
-import de.mhus.cherry.portal.api.ResourceRenderer;
-import de.mhus.lib.core.MLog;
 import de.mhus.osgi.sop.api.rest.JsonResult;
 
 public abstract class JsonResourceRenderer extends AuthResourceRenderer {

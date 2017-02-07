@@ -9,7 +9,6 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.lib.cao.CaoConst;
 import de.mhus.lib.core.MLog;
-import de.mhus.lib.errors.MException;
 
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_head_page")
 public class PageHeadRenderer extends MLog implements ResourceRenderer {

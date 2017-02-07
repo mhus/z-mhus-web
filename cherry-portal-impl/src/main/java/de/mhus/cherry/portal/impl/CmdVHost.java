@@ -13,7 +13,6 @@ import org.osgi.framework.FrameworkUtil;
 
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.core.console.ConsoleTable;
 import de.mhus.lib.karaf.MOsgi;

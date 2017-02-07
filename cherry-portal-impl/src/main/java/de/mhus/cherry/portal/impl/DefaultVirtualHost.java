@@ -12,9 +12,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.MethodNotSupportedException;
-
-import aQute.bnd.annotation.component.Reference;
 import de.mhus.cherry.portal.api.ActionCallback;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
@@ -29,25 +26,17 @@ import de.mhus.cherry.portal.api.ResourceResolver;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.StructureChangesListener;
 import de.mhus.cherry.portal.api.VirtualHost;
-import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.basics.Named;
-import de.mhus.lib.cao.CaoCore;
 import de.mhus.lib.cao.CaoDataSource;
 import de.mhus.lib.cao.CaoNode;
-import de.mhus.lib.cao.aspect.Changes;
-import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
-import de.mhus.lib.cao.util.DefaultChangesQueue.EVENT;
-import de.mhus.lib.cao.util.DefaultStructureControl;
 import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MSystem;
-import de.mhus.lib.core.base.service.TimerFactory;
-import de.mhus.lib.core.base.service.TimerIfc;
 import de.mhus.lib.core.security.AccountSource;
 import de.mhus.lib.core.security.AuthorizationSource;
 import de.mhus.lib.core.util.ReadOnlyList;

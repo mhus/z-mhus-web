@@ -1,14 +1,10 @@
 package de.mhus.cherry.portal.impl.operation;
 
-import com.vaadin.ui.Label;
-
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
-import de.mhus.lib.cao.CaoAspect;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
-import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.definition.DefRoot;
 import de.mhus.lib.core.strategy.NotSuccessful;
 import de.mhus.lib.core.strategy.Operation;

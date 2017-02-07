@@ -5,8 +5,6 @@ import java.util.TimerTask;
 
 import org.osgi.service.component.ComponentContext;
 
-import com.vaadin.event.LayoutEvents;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -15,7 +13,6 @@ import com.vaadin.ui.VerticalLayout;
 import aQute.bnd.annotation.component.Activate;
 import aQute.bnd.annotation.component.Component;
 import aQute.bnd.annotation.component.Deactivate;
-import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.lib.core.MSoftTimerTask;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.security.AccessControl;

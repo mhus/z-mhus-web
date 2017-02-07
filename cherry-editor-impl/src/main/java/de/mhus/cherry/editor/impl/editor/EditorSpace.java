@@ -1,7 +1,6 @@
 package de.mhus.cherry.editor.impl.editor;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,14 +14,13 @@ import org.vaadin.sliderpanel.client.SliderMode;
 import org.vaadin.sliderpanel.client.SliderPanelListener;
 import org.vaadin.sliderpanel.client.SliderTabPosition;
 
-import com.vaadin.server.Page;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ClientConnector;
-import com.vaadin.server.ClientConnector.AttachEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
 import com.vaadin.shared.MouseEventDetails.MouseButton;
 import com.vaadin.shared.ui.dd.VerticalDropLocation;
@@ -30,7 +28,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
@@ -39,39 +36,26 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.NavNode;
-import de.mhus.cherry.portal.api.ResourceProvider;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
-import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.cherry.portal.api.control.EditorControl;
 import de.mhus.cherry.portal.api.control.EditorControlFactory;
 import de.mhus.cherry.portal.api.control.EditorFactory;
+import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.util.CherryUtil;
-import de.mhus.lib.cao.CaoAspect;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
-import de.mhus.lib.core.IProperties;
-import de.mhus.lib.core.MProperties;
-import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.Log;
-import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.Account;
-import de.mhus.lib.core.strategy.Operation;
 import de.mhus.lib.core.util.Pair;
 import de.mhus.lib.errors.MException;
-import de.mhus.lib.karaf.MOsgi;
-import de.mhus.lib.vaadin.DialogControl;
 import de.mhus.lib.vaadin.MVaadin;
-import de.mhus.lib.vaadin.ModalDialog;
 import de.mhus.lib.vaadin.VWorkBar;
 import de.mhus.lib.vaadin.desktop.GuiLifecycle;
 import de.mhus.lib.vaadin.desktop.Navigable;
-import de.mhus.lib.vaadin.ModalDialog.Action;
-import de.mhus.lib.vaadin.operation.VaadinOperation;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
-import de.mhus.osgi.sop.api.action.ActionApi;
 import de.mhus.osgi.sop.api.action.ActionDescriptor;
 
 public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecycle {

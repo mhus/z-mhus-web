@@ -1,7 +1,6 @@
 package de.mhus.cherry.editor.impl.editor;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -16,7 +15,6 @@ import de.mhus.lib.core.strategy.Operation;
 import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.lib.vaadin.DialogControl;
 import de.mhus.lib.vaadin.ModalDialog;
-import de.mhus.lib.vaadin.ModalDialog.Action;
 import de.mhus.lib.vaadin.operation.VaadinOperation;
 import de.mhus.osgi.sop.api.action.ActionDescriptor;
 

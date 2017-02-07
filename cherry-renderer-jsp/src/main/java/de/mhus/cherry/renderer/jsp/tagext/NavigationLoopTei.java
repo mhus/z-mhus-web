@@ -4,7 +4,6 @@ import javax.servlet.jsp.tagext.TagData;
 import javax.servlet.jsp.tagext.TagExtraInfo;
 import javax.servlet.jsp.tagext.VariableInfo;
 
-import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.lib.cao.CaoNode;
 
 public class NavigationLoopTei extends TagExtraInfo {

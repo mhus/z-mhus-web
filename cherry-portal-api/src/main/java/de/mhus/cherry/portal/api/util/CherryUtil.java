@@ -1,9 +1,7 @@
 package de.mhus.cherry.portal.api.util;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
@@ -26,8 +24,6 @@ import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
-import de.mhus.osgi.sop.api.action.ActionDescriptor;
-import de.mhus.osgi.sop.api.security.SecurityApi;
 
 public class CherryUtil {
 

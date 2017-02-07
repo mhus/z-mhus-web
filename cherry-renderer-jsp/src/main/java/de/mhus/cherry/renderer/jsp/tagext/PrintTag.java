@@ -1,13 +1,11 @@
 package de.mhus.cherry.renderer.jsp.tagext;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.logging.MLogUtil;

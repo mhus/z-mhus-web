@@ -1,10 +1,8 @@
 package de.mhus.cherry.renderer.jsp.tagext;
 
 import java.util.Collection;
-import java.util.List;
 
 import de.mhus.lib.cao.CaoNode;
-import de.mhus.lib.core.AbstractProperties;
 
 public class Navigation {
 

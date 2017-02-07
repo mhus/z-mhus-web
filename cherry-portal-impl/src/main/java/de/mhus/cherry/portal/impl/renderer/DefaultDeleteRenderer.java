@@ -8,7 +8,6 @@ import de.mhus.lib.cao.CaoList;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.action.CaoConfiguration;
 import de.mhus.lib.core.IProperties;
-import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.strategy.DefaultMonitor;
 import de.mhus.lib.core.strategy.OperationResult;
 

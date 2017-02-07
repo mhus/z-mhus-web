@@ -1,6 +1,5 @@
 package de.mhus.cherry.editor.impl.pages;
 
-import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 
@@ -10,7 +9,6 @@ import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.lib.cao.CaoAction;
-import de.mhus.lib.cao.CaoNode;
 
 @Component
 public class PageControlActions implements PageControlFactory {

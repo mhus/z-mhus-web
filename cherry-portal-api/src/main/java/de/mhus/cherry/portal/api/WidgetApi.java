@@ -1,8 +1,5 @@
 package de.mhus.cherry.portal.api;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.mhus.cherry.portal.api.control.EditorFactory;

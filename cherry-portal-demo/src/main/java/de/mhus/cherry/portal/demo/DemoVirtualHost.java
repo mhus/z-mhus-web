@@ -11,7 +11,6 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.impl.DefaultContentNodeResolver;
 import de.mhus.cherry.portal.impl.DefaultNavigationProvider;
 import de.mhus.cherry.portal.impl.DefaultRendererResolver;
-import de.mhus.cherry.portal.impl.DefaultResourceProvider;
 import de.mhus.cherry.portal.impl.DefaultResourceResolver;
 import de.mhus.cherry.portal.impl.DefaultVirtualHost;
 import de.mhus.cherry.portal.impl.aaa.DefaultAuthorizator;

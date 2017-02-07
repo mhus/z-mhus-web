@@ -1,11 +1,9 @@
 package de.mhus.cherry.portal.impl.widget;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import aQute.bnd.annotation.component.Component;
@@ -21,7 +19,6 @@ import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.util.ListCaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
-import de.mhus.lib.errors.MException;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component

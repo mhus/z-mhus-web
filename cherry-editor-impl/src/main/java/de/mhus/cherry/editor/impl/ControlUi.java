@@ -1,12 +1,5 @@
 package de.mhus.cherry.editor.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeMap;
-
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,46 +11,25 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
-import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinResponse;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.util.CurrentInstance;
 
-import de.mhus.cherry.portal.api.CallContext;
-import de.mhus.cherry.portal.api.CherryApi;
-import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.control.CherryGuiApi;
-import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
-import de.mhus.lib.core.IProperties;
-import de.mhus.lib.core.MFile;
-import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
-import de.mhus.lib.core.MThread;
-import de.mhus.lib.core.cfg.CfgString;
-import de.mhus.lib.core.lang.ValueProvider;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.AccessControl;
-import de.mhus.lib.core.security.Account;
-import de.mhus.lib.errors.MException;
 import de.mhus.lib.vaadin.VaadinAccessControl;
 import de.mhus.lib.vaadin.desktop.Desktop;
-import de.mhus.lib.vaadin.desktop.GuiApi;
 import de.mhus.lib.vaadin.desktop.GuiSpaceService;
 import de.mhus.lib.vaadin.login.LoginScreen;
-import de.mhus.lib.vaadin.servlet.VaadinRequestWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
 

@@ -2,15 +2,10 @@ package de.mhus.cherry.portal.api;
 
 import java.util.Map;
 
-import javax.servlet.ServletRequest;
-
 import org.osgi.framework.Bundle;
 
 import de.mhus.lib.cao.CaoException;
 import de.mhus.lib.cao.CaoNode;
-import de.mhus.lib.cao.aspect.StructureControl.Behavior;
-import de.mhus.lib.core.IProperties;
-import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.osgi.sop.api.SApi;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 

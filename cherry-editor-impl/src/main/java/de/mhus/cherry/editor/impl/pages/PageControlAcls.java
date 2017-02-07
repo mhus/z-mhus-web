@@ -4,13 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.vaadin.easyuploads.UploadField;
-
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.Acl;

@@ -11,10 +11,10 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
-import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.WidgetApi;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_de.mhus.cherry.portal.impl.page.simpletheme")
