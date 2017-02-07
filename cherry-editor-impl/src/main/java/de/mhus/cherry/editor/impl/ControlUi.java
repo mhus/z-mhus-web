@@ -77,10 +77,12 @@ public class ControlUi extends UI implements CherryGuiApi {
 	private BundleContext context;
 	private String trailConfig = null;
 	private String host;
+	private String startNav;
 
 	@Override
 	protected void init(VaadinRequest request) {
-		
+		startNav = UI.getCurrent().getPage().getUriFragment();
+
         desktop = new Desktop(this) {
         	private MenuItem menuTrace;
 			private Refresher refresher;
@@ -155,20 +157,19 @@ public class ControlUi extends UI implements CherryGuiApi {
         setContent(desktop);
 		desktop.refreshSpaceList();
 				
-		String nav = UI.getCurrent().getPage().getUriFragment();
 		
-		if (nav != null) {
+		if (MString.isSet(startNav)) {
 			
-			if (nav.startsWith("!")) nav=nav.substring(1);
+			if (startNav.startsWith("!")) startNav=startNav.substring(1);
 			
-			if (MString.isIndex(nav, ':')) {
-				String backLink = MString.beforeIndex(nav, ':');
-				nav = MString.afterIndex(nav, ':');
+			if (MString.isIndex(startNav, ':')) {
+				String backLink = MString.beforeIndex(startNav, ':');
+				startNav = MString.afterIndex(startNav, ':');
 				if (MString.isSet(backLink))
 					desktop.rememberNavigation("Webseite", "site", "", backLink, false );
 			}
 			
-			String[] parts = nav.split("/", 3);
+			String[] parts = startNav.split("/", 3);
 			if (parts.length > 0) {
 				String space = parts[0];
 				String subSpace = parts.length > 1 ? parts[1] : null;
@@ -178,6 +179,7 @@ public class ControlUi extends UI implements CherryGuiApi {
 
 			}
 			
+			startNav = null;
 		}
 		
 		

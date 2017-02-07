@@ -47,7 +47,6 @@ import de.mhus.cherry.portal.api.control.EditorControl;
 import de.mhus.cherry.portal.api.control.EditorControlFactory;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.control.GuiUtil;
-import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoAspect;
 import de.mhus.lib.cao.CaoNode;
@@ -67,6 +66,7 @@ import de.mhus.lib.vaadin.MVaadin;
 import de.mhus.lib.vaadin.ModalDialog;
 import de.mhus.lib.vaadin.VWorkBar;
 import de.mhus.lib.vaadin.desktop.GuiLifecycle;
+import de.mhus.lib.vaadin.desktop.Navigable;
 import de.mhus.lib.vaadin.ModalDialog.Action;
 import de.mhus.lib.vaadin.operation.VaadinOperation;
 import de.mhus.osgi.sop.api.Sop;
@@ -140,6 +140,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
                 new SliderPanelBuilder(navigationContent, "Navigation")
 	                .mode(SliderMode.RIGHT)
 	                .tabPosition(SliderTabPosition.MIDDLE)
+ 	                .tabStyle("top: 70%; width: 100px; left: -30px; overflow: hidden")
                     .flowInContent(true)
                     .autoCollapseSlider(true)
                     .zIndex(9980)
@@ -163,6 +164,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
                  new SliderPanelBuilder(createContent, "Create")
  	                .mode(SliderMode.RIGHT)
  	                .tabPosition(SliderTabPosition.BEGINNING)
+ 	                .tabStyle("top: 25%; width: 100px; left: -30px; overflow: hidden")
                      .flowInContent(true)
                      .autoCollapseSlider(true)
                      .zIndex(9980)
@@ -599,6 +601,12 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 	@Override
 	public void doDestroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onShowSpace(boolean firstTime) {
 		// TODO Auto-generated method stub
 		
 	}	

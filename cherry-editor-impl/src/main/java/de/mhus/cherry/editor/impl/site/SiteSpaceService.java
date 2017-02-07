@@ -29,7 +29,7 @@ public class SiteSpaceService extends GuiSpace {
 
 	@Override
 	public boolean isHiddenSpace() {
-		return true;
+		return false;
 	}
 
 }

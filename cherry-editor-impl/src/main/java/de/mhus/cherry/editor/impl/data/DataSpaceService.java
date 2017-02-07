@@ -16,6 +16,7 @@ import aQute.bnd.annotation.component.Activate;
 import aQute.bnd.annotation.component.Component;
 import aQute.bnd.annotation.component.Deactivate;
 import de.mhus.cherry.portal.api.control.GuiUtil;
+import de.mhus.lib.core.MSoftTimerTask;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.security.AccessControl;
 import de.mhus.lib.vaadin.desktop.GuiSpace;
@@ -24,22 +25,11 @@ import de.mhus.lib.vaadin.desktop.GuiSpaceService;
 @Component(immediate=true,provide=GuiSpaceService.class)
 public class DataSpaceService extends GuiSpace {
 
-	private VerticalLayout tile;
-	private Label mem;
 	private Timer timer;
 
     @Activate
     public void activate(ComponentContext ctx) {
     	timer = new Timer(true);
-    	timer.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-				if (mem != null)
-					mem.setCaption("Memory: " + MSystem.memDisplayString() );
-			}
-    		
-    	}, 1000, 5000);
     }
     
     @Deactivate
@@ -80,8 +70,24 @@ public class DataSpaceService extends GuiSpace {
 
 	@Override
 	public AbstractComponent createTile() {
-		if (tile == null) {
-			tile = new VerticalLayout();
+			VerticalLayout tile = new VerticalLayout() {
+				private Label mem;
+				{
+					addComponent(new Label("Data") );
+					mem = new Label();
+					addComponent(mem);
+					
+			    	timer.schedule(new MSoftTimerTask(new TimerTask() {
+
+						@Override
+						public void run() {
+							mem.setCaption("Memory: " + MSystem.memDisplayString() );
+						}
+			    		
+			    	}), 1000, 5000);
+
+				}
+			};
 //			tile.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
 //				
 //				@Override
@@ -89,10 +95,6 @@ public class DataSpaceService extends GuiSpace {
 //					GuiUtil.getApi().openSpace(getName(), null, null);
 //				}
 //			});
-			tile.addComponent(new Label("Data") );
-			mem = new Label();
-			tile.addComponent(mem);
-		}		
 		return tile;
 	}
 

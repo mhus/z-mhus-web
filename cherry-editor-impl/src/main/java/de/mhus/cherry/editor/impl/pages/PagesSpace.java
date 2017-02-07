@@ -41,7 +41,6 @@ import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.GuiUtil;
-import de.mhus.cherry.portal.api.control.Navigable;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
@@ -55,6 +54,7 @@ import de.mhus.lib.core.security.Account;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.lib.vaadin.desktop.GuiLifecycle;
+import de.mhus.lib.vaadin.desktop.Navigable;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.SopApi;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
@@ -330,6 +330,12 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 			doExpand(id);
 		}
 		tree.markAsDirty();
+	}
+
+	@Override
+	public void onShowSpace(boolean firstTime) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

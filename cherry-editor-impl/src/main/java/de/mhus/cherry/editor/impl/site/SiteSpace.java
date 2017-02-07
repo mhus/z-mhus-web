@@ -3,7 +3,7 @@ package de.mhus.cherry.editor.impl.site;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.UI;
 
-import de.mhus.cherry.portal.api.control.Navigable;
+import de.mhus.lib.vaadin.desktop.Navigable;
 
 public class SiteSpace extends AbstractComponent implements Navigable {
 
@@ -13,6 +13,11 @@ public class SiteSpace extends AbstractComponent implements Navigable {
 	public String navigateTo(String selection, String filter) {
 		UI.getCurrent().getPage().setLocation( filter );
 		return "Website " + filter;
+	}
+
+	@Override
+	public void onShowSpace(boolean firstTime) {
+		UI.getCurrent().getPage().setLocation("/");
 	}
 
 }
