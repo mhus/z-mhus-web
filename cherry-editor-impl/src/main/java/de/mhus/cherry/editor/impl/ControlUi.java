@@ -82,6 +82,17 @@ public class ControlUi extends UI implements CherryGuiApi {
 	@Override
 	protected void init(VaadinRequest request) {
 		startNav = UI.getCurrent().getPage().getUriFragment();
+		
+		if (startNav == null) {} else
+		if (startNav.startsWith("!imagebrowser?")) {
+			setContent(new ImageBrowser(this));
+			return;
+		} else
+		if (startNav.startsWith("!linkbrowser?")) {
+			setContent(new LinkBrowser(this));
+			return;
+		}
+
 
         desktop = new Desktop(this) {
         	private MenuItem menuTrace;
