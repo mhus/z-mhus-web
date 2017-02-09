@@ -15,6 +15,7 @@
 	<feature name='cherry-portal' description='cherry-portal' version='${project.version}'>
 		<details>${project.description}</details>
 		<feature>mhu-osgi-full</feature>
+		<feature>mhu-ports-full</feature>
 
 		<bundle>mvn:de.mhus.cherry/cherry-portal-api/${project.version}</bundle>
 		<bundle>mvn:de.mhus.cherry/cherry-portal-impl/${project.version}</bundle>
@@ -23,6 +24,21 @@
 
 		<bundle>mvn:de.mhus.cherry/cherry-renderer-jsp/${project.version}</bundle>
 
+		<bundle>mvn:de.mhus.cherry/cherry-editor-widgets/${project.version}</bundle>
+
+	</feature>
+	
+	<feature name='mhu-ports-full' description='mhu-ports-full' version='${project.version}'>
+		<bundle>mvn:de.mhus.ports/vaadin-viritin/${ports.version}</bundle>
+		<bundle>mvn:de.mhus.ports/vaadin-easyuploads/${ports.version}</bundle>
+		<bundle>mvn:de.mhus.ports/vaadin-aceeditor/${ports.version}</bundle>
+		<bundle>mvn:de.mhus.ports/vaadin-borderlayout/${ports.version}</bundle>
+		<bundle>mvn:de.mhus.ports/vaadin-jfreechart/${ports.version}</bundle>
+		<bundle>mvn:de.mhus.ports/vaadin-portallayout/${ports.version}</bundle>
+		<bundle>mvn:de.mhus.ports/vaadin-sliderpanel/${ports.version}</bundle>
+		<bundle>mvn:de.mhus.ports/vaadin-contextmenu/${ports.version}</bundle>
+		<bundle>mvn:de.mhus.ports/vaadin-refresher/${ports.version}</bundle>
+		<bundle>mvn:de.mhus.ports/vaadin-ckeditor/${ports.version}</bundle>
 	</feature>
 	
 	<feature name='cherry-demo' description='cherry-demo' version='${project.version}'>

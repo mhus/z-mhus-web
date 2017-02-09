@@ -78,6 +78,7 @@ public class CherryDeployServlet extends HttpServlet implements BundleListener {
 			@Override
 			public void run() {
 				Sop.waitForApi(CherryApi.class, 10000);
+				log.i("will initial deploy cherry resources");
 				context.addBundleListener(CherryDeployServlet.this);
 				refreshAll(SENSIVITY.CHECK);
 			}
