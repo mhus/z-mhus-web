@@ -22,6 +22,8 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.basics.Named;
+import de.mhus.lib.core.MSingleton;
+import de.mhus.lib.form.ActivatorAdapterProvider;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = Servlet.class, properties = { "alias=/.control" }, name="CHERRYGUI",servicefactory=true)
@@ -34,6 +36,7 @@ public class ControlServlet extends VaadinServlet implements Named {
 	@Activate
 	public void activate(ComponentContext ctx) {
 		this.context = ctx.getBundleContext();
+		MSingleton.get().getBaseControl().getCurrentBase().addObject(ActivatorAdapterProvider.class,new CherryActivatorAdapterProvider());
 	}
 	
 	public BundleContext getBundleContext() {

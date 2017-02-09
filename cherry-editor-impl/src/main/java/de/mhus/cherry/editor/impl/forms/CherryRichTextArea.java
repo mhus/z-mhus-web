@@ -21,7 +21,7 @@ import de.mhus.lib.vaadin.form.UiVaadin;
 public class CherryRichTextArea extends UiVaadin {
 
 	@Override
-	protected void setValue(Object value) throws MException {
+	public void setValue(Object value) throws MException {
 		((CKEditorTextField)getComponentEditor()).setValue(MCast.toString(value));
 	}
 
@@ -52,7 +52,7 @@ public class CherryRichTextArea extends UiVaadin {
 	}
 
 	@Override
-	protected Object getValue() throws MException {
+	public Object getValue() throws MException {
 		return ((CKEditorTextField)getComponentEditor()).getValue();
 	}
 
