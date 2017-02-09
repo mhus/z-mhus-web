@@ -35,8 +35,10 @@ import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
+import de.mhus.lib.core.MSingleton;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MSystem;
+import de.mhus.lib.core.base.service.TimerIfc;
 import de.mhus.lib.core.security.AccountSource;
 import de.mhus.lib.core.security.AuthorizationSource;
 import de.mhus.lib.core.util.ReadOnlyList;
@@ -70,12 +72,11 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 
 	private String name;
 
-	private Timer timer;
+	private TimerIfc timer = MSingleton.lookup(TimerIfc.class);
 
 	public DefaultVirtualHost() {
 //		TimerFactory timerFactory = MOsgi.getService(TimerFactory.class);
 //		setTimerFactory(timerFactory);
-		timer = new Timer(true);
 		timer.schedule(new TimerTask() {
 			
 			@Override

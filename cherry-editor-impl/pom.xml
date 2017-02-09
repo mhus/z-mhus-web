@@ -120,6 +120,11 @@
 			<artifactId>vaadin-refresher</artifactId>
 			<version>${ports.version}</version>
         </dependency>
+        <dependency>
+			<groupId>de.mhus.ports</groupId>
+			<artifactId>vaadin-ckeditor</artifactId>
+			<version>${ports.version}</version>
+        </dependency>
 
     </dependencies>
 

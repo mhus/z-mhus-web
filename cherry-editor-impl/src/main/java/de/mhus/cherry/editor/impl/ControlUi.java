@@ -20,6 +20,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.mhus.cherry.editor.impl.forms.ImageBrowser;
+import de.mhus.cherry.editor.impl.forms.LinkBrowser;
 import de.mhus.cherry.portal.api.control.CherryGuiApi;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MString;

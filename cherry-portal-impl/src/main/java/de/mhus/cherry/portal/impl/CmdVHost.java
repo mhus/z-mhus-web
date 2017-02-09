@@ -22,11 +22,11 @@ import de.mhus.osgi.sop.api.Sop;
 @Service
 public class CmdVHost implements Action {
 
-	@Argument(index=0, name="vhost", required=true, description="Virtual Host name or *", multiValued=false)
-    String host;
+	@Argument(index=0, name="cmd", required=true, description="Command: list,config, use, release, current", multiValued=false)
+	String cmd;
 	
-	@Argument(index=1, name="cmd", required=true, description="Command: list,config, use, release, current", multiValued=false)
-    String cmd;
+	@Argument(index=1, name="vhost", required=false, description="Virtual host name", multiValued=false)
+    String host;	
 
 	@Argument(index=2, name="parameters", required=false, description="Parameters", multiValued=true)
     String[] parameters;
