@@ -4,7 +4,7 @@ import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.LoginHandler;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.util.Base64;
-import de.mhus.lib.core.util.Rfc1738;
+import de.mhus.lib.core.util.MUri;
 import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.lib.servlet.ResponseWrapper;
 import de.mhus.osgi.sop.api.Sop;
@@ -29,8 +29,8 @@ public class BasicAuthHandler implements LoginHandler {
 
         String username = null;
         String password = null;
-        if (parts.length > 0) username = Rfc1738.decode(parts[0]);
-        if (parts.length > 1) password = Rfc1738.decode(parts[1]);
+        if (parts.length > 0) username = MUri.decode(parts[0]);
+        if (parts.length > 1) password = MUri.decode(parts[1]);
         
         AccessApi api = Sop.getApi(AccessApi.class);
         String ticket = api.createUserTicket(username, password);
