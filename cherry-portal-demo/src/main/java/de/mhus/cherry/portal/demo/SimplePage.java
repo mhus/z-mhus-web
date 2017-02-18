@@ -48,9 +48,7 @@ public class SimplePage extends MLog implements ResourceRenderer {
 			call.setAttribute(WidgetApi.CURRENT_THEME_SCOPE, WidgetApi.THEME_SCOPE_HEADER);
 			theme.doRender(call);
 		}
-		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
-		File root = descriptor.getPath(SPACE.PRIVATE);
-		File file = new File(root, "script/page.jsp");
+		File file = call.getVirtualHost().getPrivateFile(bundle, "script/page.jsp");
 		ScriptRenderer renderer =  CherryUtil.getScriptRenderer(call, file);
 		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class), file);
 

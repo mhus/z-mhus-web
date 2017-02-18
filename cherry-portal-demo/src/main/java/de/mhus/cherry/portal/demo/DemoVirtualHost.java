@@ -50,8 +50,11 @@ public class DemoVirtualHost extends CherryVirtualHost {
 					setAaaResourceDataSource(new SharedDataSource(
 							new FsCore(CherryApi.AAA_RESOURCE_PROVIDER, new File(priv, "webcontent/aaa"), true, false), false));
 				} catch (Throwable t) {
-					t.printStackTrace();
+					log().e(t);
 				}
+				
+				String overlayPath = "demo/overlay";
+				setFileOverlayPath(overlayPath);
 				
 				DemoVirtualHost.super.doActivate();
 			}

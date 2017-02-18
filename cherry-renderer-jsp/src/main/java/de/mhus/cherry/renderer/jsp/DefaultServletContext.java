@@ -13,6 +13,7 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.util.AbstractServletContext;
 import de.mhus.osgi.sop.api.Sop;
 
+@SuppressWarnings("unchecked")
 public class DefaultServletContext extends AbstractServletContext {
 
 	private File root;

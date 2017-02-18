@@ -1,9 +1,12 @@
 package de.mhus.cherry.portal.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import org.osgi.framework.Bundle;
 
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.lib.cao.CaoNode;
@@ -88,5 +91,7 @@ public interface VirtualHost {
 	void doUpdates();
 
 	public void doPrepareCreatedWidget(CaoNode res, EditorFactory factory);
+
+	public File getPrivateFile(Bundle bundle, String path);
 
 }

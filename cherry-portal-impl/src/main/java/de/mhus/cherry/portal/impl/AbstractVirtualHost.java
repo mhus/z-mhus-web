@@ -1,5 +1,6 @@
 package de.mhus.cherry.portal.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,10 +13,13 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.osgi.framework.Bundle;
+
 import de.mhus.cherry.portal.api.ActionCallback;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.ContentNodeResolver;
+import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.LoginHandler;
 import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.NavigationProvider;
@@ -26,6 +30,7 @@ import de.mhus.cherry.portal.api.ResourceResolver;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.StructureChangesListener;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.basics.Named;
@@ -33,6 +38,7 @@ import de.mhus.lib.cao.CaoDataSource;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 import de.mhus.lib.core.MEventHandler;
+import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MSingleton;
@@ -73,6 +79,8 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	private String name;
 
 	private TimerIfc timer = MSingleton.lookup(TimerIfc.class);
+
+	private String fileOverlayPath;
 
 	public AbstractVirtualHost() {
 //		TimerFactory timerFactory = MOsgi.getService(TimerFactory.class);
@@ -595,6 +603,35 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	public void doPrepareCreatedWidget(CaoNode res, EditorFactory factory) {
 		if (factory != null)
 			factory.doPrepareCreatedWidget(res);
+	}
+
+	@Override
+	public File getPrivateFile(Bundle bundle, String path) {
+		// check for overlay file
+		if (fileOverlayPath != null) {
+			String fp = fileOverlayPath + "/" + bundle.getSymbolicName() + "/private/" + MFile.normalizePath(path);
+			File f = new File(fp);
+			log().d("Overlay", f.exists(), fp);
+			if (f.exists() && f.isFile()) {
+				return f;
+			}
+		}
+		
+		// load from deployed resources
+		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
+		if (descriptor == null) return null;
+		File root = descriptor.getPath(SPACE.PRIVATE);
+		if (root == null) return null;
+		File file = new File(root, path);
+		return file;
+	}
+
+	public String getFileOverlayPath() {
+		return fileOverlayPath;
+	}
+
+	public void setFileOverlayPath(String fileOverlayPath) {
+		this.fileOverlayPath = fileOverlayPath;
 	}
 	
 }

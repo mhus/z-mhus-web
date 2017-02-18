@@ -30,9 +30,7 @@ public class SimpleWidget extends MLog implements ResourceRenderer {
 //		String title = res.getString("title");
 //		call.getHttpResponse().getOutputStream().println("<h2>Widget:"+title+"</h2>");
 		
-		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
-		File root = descriptor.getPath(SPACE.PRIVATE);
-		File file = new File(root, "script/widget.jsp");
+		File file = call.getVirtualHost().getPrivateFile(bundle, "script/widget.jsp");
 		ScriptRenderer renderer = CherryUtil.getScriptRenderer(call, file);
 		renderer.doRender(call, bundle, file);
 	}
