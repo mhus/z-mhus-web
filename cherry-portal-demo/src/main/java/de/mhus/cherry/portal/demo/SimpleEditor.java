@@ -2,7 +2,6 @@ package de.mhus.cherry.portal.demo;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextField;
 
 import de.mhus.cherry.editor.impl.forms.CherryRichTextArea;

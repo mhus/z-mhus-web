@@ -54,7 +54,8 @@
     </service>	
 	
 	<!-- The demo vHost automatically load all resources -->
-    <bean id="defaultVirtualHost" class="de.mhus.cherry.portal.demo.DemoVirtualHost">
+    <bean id="defaultVirtualHost" class="de.mhus.cherry.portal.demo.DemoVirtualHost"  init-method="doActivate" destroy-method="doDeactivate">
+	  	<property name="bundleContext" ref="blueprintBundleContext"/>
 	    <property name="name" value="default"/>
     </bean>
 

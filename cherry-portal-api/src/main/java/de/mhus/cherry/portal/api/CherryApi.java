@@ -40,6 +40,8 @@ public interface CherryApi extends SApi {
 	public static final String ACTION_MODIFY = "modify";
 	public static final String ACTION_DELETE = "delete";
 	public static final String ACTION_CREATE = "create";
+	public static final String PUBLIC_RESOURCE_PROVIDER = "pub";
+	public static final String AAA_RESOURCE_PROVIDER = "aaa";
 
 	VirtualHost findVirtualHost(String host);
 	

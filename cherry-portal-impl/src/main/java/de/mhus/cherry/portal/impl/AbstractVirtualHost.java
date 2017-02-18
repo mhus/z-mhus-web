@@ -51,7 +51,7 @@ import de.mhus.osgi.sop.api.aaa.AaaContext;
 import de.mhus.osgi.sop.api.action.ActionApi;
 import de.mhus.osgi.sop.api.action.ActionDescriptor;
 
-public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
+public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 	private static final String SESSION_RESOURCE_PROVIDER = "_cherry_resource_provider_";
 	
@@ -74,7 +74,7 @@ public class DefaultVirtualHost extends MLog implements VirtualHost, Named {
 
 	private TimerIfc timer = MSingleton.lookup(TimerIfc.class);
 
-	public DefaultVirtualHost() {
+	public AbstractVirtualHost() {
 //		TimerFactory timerFactory = MOsgi.getService(TimerFactory.class);
 //		setTimerFactory(timerFactory);
 		timer.schedule(new TimerTask() {
