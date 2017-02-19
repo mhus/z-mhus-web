@@ -13,6 +13,7 @@ import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.security.AccountSource;
 import de.mhus.lib.core.security.AuthorizationSource;
+import de.mhus.lib.core.util.FileResolver;
 import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.lib.servlet.ResponseWrapper;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
@@ -92,6 +93,6 @@ public interface VirtualHost {
 
 	public void doPrepareCreatedWidget(CaoNode res, EditorFactory factory);
 
-	public File getPrivateFile(Bundle bundle, String path);
+	public FileResolver getPrivateFileResolver(Bundle bundle);
 
 }

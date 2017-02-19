@@ -15,6 +15,7 @@ import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.util.FileResolver;
 import de.mhus.osgi.sop.api.Sop;
 
 // http://stackoverflow.com/questions/1719254/jsp-programmatically-render#1719398
@@ -29,7 +30,7 @@ public class JspRenderer extends MLog implements ScriptRenderer {
 		
 		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
 		InternalCherryApi internal = Sop.getApi(InternalCherryApi.class);
-		File root = descriptor.getPath(SPACE.PRIVATE);
+		FileResolver root = call.getVirtualHost().getPrivateFileResolver(bundle);
 		File tmp = descriptor.getPath(SPACE.TEMP);
 	 	
 		JspRendererContext ctx = null;
@@ -39,7 +40,7 @@ public class JspRenderer extends MLog implements ScriptRenderer {
 		} catch (ClassCastException e) {}
 		if (ctx == null) {
 			try {
-				log().i("Create JSP Context",call, root.getName());
+				log().i("Create JSP Context",call, root.getRoot().getName());
 				ctx = new JspRendererContext(root, tmp);
 				internal.getBundleStore(bundle).put(NAME, ctx);
 //				call.getSession().put(NAME + root.getName(), ctx);

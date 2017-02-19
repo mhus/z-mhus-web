@@ -29,6 +29,7 @@ import de.mhus.cherry.portal.api.ProcessorContext;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.lang.DelegateClassLoader;
+import de.mhus.lib.core.util.FileResolver;
 import de.mhus.osgi.sop.api.Sop;
 
 public class JspRendererContext extends MLog implements ProcessorContext {
@@ -39,11 +40,11 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 //	private HashMap<String, JspServletWrapper> wrappers = new HashMap<>();
 	private JspServletWrapper servlet;
 	private DelegateClassLoader hostClassLoader;
-	private File root;
+	private FileResolver root;
 	private File tmp;
 	private Bundle bundle = FrameworkUtil.getBundle(JspRenderer.class);
 	
-	public JspRendererContext(File root, File tmp) throws ServletException {
+	public JspRendererContext(FileResolver root, File tmp) throws ServletException {
 		this.root = root;
 		this.tmp = tmp;
 		init();
@@ -56,7 +57,7 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 		// first of all my own classloader
 		hostClassLoader.register(this.getClass().getClassLoader());
 		// from classpath
-		File classes = new File (root,"WEB-INF/classes");
+		File classes = root.getFile("WEB-INF/classes");
 		try {
 			if (classes.exists() && classes.isDirectory()) {
 				log().d("add classes to classpath",classes);
@@ -65,7 +66,7 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 		} catch (Throwable t) {}
 		// from libs
 		{
-			File lib = new File (root,"WEB-INF/lib");
+			File lib = root.getFile("WEB-INF/lib");
 			try {
 				if (lib.exists() && lib.isDirectory()) {
 					LinkedList<URL> libs = new LinkedList<>();
@@ -161,7 +162,7 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 		    resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 		    resp.setDateHeader("Expires", -1);
 		    
-			String fileRelativ = file.getAbsolutePath().substring( root.getAbsolutePath().length() );
+			String fileRelativ = file.getAbsolutePath().substring( root.getRoot().getAbsolutePath().length() );
 			req.setAttribute(Constants.JSP_FILE, fileRelativ );
 			servlet.service(req, resp);
 			resp.flushBuffer();

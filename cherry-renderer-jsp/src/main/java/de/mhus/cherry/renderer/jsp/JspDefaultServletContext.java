@@ -2,10 +2,12 @@ package de.mhus.cherry.renderer.jsp;
 
 import java.io.File;
 
+import de.mhus.lib.core.util.FileResolver;
+
 public class JspDefaultServletContext extends DefaultServletContext {
 	
 	// http://www.e-pde.gr/docs/jasper-howto.html
-	public JspDefaultServletContext(File root, File tmp ) {
+	public JspDefaultServletContext(FileResolver root, File tmp ) {
 		super(root);
 //		File tmp = new File( host.getTmpRoot(), "jsp");
 //		tmp.mkdirs();

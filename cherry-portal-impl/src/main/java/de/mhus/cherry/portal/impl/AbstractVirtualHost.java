@@ -47,6 +47,7 @@ import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.base.service.TimerIfc;
 import de.mhus.lib.core.security.AccountSource;
 import de.mhus.lib.core.security.AuthorizationSource;
+import de.mhus.lib.core.util.FileResolver;
 import de.mhus.lib.core.util.ReadOnlyList;
 import de.mhus.lib.errors.NotFoundException;
 import de.mhus.lib.karaf.MOsgi;
@@ -606,24 +607,8 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	}
 
 	@Override
-	public File getPrivateFile(Bundle bundle, String path) {
-		// check for overlay file
-		if (fileOverlayPath != null) {
-			String fp = fileOverlayPath + "/" + bundle.getSymbolicName() + "/private/" + MFile.normalizePath(path);
-			File f = new File(fp);
-			log().d("Overlay", f.exists(), fp);
-			if (f.exists() && f.isFile()) {
-				return f;
-			}
-		}
-		
-		// load from deployed resources
-		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
-		if (descriptor == null) return null;
-		File root = descriptor.getPath(SPACE.PRIVATE);
-		if (root == null) return null;
-		File file = new File(root, path);
-		return file;
+	public FileResolver getPrivateFileResolver(Bundle bundle) {
+		return new PrivateFileResolver(bundle);
 	}
 
 	public String getFileOverlayPath() {
@@ -633,5 +618,51 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	public void setFileOverlayPath(String fileOverlayPath) {
 		this.fileOverlayPath = fileOverlayPath;
 	}
-	
+
+	public class PrivateFileResolver implements FileResolver {
+
+		
+		private Bundle bundle;
+
+		public PrivateFileResolver(Bundle bundle) {
+			this.bundle = bundle;
+		}
+
+		@Override
+		public File getFile(String path) {
+			// check for overlay file
+			if (fileOverlayPath != null) {
+				String fp = fileOverlayPath + "/" + bundle.getSymbolicName() + "/private/" + MFile.normalizePath(path);
+				File f = new File(fp);
+				log().d("Overlay", f.exists(), fp);
+				if (f.exists() && f.isFile()) {
+					return f;
+				}
+			}
+			
+			// load from deployed resources
+			DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
+			if (descriptor == null) return null;
+			File root = descriptor.getPath(SPACE.PRIVATE);
+			if (root == null) return null;
+			File file = new File(root, path);
+			return file;
+		}
+
+		@Override
+		public Set<String> getContent(String path) {
+			return null;
+		}
+
+		@Override
+		public File getRoot() {
+			DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
+			if (descriptor == null) return null;
+			File root = descriptor.getPath(SPACE.PRIVATE);
+			if (root == null) return null;
+			return root;
+		}
+
+	}
+
 }

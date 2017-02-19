@@ -18,13 +18,14 @@ import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
+import de.mhus.lib.core.util.FileResolver;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_de.mhus.cherry.portal.impl.page.simplepage")
 public class SimplePage extends MLog implements ResourceRenderer {
-
-	private Bundle bundle = FrameworkUtil.getBundle(SimpleWidget.class);
 	
+	private FileResolver resolver;
+
 	@Override
 	public void doRender(CallContext call) throws Exception {
 		CaoNode res = Sop.getApi(WidgetApi.class).getResource(call);
@@ -48,7 +49,11 @@ public class SimplePage extends MLog implements ResourceRenderer {
 			call.setAttribute(WidgetApi.CURRENT_THEME_SCOPE, WidgetApi.THEME_SCOPE_HEADER);
 			theme.doRender(call);
 		}
-		File file = call.getVirtualHost().getPrivateFile(bundle, "script/page.jsp");
+		if (resolver == null) {
+			Bundle bundle = FrameworkUtil.getBundle(SimpleWidget.class);
+			resolver = call.getVirtualHost().getPrivateFileResolver(bundle);
+		}
+		File file = resolver.getFile("script/page.jsp");
 		ScriptRenderer renderer =  CherryUtil.getScriptRenderer(call, file);
 		renderer.doRender(call, FrameworkUtil.getBundle(SimplePage.class), file);
 
