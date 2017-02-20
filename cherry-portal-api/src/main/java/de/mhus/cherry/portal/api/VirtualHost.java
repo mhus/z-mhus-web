@@ -91,7 +91,7 @@ public interface VirtualHost {
 
 	void doUpdates();
 
-	public void doPrepareCreatedWidget(CaoNode res, EditorFactory factory);
+	public void doPrepareCreatedWidget(CaoNode res);
 
 	public FileResolver getPrivateFileResolver(Bundle bundle);
 

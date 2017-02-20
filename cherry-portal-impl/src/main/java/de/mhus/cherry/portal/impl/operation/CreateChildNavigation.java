@@ -80,6 +80,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 	
 					Item[] pageTypeTypesArray = pageTypeTypes.toArray(new Item[pageTypeTypes.size()]);
 					properties.put("pageType." + DataSource.ITEMS, pageTypeTypesArray);
+					properties.setBoolean("hidden", false);
 				}	
 
 			}
@@ -132,11 +133,9 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 				
 //				StructureControl controlNew = newPage.adaptTo(StructureControl.class);
 //				controlNew.moveToBottom();
+				vHost.doPrepareCreatedWidget(newPage);
 			}
 		}
-				
-		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost,newNavigation);
-		vHost.doPrepareCreatedWidget(newNavigation, factory);
 		
 		return new Successful(this, "ok", newNavigation);
 	}

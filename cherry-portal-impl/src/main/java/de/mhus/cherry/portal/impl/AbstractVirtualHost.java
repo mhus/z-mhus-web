@@ -621,7 +621,8 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	}
 
 	@Override
-	public void doPrepareCreatedWidget(CaoNode res, EditorFactory factory) {
+	public void doPrepareCreatedWidget(CaoNode res) {
+		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(this, res);
 		if (factory != null)
 			factory.doPrepareCreatedWidget(res);
 	}
