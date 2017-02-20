@@ -130,4 +130,8 @@ public class CherryUtil {
 		return out;
 	}
 
+	public static boolean isNavigationNode(VirtualHost vHost, CaoNode resource) {
+		return resource != null && resource.getPath().indexOf("/_") < 0;
+	}
+
 }

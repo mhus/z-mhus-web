@@ -3,12 +3,12 @@ package de.mhus.cherry.portal.demo;
 import com.vaadin.ui.AbstractComponent;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.cherry.portal.api.AbstractEditorFactory;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.cherry.portal.api.control.LayoutPanel;
-import de.mhus.cherry.portal.impl.AbstractEditorFactory;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.CaoWritableElement;
 import de.mhus.lib.core.strategy.OperationResult;

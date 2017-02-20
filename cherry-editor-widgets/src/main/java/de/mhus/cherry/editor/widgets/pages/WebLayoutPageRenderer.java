@@ -21,26 +21,24 @@ import de.mhus.lib.core.util.FileResolver;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_de.mhus.cherry.editor.widgets.pages.WebContentPage")
-public class WebContentPage  extends MLog implements ResourceRenderer {
+public class WebLayoutPageRenderer  extends MLog implements ResourceRenderer {
 
 	private FileResolver resolver;
 
 	@Override
 	public void doRender(CallContext call) throws Exception {
-		String themeName = call.getVirtualHost().getContentNodeResolver().getRecursiveString(call.getNavigationResource(), WidgetApi.THEME );
-		ResourceRenderer theme = null;
-		if (MString.isSet(themeName)) {
-			theme = call.getVirtualHost().getResourceRenderer(themeName);
+		ResourceRenderer theme = call.getVirtualHost().lookupTheme( call.getNavigationResource() );
+		if (theme != null) {
 			call.setAttribute(WidgetApi.CURRENT_THEME_SCOPE, WidgetApi.THEME_SCOPE_HEADER);
 			theme.doRender(call);
 		}
 		if (resolver == null) {
-			Bundle bundle = FrameworkUtil.getBundle(WebContentPage.class);
+			Bundle bundle = FrameworkUtil.getBundle(WebLayoutPageRenderer.class);
 			resolver = call.getVirtualHost().getPrivateFileResolver(bundle);
 		}
 		File file = resolver.getRoot();
 		ScriptRenderer renderer =  CherryUtil.getScriptRenderer(call, file);
-		renderer.doRender(call, FrameworkUtil.getBundle(WebContentPage.class), file);
+		renderer.doRender(call, FrameworkUtil.getBundle(WebLayoutPageRenderer.class), file);
 
 		if (theme != null) {
 			call.setAttribute(WidgetApi.CURRENT_THEME_SCOPE, WidgetApi.THEME_SCOPE_FOOTER);

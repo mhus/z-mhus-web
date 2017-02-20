@@ -517,36 +517,35 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private synchronized String doShow(VirtualHost vHost, CaoNode resource) {
 
 		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost,resource);
-		if (factory == null) {
-			// editor not found
-			return null;
-		}
-		
 		this.resource = new CaoNode[] {resource};
 		breadcrumb.setValue( resource.getConnection().getName() + ":" + resource.getPath() );
-		doFillTabs(resource, factory);
+		if (factory == null)
+			factory = vHost.getDefaultEditorFactory(resource);
 		
+		if (factory != null) {
+			doFillTabs(resource, factory);
 		
-		Panel editorPanel = new Panel();
-		editorPanel.setSizeFull();
-		contentLayout.addComponent(editorPanel);
-
-		try {
-			editor = factory.createEditor(resource.getWritableNode());
-			editor.setSizeFull();
-			editor.setMargin(true);
-			editorPanel.setContent(editor);
-			editor.initUi();
-			panel.setCaption( editor.getTitle() );
-		} catch (MException e) {
-			log.e(e);
-			return null;
-		}
+			Panel editorPanel = new Panel();
+			editorPanel.setSizeFull();
+			contentLayout.addComponent(editorPanel);
+	
+			try {
+				editor = factory.createEditor(resource.getWritableNode());
+				editor.setSizeFull();
+				editor.setMargin(true);
+				editorPanel.setContent(editor);
+				editor.initUi();
+				panel.setCaption( editor.getTitle() );
+			} catch (MException e) {
+				log.e(e);
+				return null;
+			}
+			contentLayout.setExpandRatio(editorPanel, 1f);
+			contentLayout.setMargin(true);
+			contentLayout.setSpacing(true);
+			//contentLayout.setSizeFull();		
+		}		
 		
-		contentLayout.setExpandRatio(editorPanel, 1f);
-		contentLayout.setMargin(true);
-		contentLayout.setSpacing(true);
-		//contentLayout.setSizeFull();		
 		
 		return "Edit " + resource.getString("title", resource.getName());
 	}

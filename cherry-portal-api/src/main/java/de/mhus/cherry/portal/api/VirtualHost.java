@@ -97,4 +97,6 @@ public interface VirtualHost {
 
 	public ResourceRenderer lookupTheme(NavNode navigation);
 
+	public EditorFactory getDefaultEditorFactory(CaoNode resource);
+
 }

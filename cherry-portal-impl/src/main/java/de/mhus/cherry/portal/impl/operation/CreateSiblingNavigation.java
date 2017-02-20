@@ -32,59 +32,16 @@ import de.mhus.lib.vaadin.operation.AbstractVaadinOperationForm;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(properties="tags=control|caonode|create",provide=Operation.class)
-public class CreateSiblingNavigation extends AbstractVaadinOperation {
-
+public class CreateSiblingNavigation extends CreateChildNavigation {
 
 	@Override
-	protected AbstractVaadinOperationEditor createEditor() {
-		return new AbstractVaadinOperationForm(this) {
-
-			@Override
-			protected void initDataSource(PropertiesDataSource ds) {
-				MProperties properties = new MProperties();
-				ds.setProperties(properties);
-				
-				CaoNode[] navArray = CherryUtil.getNodeFromProperties(editorProperties);
-				CaoNode nav = navArray[0];
-				CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
-				Collection<EditorFactory> list = call.getVirtualHost().getAvailablePageTypes(nav);
-				LinkedList<Item> pageTypeTypes = new LinkedList<>();
-				for (EditorFactory editor : list) {
-					pageTypeTypes.add(new Item(editor.getIdent(), editor.getCaption() ));
-				}
-
-				Item[] pageTypeTypesArray = pageTypeTypes.toArray(new Item[pageTypeTypes.size()]);
-				properties.put("pageType." + DataSource.ITEMS, pageTypeTypesArray);
-				
-			}
-			
-		};
+	protected StructureControl getParentControl(CaoNode nav) {
+		return  nav.getParent().adaptTo(StructureControl.class);
 	}
 
 	@Override
-	protected OperationResult doExecute2(TaskContext context) throws Exception {
-		CaoNode[] navArray = CherryUtil.getNodeFromProperties(context.getParameters());
-		CaoNode nav = navArray[0];
-		String title = context.getParameters().getString("title");
-		String name = context.getParameters().getString("name", MFile.normalize(title));
-		boolean hidden = context.getParameters().getBoolean("hidden", true);
-		StructureControl control = nav.getParent().adaptTo(StructureControl.class);
-		MProperties properties = new MProperties();
-		properties.setString(WidgetApi.RES_TITLE, title);
-		properties.setBoolean(CherryApi.NAV_HIDDEN, hidden);
-		CaoNode res = control.createChildNode(name, properties);
-		if (res == null) return new NotSuccessful(this, "not created", "error=Can't create node", -1);
-		return new Successful(this, "ok", res);
-	}
-
-	@Override
-	protected OperationDescription createDescription() {
-		return new OperationDescription(this, "Create Sibling Navigation", new DefRoot(
-					new FmCombobox("pageType", "Page Type", "Type of the new page"),
-					new FmText("title", "Page Title", "Title of the new page"),
-					new FmText("name", "Node Name", "Technical node name shown in path, leave blank for default"),
-					new FmCheckbox("hidden", "Hidden", "Set node to hidden")
-				));
+	protected String getCaption() {
+		return "Create Sibling Navigation";
 	}
 
 }

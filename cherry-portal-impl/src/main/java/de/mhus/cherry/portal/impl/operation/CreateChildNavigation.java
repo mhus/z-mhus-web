@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
+import com.vaadin.client.WidgetUtil;
+
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
@@ -36,6 +38,16 @@ import de.mhus.osgi.sop.api.Sop;
 @Component(properties="tags=control|caonode|create",provide=Operation.class)
 public class CreateChildNavigation extends AbstractVaadinOperation {
 
+	@Override
+	public boolean canExecute(TaskContext context) {
+		if (!super.canExecute(context)) return false;
+		
+		CaoNode[] navArray = CherryUtil.getNodeFromProperties(context.getParameters());
+		if (navArray == null || navArray.length < 1) return false; 
+		CaoNode nav = navArray[0];
+		return CherryUtil.isNavigationNode(null, nav);
+	}
+	
 	@Override
 	protected AbstractVaadinOperationEditor createEditor() {
 		return new AbstractVaadinOperationForm(this) {
@@ -92,7 +104,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 		// create navigation node
 		CaoNode newNavigation = null;
 		{
-			StructureControl control = nav.adaptTo(StructureControl.class);
+			StructureControl control = getParentControl(nav);
 			MProperties properties = new MProperties();
 			properties.setString(WidgetApi.RES_TITLE, title);
 			properties.setBoolean(CherryApi.NAV_HIDDEN, hidden);
@@ -118,8 +130,8 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 				newPage = control.createChildNode(page, properties);
 				if (newPage == null) return new NotSuccessful(this, "not created", "error=Can't create node", -1);
 				
-				StructureControl controlNew = newPage.adaptTo(StructureControl.class);
-				controlNew.moveToBottom();
+//				StructureControl controlNew = newPage.adaptTo(StructureControl.class);
+//				controlNew.moveToBottom();
 			}
 		}
 				
@@ -129,15 +141,23 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 		return new Successful(this, "ok", newNavigation);
 	}
 
+	protected StructureControl getParentControl(CaoNode nav) {
+		return  nav.adaptTo(StructureControl.class);
+	}
+
 	@Override
 	protected OperationDescription createDescription() {
-		return new OperationDescription(this, "Create Child Navigation", new DefRoot(
+		return new OperationDescription(this, getCaption(), new DefRoot(
 					new FmCombobox("page", "Page", "Page"),
 					new FmCombobox("pageType", "Page Type", "Type of the new page"),
 					new FmText("title", "Page Title", "Title of the new page"),
 					new FmText("name", "Node Name", "Technical node name shown in path, leave blank for default"),
 					new FmCheckbox("hidden", "Hidden", "Set node to hidden")
 				));
+	}
+
+	protected String getCaption() {
+		return "Create Child Navigation";
 	}
 
 }

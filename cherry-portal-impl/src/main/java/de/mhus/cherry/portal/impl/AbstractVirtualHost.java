@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.framework.Bundle;
 
+import com.vaadin.client.WidgetUtil;
+
 import de.mhus.cherry.portal.api.ActionCallback;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
@@ -87,6 +89,8 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	private String fileOverlayPath;
 
 	private BundleLocal<FileResolver> privateFileResolver;
+
+	private EditorFactory defaultNavigationEditorFactory;
 
 	public AbstractVirtualHost() {
 	}
@@ -604,6 +608,7 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 		tags.add( type );
 		
 		MProperties properties = new MProperties();
+		properties.put(CherryUtil.NODE, node);
 		List<ActionDescriptor> actions = Sop.getApi(ActionApi.class).getActions(tags, properties);
 		
 		actions = CherryUtil.order("control_action_" + type, actions, this);
@@ -622,15 +627,19 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	}
 
 	@Override
-	public FileResolver getPrivateFileResolver(Bundle bundle) {
+	public synchronized FileResolver getPrivateFileResolver(Bundle bundle) {
 		FileResolver out = privateFileResolver.get(bundle);
 		if (out == null) {
-			out = new PrivateFileResolver(bundle);
+			out = createPrivateFileResolver(bundle);
 			privateFileResolver.put(bundle, out);
 		}
 		return out;
 	}
 
+	protected FileResolver createPrivateFileResolver(Bundle bundle) {
+		return new PrivateFileResolver(bundle);
+	}
+	
 	public String getFileOverlayPath() {
 		return fileOverlayPath;
 	}
@@ -639,7 +648,7 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 		this.fileOverlayPath = fileOverlayPath;
 	}
 
-	public class PrivateFileResolver implements FileResolver {
+	private class PrivateFileResolver implements FileResolver {
 
 		
 		private Bundle bundle;
@@ -690,7 +699,20 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 		}
 		return null;
 	}
-	
-	
+
+	@Override
+	public EditorFactory getDefaultEditorFactory(CaoNode resource) {
+		if (CherryUtil.isNavigationNode(this, resource))
+			return defaultNavigationEditorFactory;
+		return null;
+	}
+
+	public EditorFactory getDefaultNavigationEditorFactory() {
+		return defaultNavigationEditorFactory;
+	}
+
+	public void setDefaultNavigationEditorFactory(EditorFactory defaultNavigationEditorFactory) {
+		this.defaultNavigationEditorFactory = defaultNavigationEditorFactory;
+	}
 
 }

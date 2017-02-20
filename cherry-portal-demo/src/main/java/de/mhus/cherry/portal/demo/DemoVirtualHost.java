@@ -55,7 +55,7 @@ public class DemoVirtualHost extends CherryVirtualHost {
 				
 				String overlayPath = "demo/overlay";
 				setFileOverlayPath(overlayPath);
-				
+				setDefaultNavigationEditorFactory(new NavigationEditor());
 				DemoVirtualHost.super.doActivate();
 			}
 		});
