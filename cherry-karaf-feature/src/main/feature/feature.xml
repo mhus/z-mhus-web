@@ -23,7 +23,10 @@
 		<bundle>mvn:de.mhus.cherry/cherry-editor-impl/${project.version}</bundle>
 
 		<bundle>mvn:de.mhus.cherry/cherry-renderer-jsp/${project.version}</bundle>
-
+<!-- 
+		<bundle>mvn:de.mhus.cherry/cherry-deploy-less/${project.version}</bundle>
+		<bundle>mvn:de.mhus.cherry/cherry-deploy-sass/${project.version}</bundle>
+ -->
 		<bundle>mvn:de.mhus.cherry/cherry-editor-widgets/${project.version}</bundle>
 
 	</feature>

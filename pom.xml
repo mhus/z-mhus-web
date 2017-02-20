@@ -146,6 +146,10 @@
     <module>cherry-content-base</module>
     <module>cherry-editor-widgets</module>
     <module>cherry-portal-demo</module>
+
+    <module>cherry-deploy-less</module>
+    <module>cherry-deploy-sass</module>
+    
     <module>cherry-karaf-feature</module>
   </modules>
 

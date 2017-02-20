@@ -8,7 +8,7 @@
   <artifactId>cherry-deploy-sass</artifactId>
     <packaging>bundle</packaging>
 
-    <name>cherry-deploy-less</name>
+    <name>cherry-deploy-sass</name>
     <description>Cherry Deploy sass to css</description>
 
     <dependencies>

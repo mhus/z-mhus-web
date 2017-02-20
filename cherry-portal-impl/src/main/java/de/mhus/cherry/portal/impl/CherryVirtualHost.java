@@ -61,7 +61,9 @@ public class CherryVirtualHost extends AbstractVirtualHost {
 	private CaoCore aaaCore;
 	private BundleContext bundleContext;
 	
+	@Override
 	public void doActivate() {
+		super.doActivate();
 		try {
 			
 			// lookup navigation provider
@@ -166,6 +168,7 @@ public class CherryVirtualHost extends AbstractVirtualHost {
 
 	}
 	
+	@Override
 	public void doDeactivate() {
 		// close all connections
 		if (navCore != null) navCore.close();
@@ -176,6 +179,7 @@ public class CherryVirtualHost extends AbstractVirtualHost {
 		pubCore = null;
 		if (aaaCore != null) aaaCore.close();
 		aaaCore = null;
+		super.doDeactivate();
 	}
 
 

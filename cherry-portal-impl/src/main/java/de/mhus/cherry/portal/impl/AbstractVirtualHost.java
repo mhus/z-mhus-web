@@ -30,6 +30,7 @@ import de.mhus.cherry.portal.api.ResourceResolver;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.StructureChangesListener;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
@@ -37,6 +38,7 @@ import de.mhus.lib.basics.Named;
 import de.mhus.lib.cao.CaoDataSource;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
+import de.mhus.lib.core.AbstractProperties;
 import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
@@ -50,6 +52,7 @@ import de.mhus.lib.core.security.AuthorizationSource;
 import de.mhus.lib.core.util.FileResolver;
 import de.mhus.lib.core.util.ReadOnlyList;
 import de.mhus.lib.errors.NotFoundException;
+import de.mhus.lib.karaf.BundleLocal;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.lib.servlet.ResponseWrapper;
@@ -83,7 +86,12 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 	private String fileOverlayPath;
 
+	private BundleLocal<FileResolver> privateFileResolver;
+
 	public AbstractVirtualHost() {
+	}
+
+	public void doActivate() {
 //		TimerFactory timerFactory = MOsgi.getService(TimerFactory.class);
 //		setTimerFactory(timerFactory);
 		timer.schedule(new TimerTask() {
@@ -94,6 +102,13 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 			}
 		}, 5000, 1000);
 
+		privateFileResolver = new BundleLocal<>();
+		privateFileResolver.open();
+	}
+	
+	public void doDeactivate() {
+		timer.cancel();
+		privateFileResolver.close();
 	}
 	
 	@Override
@@ -608,7 +623,12 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 	@Override
 	public FileResolver getPrivateFileResolver(Bundle bundle) {
-		return new PrivateFileResolver(bundle);
+		FileResolver out = privateFileResolver.get(bundle);
+		if (out == null) {
+			out = new PrivateFileResolver(bundle);
+			privateFileResolver.put(bundle, out);
+		}
+		return out;
 	}
 
 	public String getFileOverlayPath() {
@@ -623,9 +643,13 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 		
 		private Bundle bundle;
+		private File root;
 
 		public PrivateFileResolver(Bundle bundle) {
 			this.bundle = bundle;
+			DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
+			if (descriptor != null)
+				root = descriptor.getPath(SPACE.PRIVATE);
 		}
 
 		@Override
@@ -640,10 +664,6 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 				}
 			}
 			
-			// load from deployed resources
-			DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
-			if (descriptor == null) return null;
-			File root = descriptor.getPath(SPACE.PRIVATE);
 			if (root == null) return null;
 			File file = new File(root, path);
 			return file;
@@ -656,13 +676,21 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 		@Override
 		public File getRoot() {
-			DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
-			if (descriptor == null) return null;
-			File root = descriptor.getPath(SPACE.PRIVATE);
 			if (root == null) return null;
 			return root;
 		}
 
 	}
+
+	@Override
+	public ResourceRenderer lookupTheme(NavNode navigation) {
+		String themeName = getContentNodeResolver().getRecursiveString(navigation, WidgetApi.THEME );
+		if (MString.isSet(themeName)) {
+			return getResourceRenderer(themeName);
+		}
+		return null;
+	}
+	
+	
 
 }

@@ -95,4 +95,6 @@ public interface VirtualHost {
 
 	public FileResolver getPrivateFileResolver(Bundle bundle);
 
+	public ResourceRenderer lookupTheme(NavNode navigation);
+
 }
