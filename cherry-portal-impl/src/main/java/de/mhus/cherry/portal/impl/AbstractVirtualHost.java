@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -35,6 +36,7 @@ import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.control.EditorFactory;
+import de.mhus.cherry.portal.api.control.EditorFactory.TYPE;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.basics.Named;
 import de.mhus.lib.cao.CaoDataSource;
@@ -597,9 +599,20 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 	@Override
 	public Collection<EditorFactory> getAvailablePageTypes(CaoNode nav) {
-		return CherryUtil.orderServices(VirtualHost.class, EditorFactory.class, this);
+		return CherryUtil.orderServices(VirtualHost.class, EditorFactory.class, this)
+				.stream()
+				.filter(i -> i.getType() == TYPE.PAGE )
+				.collect(Collectors.toList());
 	}
 
+	@Override
+	public Collection<EditorFactory> getAvailableWidgetTypes(CaoNode nav) {
+		return CherryUtil.orderServices(VirtualHost.class, EditorFactory.class, this)
+				.stream()
+				.filter(i -> i.getType() == TYPE.WIDGET )
+				.collect(Collectors.toList());
+	}
+	
 	@Override
 	public Collection<ActionDescriptor> getActions(String type, CaoNode[] node) {
 		LinkedList<String> tags = new LinkedList<>();

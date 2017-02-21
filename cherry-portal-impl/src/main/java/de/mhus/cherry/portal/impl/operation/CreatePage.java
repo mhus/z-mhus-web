@@ -36,7 +36,7 @@ import de.mhus.lib.vaadin.operation.AbstractVaadinOperationForm;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(properties="tags=control|caonode|create",provide=Operation.class)
-public class CreateChildNavigation extends AbstractVaadinOperation {
+public class CreatePage extends AbstractVaadinOperation {
 
 	@Override
 	public boolean canExecute(TaskContext context) {
@@ -102,28 +102,13 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 		
 		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
 		
-		// create navigation node
-		CaoNode newNavigation = null;
-		{
-			StructureControl control = getParentControl(nav);
-			MProperties properties = new MProperties();
-			properties.setString(WidgetApi.RES_TITLE, title);
-			properties.setBoolean(CherryApi.NAV_HIDDEN, hidden);
-			
-			newNavigation = control.createChildNode(name, properties);
-			if (newNavigation == null) return new NotSuccessful(this, "not created", "error=Can't create node", -1);
-			
-			StructureControl controlNew = newNavigation.adaptTo(StructureControl.class);
-			controlNew.moveToBottom();
-		}
-		
 		// create page node
 		CaoNode newPage = null;
 		{
 			
 			Map<String, String> list = vHost.getContentNodeResolver().getDefaultPages();
 			if (list.containsKey(page)) {
-				StructureControl control = newNavigation.adaptTo(StructureControl.class);
+				StructureControl control = nav.adaptTo(StructureControl.class);
 				MProperties properties = new MProperties();
 				properties.setString(WidgetApi.RES_TITLE, title);
 				properties.setString(WidgetApi.RENDERER, pageType);
@@ -140,10 +125,6 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 		return new Successful(this, "ok", newPage);
 	}
 
-	protected StructureControl getParentControl(CaoNode nav) {
-		return  nav.adaptTo(StructureControl.class);
-	}
-
 	@Override
 	protected OperationDescription createDescription() {
 		return new OperationDescription(this, getCaption(), new DefRoot(
@@ -156,7 +137,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 	}
 
 	protected String getCaption() {
-		return "Create Child Navigation";
+		return "Create Page";
 	}
 
 }

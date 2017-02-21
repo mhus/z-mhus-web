@@ -75,6 +75,8 @@ public interface VirtualHost {
 	 * @return 
 	 */
 	public Collection<EditorFactory> getAvailablePageTypes(CaoNode nav);
+	
+	public Collection<EditorFactory> getAvailableWidgetTypes(CaoNode nav);
 
 	/**
 	 * Returns a list of actions from ActionApi with the given type.

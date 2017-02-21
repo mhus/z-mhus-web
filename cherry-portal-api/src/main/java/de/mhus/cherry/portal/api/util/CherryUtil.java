@@ -134,4 +134,8 @@ public class CherryUtil {
 		return resource != null && resource.getPath().indexOf("/_") < 0;
 	}
 
+	public static boolean isPageNode(Object object, CaoNode resource) {
+		return resource != null && resource.getName().startsWith("_");
+	}
+
 }

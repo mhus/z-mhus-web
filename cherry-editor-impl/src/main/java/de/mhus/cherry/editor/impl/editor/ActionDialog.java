@@ -6,6 +6,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import de.mhus.cherry.editor.impl.ControlUi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MProperties;
@@ -91,6 +92,9 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		} else
 		if (result.isSuccessful()) {
 			Notification.show(caption, result.getMsg(), Notification.TYPE_HUMANIZED_MESSAGE);
+			if (result.getResult() != null && result.getResult() instanceof CaoNode) {
+				((ControlUi)ControlUi.getCurrent()).navigateToEditor((CaoNode)result.getResult() );
+			}
 		} else {
 			Notification.show(caption, result.getMsg(), Notification.TYPE_ERROR_MESSAGE);
 		}

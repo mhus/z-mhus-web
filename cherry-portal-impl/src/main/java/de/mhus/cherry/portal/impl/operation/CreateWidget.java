@@ -36,7 +36,7 @@ import de.mhus.lib.vaadin.operation.AbstractVaadinOperationForm;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(properties="tags=control|caonode|create",provide=Operation.class)
-public class CreateChildNavigation extends AbstractVaadinOperation {
+public class CreateWidget extends AbstractVaadinOperation {
 
 	@Override
 	public boolean canExecute(TaskContext context) {
@@ -45,7 +45,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 		CaoNode[] navArray = CherryUtil.getNodeFromProperties(context.getParameters());
 		if (navArray == null || navArray.length < 1) return false; 
 		CaoNode nav = navArray[0];
-		return CherryUtil.isNavigationNode(null, nav);
+		return CherryUtil.isPageNode(null, nav) || CherryUtil.isPageNode(null, nav.getParent());
 	}
 	
 	@Override
@@ -59,27 +59,22 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 				
 				// Page Items
 				VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
-				{
-					Map<String, String> list = vHost.getContentNodeResolver().getDefaultPages();
-					LinkedList<Item> pageTypes = new LinkedList<>();
-					for (Map.Entry<String,String> item : list.entrySet())
-						pageTypes.add(new Item(item.getKey(), item.getValue()));
-					Item[] pageTypesArray = pageTypes.toArray(new Item[pageTypes.size()]);
-					properties.put("page." + DataSource.ITEMS, pageTypesArray);
-				}				
 				// Page Type Items
 				{
 					CaoNode[] navArray = CherryUtil.getNodeFromProperties(editorProperties);
 					CaoNode nav = navArray[0];
+					
+					if (!CherryUtil.isPageNode(null, nav)) nav = nav.getParent();
+					
 					CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
-					Collection<EditorFactory> list = call.getVirtualHost().getAvailablePageTypes(nav);
+					Collection<EditorFactory> list = call.getVirtualHost().getAvailableWidgetTypes(nav);
 					LinkedList<Item> pageTypeTypes = new LinkedList<>();
 					for (EditorFactory editor : list) {
 						pageTypeTypes.add(new Item(editor.getIdent(), editor.getCaption() ));
 					}
 	
 					Item[] pageTypeTypesArray = pageTypeTypes.toArray(new Item[pageTypeTypes.size()]);
-					properties.put("pageType." + DataSource.ITEMS, pageTypeTypesArray);
+					properties.put("widget." + DataSource.ITEMS, pageTypeTypesArray);
 					properties.setBoolean("hidden", false);
 				}	
 
@@ -97,58 +92,35 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 		String title = context.getParameters().getString("title");
 		String name = context.getParameters().getString("name", MFile.normalize(title));
 		boolean hidden = context.getParameters().getBoolean("hidden", true);
-		String pageType = context.getParameters().getString("pageType");
-		String page = context.getParameters().getString("page");
+		String type = context.getParameters().getString("widget");
 		
 		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
 		
-		// create navigation node
-		CaoNode newNavigation = null;
+		// create page node
+		CaoNode newWidget = null;
 		{
-			StructureControl control = getParentControl(nav);
+			if (!CherryUtil.isPageNode(null, nav)) nav = nav.getParent();
+
+			StructureControl control = nav.adaptTo(StructureControl.class);
 			MProperties properties = new MProperties();
 			properties.setString(WidgetApi.RES_TITLE, title);
-			properties.setBoolean(CherryApi.NAV_HIDDEN, hidden);
+			properties.setString(WidgetApi.RENDERER, type);
 			
-			newNavigation = control.createChildNode(name, properties);
-			if (newNavigation == null) return new NotSuccessful(this, "not created", "error=Can't create node", -1);
+			newWidget = control.createChildNode(name, properties);
+			if (newWidget == null) return new NotSuccessful(this, "not created", "error=Can't create node", -1);
 			
-			StructureControl controlNew = newNavigation.adaptTo(StructureControl.class);
-			controlNew.moveToBottom();
-		}
-		
-		// create page node
-		CaoNode newPage = null;
-		{
-			
-			Map<String, String> list = vHost.getContentNodeResolver().getDefaultPages();
-			if (list.containsKey(page)) {
-				StructureControl control = newNavigation.adaptTo(StructureControl.class);
-				MProperties properties = new MProperties();
-				properties.setString(WidgetApi.RES_TITLE, title);
-				properties.setString(WidgetApi.RENDERER, pageType);
-				
-				newPage = control.createChildNode(page, properties);
-				if (newPage == null) return new NotSuccessful(this, "not created", "error=Can't create node", -1);
-				
 //				StructureControl controlNew = newPage.adaptTo(StructureControl.class);
 //				controlNew.moveToBottom();
-				vHost.doPrepareCreatedWidget(newPage);
-			}
+			vHost.doPrepareCreatedWidget(newWidget);
 		}
 		
-		return new Successful(this, "ok", newPage);
-	}
-
-	protected StructureControl getParentControl(CaoNode nav) {
-		return  nav.adaptTo(StructureControl.class);
+		return new Successful(this, "ok", newWidget);
 	}
 
 	@Override
 	protected OperationDescription createDescription() {
 		return new OperationDescription(this, getCaption(), new DefRoot(
-					new FmCombobox("page", "Page", "Page"),
-					new FmCombobox("pageType", "Page Type", "Type of the new page"),
+					new FmCombobox("widget", "Widget", "Widget"),
 					new FmText("title", "Page Title", "Title of the new page"),
 					new FmText("name", "Node Name", "Technical node name shown in path, leave blank for default"),
 					new FmCheckbox("hidden", "Hidden", "Set node to hidden")
@@ -156,7 +128,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 	}
 
 	protected String getCaption() {
-		return "Create Child Navigation";
+		return "Create Widget";
 	}
 
 }
