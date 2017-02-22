@@ -36,6 +36,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.NavNode;
+import de.mhus.cherry.portal.api.StructureChangesListener;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorControl;
@@ -46,10 +47,13 @@ import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
+import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
+import de.mhus.lib.cao.util.DefaultChangesQueue.EVENT;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.security.Account;
 import de.mhus.lib.core.util.Pair;
 import de.mhus.lib.errors.MException;
+import de.mhus.lib.vaadin.ConfirmDialog;
 import de.mhus.lib.vaadin.MVaadin;
 import de.mhus.lib.vaadin.VWorkBar;
 import de.mhus.lib.vaadin.desktop.GuiLifecycle;
@@ -58,7 +62,7 @@ import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
 import de.mhus.osgi.sop.api.action.ActionDescriptor;
 
-public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecycle {
+public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecycle, StructureChangesListener {
 
 	private static Log log = Log.getLog(EditorSpace.class);
 	private static final long serialVersionUID = 1L;
@@ -77,6 +81,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private VWorkBar navigationToolBar;
 	private TextField breadcrumb;
 	private HorizontalLayout actionButtons;
+	private CaoNode[] tempResource;
 
 	@Override
 	public String navigateTo(String selection, String filter) {
@@ -159,6 +164,8 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
                          public void onToggle(final boolean expand) {
                         	 if (expand)
                         		 doResetCreateContent();
+                        	 else
+                        		 tempResource = null;
                          }
                      }).build();
  		sliders.addComponent(createSlider);
@@ -207,6 +214,9 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		});
 		actionButtons.addComponent(bSave);
 
+		
+		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getStructureRegistry().registerWeak(this);
+		
 	}
 
 	private void doSelectFromBreadcrumb() {
@@ -220,10 +230,8 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		createContent.removeAllComponents();
 		
 		CaoNode[] parent = resource;
-		if (navigationSlider.isExpanded()) {
-			NavNode[] p = navigation.getSelectedNode();
-			if (p != null) parent = CherryUtil.getCurrent(p);
-		}
+		if (tempResource != null) parent = tempResource;
+		tempResource = null;
 		if (parent == null) {
 			createSlider.collapse();
 			return;
@@ -286,6 +294,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 				@Override
 				public List<Pair<String, Object>> getAddOptions() {
+					tempResource = CherryUtil.getCurrent(navigation.getSelectedNode()); 
 					EditorSpace.this.openCreateSlider();
 					return null;
 				}
@@ -297,7 +306,12 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 				@Override
 				public List<Pair<String, Object>> getDeleteOptions() {
-					return getDeleteOptionsList();
+					List<Pair<String, Object>> ret = getDeleteOptionsList();
+					if (ret != null && ret.size() == 1) {
+						EditorSpace.this.doDelete(ret.get(0).getValue());
+						return null;
+					}
+					return ret;
 				}
 
 				@Override
@@ -366,7 +380,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 						}
 						
 						ContextMenuItem cmCreate = cmMenu.addItem("New");
-						cmCreate.addItemClickListener(p -> { openCreateSlider(); });
+						cmCreate.addItemClickListener(p -> { tempResource = CherryUtil.getCurrent(navigation.getSelectedNode()); openCreateSlider(); });
 						ContextMenuItem cmDelete = cmMenu.addItem("Delete");
 						cmDelete.addItemClickListener(p -> { doDelete(null);});
 						cmMenu.setAsContextMenuOf(navigation.getTree());
@@ -433,7 +447,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 
 	protected void openCreateSlider() {
 		NavNode[] selectedNode = navigation.getSelectedNode();
-		if (selectedNode != null) {
+		if (selectedNode != null || tempResource != null) {
 			createSlider.expand();
 			navigationSlider.collapse();
 		}
@@ -500,10 +514,13 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private synchronized String doShow(String resId) {
 		log.d("show resource", resId);
 		
+		resource = null;
 		tabs.removeAllComponents();
 		tabs.addTab(contentLayout, "Content");
 		
 		contentLayout.removeAllComponents();
+		
+		if (resId == null) return null;
 		
 		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost( GuiUtil.getApi().getHost() );
 		CaoNode resource = vHost.getResourceResolver().getResource(vHost, resId);
@@ -592,6 +609,34 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	public void onShowSpace(boolean firstTime) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void navigationChanges(Change[] changes) {
+		if (resource == null || resource.length < 1) return;
+		for (Change change : changes)
+			if (change.getNode().equals(resource[0].getId())) {
+				if (change.getEvent() == EVENT.DELETED) {
+					doShow(null);
+					return;
+				} else
+				if (change.getEvent() == EVENT.MODIFIED) {
+					ConfirmDialog.show(getUI(), "Concurrent Modification", "Current node was modified by remote", "Reload", "Ignore", new ConfirmDialog.Listener() {
+						
+						@Override
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								try {
+									resource[0].reload();
+									doShow(resource[0].getId());
+								} catch (Throwable e) {
+									log.e(e);
+								}
+							}
+						}
+					});
+				}
+			}
 	}	
 
 }
