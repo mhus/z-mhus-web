@@ -27,7 +27,7 @@ import de.mhus.lib.form.ActivatorAdapterProvider;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = Servlet.class, properties = { "alias=/.control" }, name="CHERRYGUI",servicefactory=true)
-@VaadinServletConfiguration(ui=ControlUi.class, productionMode=true)
+@VaadinServletConfiguration(ui=ControlUi.class, productionMode=false)
 public class ControlServlet extends VaadinServlet implements Named {
 
 	private static final long serialVersionUID = 1L;

@@ -185,6 +185,17 @@ $desktop-background-image: "img/cherry-blossom-1318258_1920.jpg" !default;
     .cursorhand {
     		cursor: pointer;
     }
+   
+    .stack {
+    	padding: 10px;
+    	border: 2px dotted black;
+    } 
+    
+    .stack_unused {
+    	padding: 10px;
+    	border: 2px dotted black;
+    	background: #aaaaaa;
+    } 
     
   }
 

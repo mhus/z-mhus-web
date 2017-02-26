@@ -95,7 +95,9 @@ public class SimpleEditorFactory extends AbstractEditorFactory implements Editor
 
 	@Override
 	public LayoutPanel createLayoutPanel(CaoNode res) {
-		// TODO Auto-generated method stub
+		if (res.getName().startsWith("_")) {
+			return new SimplePageLayout(res);
+		}
 		return null;
 	}
 

@@ -44,8 +44,10 @@ import de.mhus.cherry.portal.api.control.EditorControlFactory;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.cherry.portal.api.control.GuiUtil;
+import de.mhus.cherry.portal.api.control.LayoutPanel;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.CaoWritableElement;
 import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 import de.mhus.lib.cao.util.DefaultChangesQueue.EVENT;
@@ -82,6 +84,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private TextField breadcrumb;
 	private HorizontalLayout actionButtons;
 	private CaoNode[] tempResource;
+	private LayoutPanel layout;
 
 	@Override
 	public String navigateTo(String selection, String filter) {
@@ -515,6 +518,8 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		log.d("show resource", resId);
 		
 		resource = null;
+		editor = null;
+		layout = null;
 		tabs.removeAllComponents();
 		tabs.addTab(contentLayout, "Content");
 		
@@ -547,12 +552,21 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			contentLayout.addComponent(editorPanel);
 	
 			try {
-				editor = factory.createEditor(resource.getWritableNode());
+				CaoWritableElement writable = resource.getWritableNode();
+				editor = factory.createEditor(writable);
 				editor.setSizeFull();
 				editor.setMargin(true);
 				editorPanel.setContent(editor);
 				editor.initUi();
 				panel.setCaption( editor.getTitle() );
+				
+				layout = factory.createLayoutPanel(writable);
+				if (layout != null) {
+					layout.setSizeFull();
+					tabs.addTab(layout, "Layout");
+					layout.doReload();
+				}
+				
 			} catch (MException e) {
 				log.e(e);
 				return null;

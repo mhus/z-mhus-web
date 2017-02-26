@@ -50,6 +50,11 @@
 			<artifactId>vaadin-ckeditor</artifactId>
 			<version>${ports.version}</version>
         </dependency>
+        <dependency>
+			<groupId>de.mhus.ports</groupId>
+			<artifactId>vaadin-portallayout</artifactId>
+			<version>${ports.version}</version>
+        </dependency>
 		
     </dependencies>
 

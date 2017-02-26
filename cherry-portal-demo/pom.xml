@@ -73,6 +73,13 @@
 			<version>${servlet.version}</version>
         	<scope>provided</scope>
 		</dependency>
+		
+        <dependency>
+			<groupId>de.mhus.ports</groupId>
+			<artifactId>vaadin-portallayout</artifactId>
+			<version>${ports.version}</version>
+        </dependency>
+		
     </dependencies>
 
     <build>
