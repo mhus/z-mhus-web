@@ -606,6 +606,13 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			UI.getCurrent().showNotification(error);
 			return;
 		}
+		if (layout != null) {
+			error = layout.doSave();
+			if (error != null) {
+				UI.getCurrent().showNotification(error);
+//				return;
+			}
+		}
 		doBack();
 	}
 

@@ -9,4 +9,6 @@ public abstract class LayoutPanel extends VerticalLayout {
 
 	public abstract void doReload();
 	
+	public abstract String doSave();
+	
 }
