@@ -46,11 +46,15 @@ import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.LayoutPanel;
 import de.mhus.cherry.portal.api.util.CherryUtil;
+import de.mhus.lib.cao.CaoConst;
+import de.mhus.lib.cao.CaoCore;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.cao.CaoUtil;
 import de.mhus.lib.cao.CaoWritableElement;
 import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 import de.mhus.lib.cao.util.DefaultChangesQueue.EVENT;
+import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.security.Account;
 import de.mhus.lib.core.util.Pair;
@@ -74,6 +78,8 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private EditorPanel editor;
 	private Button bSave;
 	private Button bCancel;
+	private Button bReload;
+	private Button bApply;
 	private TabSheet tabs;
 	private SliderPanel navigationSlider;
 	private BorderLayout navigationContent;
@@ -85,6 +91,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	private HorizontalLayout actionButtons;
 	private CaoNode[] tempResource;
 	private LayoutPanel layout;
+	private VirtualHost vHost;
 
 	@Override
 	public String navigateTo(String selection, String filter) {
@@ -96,6 +103,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	@Override
 	public void doInitialize() {
 		
+		vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
 		panel = new Panel();
 		setMargin(true);
 		addComponent(panel);
@@ -199,6 +207,17 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		Label dummy = new Label(" ");
 		actionButtons.addComponent(dummy);
 		
+		bReload = new Button("Reload", new Button.ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				doReload();
+			}
+		});
+		actionButtons.addComponent(bReload);
+		
+		actionButtons.addComponent(new Label(" "));
+
 		bCancel = new Button("Cancel", new Button.ClickListener() {
 			
 			@Override
@@ -217,6 +236,16 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		});
 		actionButtons.addComponent(bSave);
 
+		actionButtons.addComponent(new Label(" "));
+		
+		bApply = new Button("Apply", new Button.ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				doApply();
+			}
+		});
+		actionButtons.addComponent(bApply);
 		
 		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getStructureRegistry().registerWeak(this);
 		
@@ -596,23 +625,31 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		
 	}
 
+	protected void doReload() {
+		doShow(resource[0].getConnection().getName() + ":" + resource[0].getId());
+	}
+	
 	protected void doCancel() {
 		doBack();
 	}
 
-	protected void doSave() {
+	protected boolean doApply() {
 		String error = editor.doSave();
 		if (error != null) {
 			UI.getCurrent().showNotification(error);
-			return;
+			return false;
 		}
 		if (layout != null) {
 			error = layout.doSave();
 			if (error != null) {
 				UI.getCurrent().showNotification(error);
-//				return;
 			}
 		}
+		return true;
+	}
+	
+	protected void doSave() {
+		if (!doApply()) return;
 		doBack();
 	}
 
@@ -636,12 +673,20 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	public void navigationChanges(Change[] changes) {
 		if (resource == null || resource.length < 1) return;
 		for (Change change : changes)
+			if (change.getEvent() == EVENT.BIG_CHANGE) {
+				
+			} else
 			if (change.getNode().equals(resource[0].getId())) {
 				if (change.getEvent() == EVENT.DELETED) {
 					doShow(null);
 					return;
 				} else
-				if (change.getEvent() == EVENT.MODIFIED) {
+				if (change.getEvent() == EVENT.MODIFIED ) {
+					
+					CaoNode otherNode = vHost.getNavigationProvider().getResource(change.getNode());
+					if (otherNode == null || MSystem.equals(resource[0].getDate(CaoConst.MODIFIED), otherNode.getDate(CaoConst.MODIFIED))) 
+						continue;
+					
 					ConfirmDialog.show(getUI(), "Concurrent Modification", "Current node was modified by remote", "Reload", "Ignore", new ConfirmDialog.Listener() {
 						
 						@Override
@@ -649,7 +694,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 							if (dialog.isConfirmed()) {
 								try {
 									resource[0].reload();
-									doShow(resource[0].getId());
+									doShow(resource[0].getConnection().getName() + ":" + resource[0].getId());
 								} catch (Throwable e) {
 									log.e(e);
 								}

@@ -1,12 +1,15 @@
 package de.mhus.cherry.portal.demo;
 
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Image;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.AbstractEditorFactory;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.control.EditorPanel;
 import de.mhus.cherry.portal.api.control.LayoutPanel;
+import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.CaoWritableElement;
 
@@ -22,7 +25,8 @@ public class SimpleWidgetEditor extends AbstractEditorFactory implements EditorF
 
 	@Override
 	public AbstractComponent createPreview(CaoNode res) {
-		return null;
+		String url = CherryUtil.getPublicDeployUrl(this, "/img/widget.png");
+		return new Image("",new ExternalResource( url ));
 	}
 
 	@Override

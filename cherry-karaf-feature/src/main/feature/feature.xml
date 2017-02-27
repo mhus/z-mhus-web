@@ -17,6 +17,8 @@
 		<feature>mhu-osgi-full</feature>
 		<feature>mhu-ports-full</feature>
 
+		<bundle>mvn:javax.portlet/portlet-api/2.0</bundle>
+
 		<bundle>mvn:de.mhus.cherry/cherry-portal-api/${project.version}</bundle>
 		<bundle>mvn:de.mhus.cherry/cherry-portal-impl/${project.version}</bundle>
 		<bundle>mvn:de.mhus.cherry/cherry-editor-theme/${project.version}</bundle>

@@ -10,8 +10,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.DeployDescriptor;
+import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.ScriptRenderer;
@@ -136,6 +141,14 @@ public class CherryUtil {
 
 	public static boolean isPageNode(Object object, CaoNode resource) {
 		return resource != null && resource.getName().startsWith("_");
+	}
+
+	public static String getPublicDeployUrl(Object owner, String path) {
+		if (owner == null || path == null) return null;
+		Bundle bundle = FrameworkUtil.getBundle(owner.getClass());
+		DeployDescriptor desc = Sop.getApi(CherryApi.class ).getDeployDescritor( bundle ); 
+		if (desc == null) return null;
+		return desc.getWebPath(SPACE.PUBLIC) + path;
 	}
 
 }

@@ -18,7 +18,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 
 import de.mhus.cherry.portal.api.CherryApi;
+import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
+import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.control.LayoutPanel;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.CaoWritableElement;
@@ -65,7 +67,7 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 
 	@Override
 	public void portletClosed(PortletCloseEvent event) {
-		
+
 	}
 
 
@@ -108,11 +110,19 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 				Label l = new Label(child.getName());
 				l.setData(child);
 				
-				Label preview = new Label("-");
+				VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+				EditorFactory editorFactory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost, child);
+				Component preview = null;
+				if (editorFactory != null) {
+					preview = editorFactory.createPreview(child);
+				}
+				if (preview == null)
+					preview = new Label("-");
 				Portlet p = stack[i].portletFor(preview);
 				p.setCaption(child.getName());
 				p.setHeaderComponent(l);
 				p.setCollapsible(false);
+				p.setClosable(false);
 				if (readOnly)
 					p.setLocked(true);
 				allNodes.remove(child);
@@ -124,13 +134,21 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 			Label l = new Label(child.getName());
 			l.setData(child);
 			
-			Label preview = new Label("-");
+			VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+			EditorFactory editorFactory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost, child);
+			Component preview = null;
+			if (editorFactory != null) {
+				preview = editorFactory.createPreview(child);
+			}
+			if (preview == null)
+				preview = new Label("-");
 
 			l.setData(child);
 			Portlet p = unused.portletFor(preview);
 			p.setCaption(child.getName());
 			p.setCollapsible(false);
 			p.setHeaderComponent(l);
+			p.setClosable(false);
 			if (readOnly)
 				p.setLocked(true);
 			
