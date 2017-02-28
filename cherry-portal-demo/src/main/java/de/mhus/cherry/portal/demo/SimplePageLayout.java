@@ -38,11 +38,13 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 	private Panel p;
 	private boolean readOnly;
 	private VerticalLayout v;
+	private Panel un;
 
 	public SimplePageLayout(CaoNode res) {
 		this.res = res;
 		
 		p = new Panel();
+		un = new Panel();
 		
 		h = new HorizontalLayout();
 		v = new VerticalLayout();
@@ -51,7 +53,12 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 		h.setWidth("100%");
 		p.addStyleName("v-scrollable");
         p.setHeight("100%");
+		un.addStyleName("v-scrollable");
+        un.setHeight("100%");
+        un.setWidth("250px");
         addComponent(p);
+        addComponent(un);
+        setExpandRatio(p, 1);
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -112,7 +119,7 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 		if (!readOnly)
 			unused.addStyleName("stack_unused");
 		unused.setMargin(true);
-		h.addComponent(unused);
+		un.setContent(unused);
 		
 
 			
