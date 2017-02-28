@@ -16,6 +16,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
@@ -34,21 +35,23 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 	private Stack[] stack;
 	private HorizontalLayout h;
 	private Stack unused;
-	private Panel v;
+	private Panel p;
 	private boolean readOnly;
+	private VerticalLayout v;
 
 	public SimplePageLayout(CaoNode res) {
 		this.res = res;
 		
-		v = new Panel();
+		p = new Panel();
 		
 		h = new HorizontalLayout();
-		v.setContent(h);
+		v = new VerticalLayout();
+		p.setContent(v);
 //		setSizeFull();
 		h.setWidth("100%");
-		v.addStyleName("v-scrollable");
-        v.setHeight("100%");
-        addComponent(v);
+		p.addStyleName("v-scrollable");
+        p.setHeight("100%");
+        addComponent(p);
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -73,6 +76,7 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 
 	@Override
 	public void doReload() {
+		v.removeAllComponents();
 		h.removeAllComponents();
 		
 		readOnly = false;
@@ -85,14 +89,23 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 			}
 		}
 		
-		stack = new Stack[2];
+		stack = new Stack[4];
 		for (int i = 0; i < stack.length; i++) {
 			stack[i] = new Stack();
 			stack[i].setCaption("Column " + (i+1));
-			h.addComponent(stack[i]);
 			stack[i].setMargin(true);
 			if (!readOnly)
 				stack[i].addStyleName("stack");
+			if (i == 0) {
+				v.addComponent(stack[i]);
+				v.addComponent(h);
+			}
+			else if (i == stack.length-1) {
+				v.addComponent(stack[i]);
+			}
+			else {
+				h.addComponent(stack[i]);
+			}
 		}
 		unused = new Stack();
 		unused.setCaption("Not Shown");
