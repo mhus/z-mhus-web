@@ -18,7 +18,7 @@ import de.mhus.lib.cao.CaoWritableElement;
 import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.osgi.sop.api.Sop;
 
-@Component(provide = EditorFactory.class, name="cherry_editor_" + SimpleEditorFactory.NAME)
+//@Component(provide = EditorFactory.class, name="cherry_editor_" + SimpleEditorFactory.NAME)
 public class SimpleEditorFactory extends AbstractEditorFactory implements EditorFactory {
 
 	public final static String NAME = "de.mhus.cherry.portal.demo.simpleeditorfactory";
@@ -40,7 +40,7 @@ public class SimpleEditorFactory extends AbstractEditorFactory implements Editor
 			CaoWritableElement w = content.getWritableNode();
 			w.setString(CherryApi.RES_RET_TYPE, CherryApi.RET_TYPE_PAGE);
 			w.setString(WidgetApi.RENDERER, "de.mhus.cherry.portal.impl.page.SimplePage");
-			w.setString(WidgetApi.EDITOR, "de.mhus.cherry.portal.demo.simpleeditorfactory");
+			//w.setString(WidgetApi.EDITOR, "de.mhus.cherry.portal.demo.simpleeditorfactory");
 			OperationResult res = w.getUpdateAction().doExecute(null);
 			return res != null && res.isSuccessful();
 		} catch (Throwable t) {

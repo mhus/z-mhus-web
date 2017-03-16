@@ -20,7 +20,7 @@ import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.util.FileResolver;
 import de.mhus.osgi.sop.api.Sop;
 
-@Component(provide = ResourceRenderer.class, name="cherry_renderer_de.mhus.cherry.portal.impl.page.simplewidget")
+//@Component(provide = ResourceRenderer.class, name="cherry_renderer_de.mhus.cherry.portal.impl.page.simplewidget")
 public class SimpleWidget extends MLog implements ResourceRenderer {
 
 	private Bundle bundle = FrameworkUtil.getBundle(SimpleWidget.class);

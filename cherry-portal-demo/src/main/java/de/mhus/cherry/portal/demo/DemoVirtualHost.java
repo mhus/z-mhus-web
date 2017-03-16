@@ -7,6 +7,7 @@ import org.osgi.framework.FrameworkUtil;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
+import de.mhus.cherry.portal.api.WidgetDescriptor;
 import de.mhus.cherry.portal.impl.CherryVirtualHost;
 import de.mhus.lib.cao.fdb.FdbCore;
 import de.mhus.lib.cao.fs.FsCore;
@@ -52,6 +53,10 @@ public class DemoVirtualHost extends CherryVirtualHost {
 				} catch (Throwable t) {
 					log().e(t);
 				}
+				
+				addWidgetDescriptor(new SimpleWidgetDescriptor("de.mhus.cherry.portal.impl.page.SimpleWidget", WidgetDescriptor.TYPE.WIDGET, new SimpleWidget(), new SimpleEditorFactory() ) );
+				addWidgetDescriptor(new SimpleWidgetDescriptor("de.mhus.cherry.portal.impl.page.SimplePage", WidgetDescriptor.TYPE.PAGE, new SimplePage(), new SimpleEditorFactory() ) );
+				addWidgetDescriptor(new SimpleWidgetDescriptor("de.mhus.cherry.portal.impl.page.SimpleTheme", WidgetDescriptor.TYPE.THEME, new SimpleTheme(), null ) );
 				
 				String overlayPath = "demo/overlay";
 				setFileOverlayPath(overlayPath);

@@ -34,6 +34,7 @@ import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.StructureChangesListener;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.cherry.portal.api.WidgetApi;
+import de.mhus.cherry.portal.api.WidgetDescriptor;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.control.EditorFactory.TYPE;
@@ -93,6 +94,9 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	private BundleLocal<FileResolver> privateFileResolver;
 
 	private EditorFactory defaultNavigationEditorFactory;
+	
+	protected HashMap<String, WidgetDescriptor> widgetDescriptors = new HashMap<>();
+	
 
 	public AbstractVirtualHost() {
 	}
@@ -114,7 +118,8 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	
 	public void doDeactivate() {
 		timer.cancel();
-		privateFileResolver.close();
+		if (privateFileResolver != null)
+			privateFileResolver.close();
 	}
 	
 	@Override
@@ -465,14 +470,27 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 		return "text/html";
 	}
 
+//	@Override
+//	public EditorFactory getControlEditorFactory(String name) {
+//		descriptor = getWidgetDescriptor(name);
+//		name = name.toLowerCase();
+//		EditorFactory factory = null;
+//		try {
+//			factory = MOsgi.getService(EditorFactory.class, MOsgi.filterServiceName("cherry_editor_" + name));
+//		} catch (NotFoundException e) {}
+//		return factory;
+//	}
+
 	@Override
-	public EditorFactory getControlEditorFactory(String name) {
+	public WidgetDescriptor getWidgetDescriptor(String name) {
 		name = name.toLowerCase();
-		EditorFactory factory = null;
-		try {
-			factory = MOsgi.getService(EditorFactory.class, MOsgi.filterServiceName("cherry_editor_" + name));
-		} catch (NotFoundException e) {}
-		return factory;
+		WidgetDescriptor ret = widgetDescriptors.get(name);
+		if (ret == null) log().w("widget descriptor not found",name);
+		return ret;
+	}
+	
+	public void addWidgetDescriptor(WidgetDescriptor wd) {
+		widgetDescriptors.put(wd.getName().toLowerCase(), wd);
 	}
 
 	@Override

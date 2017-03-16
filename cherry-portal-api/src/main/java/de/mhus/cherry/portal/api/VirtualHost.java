@@ -39,7 +39,7 @@ public interface VirtualHost {
 	
 	public ScriptRenderer getScriptRenderer(String name);
 
-	public EditorFactory getControlEditorFactory(String name);
+//	public EditorFactory getControlEditorFactory(String name);
 
 	/**
 	 * Insert the path like using in the browser and get the specified resource (not navigation node)
@@ -100,5 +100,7 @@ public interface VirtualHost {
 	public ResourceRenderer lookupTheme(NavNode navigation);
 
 	public EditorFactory getDefaultEditorFactory(CaoNode resource);
+
+	WidgetDescriptor getWidgetDescriptor(String name);
 
 }

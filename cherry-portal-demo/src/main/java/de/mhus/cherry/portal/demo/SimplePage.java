@@ -21,7 +21,7 @@ import de.mhus.lib.core.MString;
 import de.mhus.lib.core.util.FileResolver;
 import de.mhus.osgi.sop.api.Sop;
 
-@Component(provide = ResourceRenderer.class, name="cherry_renderer_de.mhus.cherry.portal.impl.page.simplepage")
+//@Component(provide = ResourceRenderer.class, name="cherry_renderer_de.mhus.cherry.portal.impl.page.simplepage")
 public class SimplePage extends MLog implements ResourceRenderer {
 	
 	private FileResolver resolver;

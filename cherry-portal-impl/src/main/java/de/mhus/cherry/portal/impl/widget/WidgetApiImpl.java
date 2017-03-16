@@ -33,7 +33,7 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 			log().d("renderer not set", call, widget);
 			return;
 		}
-		ResourceRenderer renderer = call.getVirtualHost().getResourceRenderer(rendererName);
+		ResourceRenderer renderer = call.getVirtualHost().getWidgetDescriptor(rendererName).getRenderer();
 		if (renderer == null) {
 			log().d("renderer not found", call, rendererName, widget);
 			return;
@@ -52,12 +52,9 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 
 	@Override
 	public EditorFactory getControlEditorFactory(VirtualHost vHost, CaoNode resource) {
-		String editorName = resource.getString(EDITOR, null);
+		String editorName = resource.getString(RENDERER, null);
 		if (editorName != null)
-			return vHost.getControlEditorFactory(editorName);
-		editorName = resource.getString(RENDERER, null);
-		if (editorName != null)
-			return vHost.getControlEditorFactory(editorName);
+			return vHost.getWidgetDescriptor(editorName).getEditorFactory();
 		return null;
 	}
 
@@ -84,7 +81,7 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 		
 		String themeName = api.getRecursiveString(call.getNavigationResource().getNav(), WidgetApi.THEME);
 		if (themeName != null) {
-			ResourceRenderer renderer = call.getVirtualHost().getResourceRenderer(themeName);
+			ResourceRenderer renderer = call.getVirtualHost().getWidgetDescriptor(themeName).getRenderer();
 			if (renderer != null) {
 				renderer.doCollectResourceLinks(ResourceRenderer.RESOURCE_JAVASCRIPT, jsList);
 				renderer.doCollectResourceLinks(ResourceRenderer.RESOURCE_CSS, cssList);
@@ -109,7 +106,7 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 		
 		String rendererName = res.getString(WidgetApi.RENDERER, null);
 		if (MString.isSet(rendererName)) {
-			ResourceRenderer renderer = call.getVirtualHost().getResourceRenderer(rendererName);
+			ResourceRenderer renderer = call.getVirtualHost().getWidgetDescriptor(rendererName).getRenderer();
 			if (renderer != null) {
 				renderer.doCollectResourceLinks(ResourceRenderer.RESOURCE_JAVASCRIPT, jsList);
 				renderer.doCollectResourceLinks(ResourceRenderer.RESOURCE_CSS, cssList);

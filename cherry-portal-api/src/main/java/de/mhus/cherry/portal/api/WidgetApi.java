@@ -10,7 +10,6 @@ public interface WidgetApi extends SApi {
 
 	public static final String CURRENT_WIDGET_NODE = "current_widget_node";
 	public static final String RENDERER = "cherry:renderer";
-	public static final String EDITOR = "cherry:editor";
 	public static final String ACTION_CALLBACK = "cherry:callback";
 
 	public static final String THEME = "cherry:theme";
