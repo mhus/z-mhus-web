@@ -47,7 +47,7 @@ import de.mhus.lib.core.MEventHandler;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
-import de.mhus.lib.core.MSingleton;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.base.service.TimerIfc;
@@ -86,7 +86,7 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 	private String name;
 
-	private TimerIfc timer = MSingleton.lookup(TimerIfc.class);
+	private TimerIfc timer = MApi.lookup(TimerIfc.class);
 
 	private String fileOverlayPath;
 
