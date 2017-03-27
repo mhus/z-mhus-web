@@ -1,19 +1,19 @@
 package de.mhus.cherry.portal.impl.cache;
 
 import aQute.bnd.annotation.component.Component;
+import de.mhus.lib.karaf.services.AbstractCacheControl;
 import de.mhus.lib.karaf.services.CacheControlIfc;
 
-@Component
-public class NodeAttributeCacheService implements CacheControlIfc {
+@Component(provide=CacheControlIfc.class)
+public class NodeAttributeCacheService extends AbstractCacheControl {
+
+	{
+		supportDisable = false;
+	}
 
 	@Override
 	public long getSize() {
 		return CacheApiImpl.instance.cache.size();
-	}
-
-	@Override
-	public String getName() {
-		return "de.mhus.cherry.portal.impl.nodeAttributeCache";
 	}
 
 	@Override
