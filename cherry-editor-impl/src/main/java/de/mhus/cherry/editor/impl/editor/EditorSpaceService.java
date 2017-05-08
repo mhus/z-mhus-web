@@ -1,5 +1,7 @@
 package de.mhus.cherry.editor.impl.editor;
 
+import java.util.Locale;
+
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -7,6 +9,9 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import aQute.bnd.annotation.component.Component;
 import de.mhus.lib.vaadin.desktop.GuiSpace;
 import de.mhus.lib.vaadin.desktop.GuiSpaceService;
+import de.mhus.lib.vaadin.desktop.HelpContext;
+import de.mhus.lib.vaadin.desktop.IFrameHelpContext;
+import de.mhus.lib.vaadin.desktop.NlsHelpContext;
 
 @Component(immediate=true,provide=GuiSpaceService.class)
 public class EditorSpaceService extends GuiSpace {
@@ -17,7 +22,7 @@ public class EditorSpaceService extends GuiSpace {
 	}
 
 	@Override
-	public String getDisplayName() {
+	public String getDisplayName(Locale locale) {
 		return "Editor";
 	}
 
@@ -51,6 +56,11 @@ public class EditorSpaceService extends GuiSpace {
 	@Override
 	public boolean isHiddenSpace() {
 		return true;
+	}
+
+	@Override
+	public HelpContext createHelpContext(Locale locale) {
+		return new IFrameHelpContext("http://duckduckgo.com");
 	}
 
 }

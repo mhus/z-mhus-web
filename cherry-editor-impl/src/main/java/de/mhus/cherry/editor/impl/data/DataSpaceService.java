@@ -1,5 +1,6 @@
 package de.mhus.cherry.editor.impl.data;
 
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,6 +19,7 @@ import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.security.AccessControl;
 import de.mhus.lib.vaadin.desktop.GuiSpace;
 import de.mhus.lib.vaadin.desktop.GuiSpaceService;
+import de.mhus.lib.vaadin.desktop.HelpContext;
 
 @Component(immediate=true,provide=GuiSpaceService.class)
 public class DataSpaceService extends GuiSpace {
@@ -41,7 +43,7 @@ public class DataSpaceService extends GuiSpace {
 	}
 
 	@Override
-	public String getDisplayName() {
+	public String getDisplayName(Locale locale) {
 		return "Data";
 	}
 
@@ -103,6 +105,12 @@ public class DataSpaceService extends GuiSpace {
 	@Override
 	public boolean isHiddenInMenu() {
 		return true;
+	}
+
+	@Override
+	public HelpContext createHelpContext(Locale locale) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
