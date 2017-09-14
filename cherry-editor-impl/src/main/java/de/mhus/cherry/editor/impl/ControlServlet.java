@@ -69,7 +69,7 @@ public class ControlServlet extends VaadinServlet implements Named {
     			
     		}
 			
-			Sop.getApi(InternalCherryApi.class).releaseCall(call);
+			MApi.lookup(InternalCherryApi.class).releaseCall(call);
 
 		}
 	}

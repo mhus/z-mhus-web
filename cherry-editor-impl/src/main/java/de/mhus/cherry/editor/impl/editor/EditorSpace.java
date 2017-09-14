@@ -54,6 +54,7 @@ import de.mhus.lib.cao.CaoWritableElement;
 import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
 import de.mhus.lib.cao.util.DefaultChangesQueue.EVENT;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.security.Account;
@@ -103,7 +104,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	@Override
 	public void doInitialize() {
 		
-		vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
 		panel = new Panel();
 		setMargin(true);
 		addComponent(panel);
@@ -247,12 +248,12 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		});
 		actionButtons.addComponent(bApply);
 		
-		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getStructureRegistry().registerWeak(this);
+		MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().getStructureRegistry().registerWeak(this);
 		
 	}
 
 	private void doSelectFromBreadcrumb() {
-		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
 		String path = breadcrumb.getValue();
 		CaoNode res = vHost.getResourceResolver().getResource(vHost, path);
 		doShow(vHost, res);
@@ -269,7 +270,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			return;
 		}
 		final CaoNode[] parentFinal = parent;
-		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
 		Collection<ActionDescriptor> actions = vHost.getActions(CherryApi.ACTION_CREATE, parent);
 		for (ActionDescriptor action : actions) {
 			Button b = new Button(action.getCaption());
@@ -313,7 +314,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 						break;
 					}
 					
-					Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+					MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
 
 				}
 				
@@ -447,7 +448,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		StructureControl control = selectedNode[0].getCurrent().adaptTo(StructureControl.class);
 		if (control == null) return;
 		control.moveToBottom();
-		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+		MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
 	}
 
 	protected void moveTop() {
@@ -456,7 +457,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		StructureControl control = selectedNode[0].getCurrent().adaptTo(StructureControl.class);
 		if (control == null) return;
 		control.moveToTop();
-		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+		MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
 	}
 
 	protected void moveDown() {
@@ -465,7 +466,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		StructureControl control = selectedNode[0].getCurrent().adaptTo(StructureControl.class);
 		if (control == null) return;
 		control.moveDown();
-		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+		MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
 	}
 
 	protected void moveUp() {
@@ -474,7 +475,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		StructureControl control = selectedNode[0].getCurrent().adaptTo(StructureControl.class);
 		if (control == null) return;
 		control.moveUp();
-		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+		MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
 	}
 
 	protected void openCreateSlider() {
@@ -521,7 +522,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		NavNode[] selectedNode = navigation.getSelectedNode();
 		if (selectedNode == null) return null;
 		LinkedList<Pair<String,Object>> list = new LinkedList<>();
-		Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, CherryUtil.getCurrent(selectedNode));
+		Collection<ActionDescriptor> actions = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, CherryUtil.getCurrent(selectedNode));
 		for (ActionDescriptor action :actions) {
 			list.add(new Pair<String,Object>(action.getCaption(), action ) );
 		}
@@ -535,7 +536,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		LinkedList<Pair<String,Object>> list = new LinkedList<>();
 		list.add(new Pair<String, Object>("Open", "."));
 		
-		Collection<ActionDescriptor> actions = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_MODIFY, CherryUtil.getCurrent(selectedNode));
+		Collection<ActionDescriptor> actions = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_MODIFY, CherryUtil.getCurrent(selectedNode));
 		for (ActionDescriptor action :actions) {
 			list.add(new Pair<String,Object>(action.getCaption(), action ) );
 		}
@@ -556,7 +557,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		
 		if (resId == null) return null;
 		
-		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost( GuiUtil.getApi().getHost() );
+		VirtualHost vHost = MApi.lookup(CherryApi.class).findVirtualHost( GuiUtil.getApi().getHost() );
 		CaoNode resource = vHost.getResourceResolver().getResource(vHost, resId);
 		if (resource == null) {
 			// resource not found
@@ -567,7 +568,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	
 	private synchronized String doShow(VirtualHost vHost, CaoNode resource) {
 
-		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost,resource);
+		EditorFactory factory = MApi.lookup(WidgetApi.class).getControlEditorFactory(vHost,resource);
 		this.resource = new CaoNode[] {resource};
 		breadcrumb.setValue( resource.getConnection().getName() + ":" + resource.getPath() );
 		if (factory == null)
@@ -611,7 +612,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 	}
 
 	private void doFillTabs(CaoNode res, EditorFactory editorFactory) {
-		AccessApi aaa = Sop.getApi(AccessApi.class);
+		AccessApi aaa = MApi.lookup(AccessApi.class);
 		Account account = aaa.getCurrentOrGuest().getAccount();
 		for (EditorControlFactory factory : CherryUtil.orderServices(EditorSpace.class, EditorControlFactory.class)) {
 			if (aaa.hasGroupAccess(account, EditorSpace.class, factory.getName(), "create")) {

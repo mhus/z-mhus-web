@@ -15,6 +15,7 @@ import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MString;
 import de.mhus.osgi.sop.api.Sop;
 
@@ -47,7 +48,7 @@ public class PageControlAcls implements PageControlFactory {
 
 		@Override
 		public void doUpdate(NavNode nav) {
-	        CherryApi api = Sop.getApi(CherryApi.class);
+	        CherryApi api = MApi.lookup(CherryApi.class);
 	        CaoNode cur = nav.getCurrent();
 			Map<String, Acl> acls = api.getEffectiveAcls(cur);
 			TreeMap<String, Acl> sorted = new TreeMap<>(acls);

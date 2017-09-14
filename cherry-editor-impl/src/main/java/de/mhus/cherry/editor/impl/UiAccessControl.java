@@ -6,6 +6,7 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.security.AccessControl;
 import de.mhus.lib.core.security.Account;
@@ -23,10 +24,10 @@ public class UiAccessControl extends MLog implements AccessControl {
 		if (!isUserSignedIn()) {
 			// try auto login
 			String host = request.getHeader("Host");
-			VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
+			VirtualHost vHost = MApi.lookup(CherryApi.class).findVirtualHost(host);
 			AaaContext context = vHost.doLogin(new VaadinRequestWrapper(request), null);
 			if (context != null) {
-				IProperties session = Sop.getApi(InternalCherryApi.class).getCherrySession(sessionId);
+				IProperties session = MApi.lookup(InternalCherryApi.class).getCherrySession(sessionId);
 				session.put(InternalCherryApi.SESSION_ACCESS_NAME, context);
 			}
 		}
@@ -35,7 +36,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public boolean signIn(String username, String password) {
 		try {
-			InternalCherryApi internal = Sop.getApi(InternalCherryApi.class);
+			InternalCherryApi internal = MApi.lookup(InternalCherryApi.class);
 			String ret = internal.doLogin(username, password);
 			return ret == null;
 		} catch (Throwable t) {
@@ -47,7 +48,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public boolean isUserSignedIn() {
 		try {
-			InternalCherryApi internal = Sop.getApi(InternalCherryApi.class);
+			InternalCherryApi internal = MApi.lookup(InternalCherryApi.class);
 			return internal.isLoggedIn();
 		} catch (Throwable t) {
 			log().d(t);
@@ -58,7 +59,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public boolean hasGroup(String role) {
 		try {
-			AaaContext current = Sop.getApi(CherryApi.class).getCurrentCall().getAaaContext();
+			AaaContext current = MApi.lookup(CherryApi.class).getCurrentCall().getAaaContext();
 			return current.getAccount().hasGroup(role);
 		} catch (Throwable t) {
 			log().d(t);
@@ -69,7 +70,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public String getName() {
 		try {
-			AaaContext current = Sop.getApi(CherryApi.class).getCurrentCall().getAaaContext();
+			AaaContext current = MApi.lookup(CherryApi.class).getCurrentCall().getAaaContext();
 			return current.getAccount().getName();
 		} catch (Throwable t) {
 			log().d(t);
@@ -80,7 +81,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public void signOut() {
 		try {
-			Sop.getApi(InternalCherryApi.class).doLogout();
+			MApi.lookup(InternalCherryApi.class).doLogout();
 		} catch (Throwable t) {
 			log().d(t);
 		}
@@ -89,7 +90,7 @@ public class UiAccessControl extends MLog implements AccessControl {
 	@Override
 	public Account getAccount() {
 		try {
-			AaaContext current = Sop.getApi(CherryApi.class).getCurrentCall().getAaaContext();
+			AaaContext current = MApi.lookup(CherryApi.class).getCurrentCall().getAaaContext();
 			return current.getAccount();
 		} catch (Throwable t) {
 			log().d("getAccount",t.toString());

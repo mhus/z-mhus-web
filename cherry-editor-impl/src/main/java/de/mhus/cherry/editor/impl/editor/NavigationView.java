@@ -38,6 +38,7 @@ import de.mhus.cherry.portal.api.control.ControlParent;
 import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.util.DefaultChangesQueue.Change;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
@@ -196,7 +197,7 @@ public abstract class NavigationView extends VerticalLayout implements ControlPa
 		container.addContainerProperty("sort", String.class, "");
 		
 		String host = ((ControlUi)GuiUtil.getApi()).getHost();
-		vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
+		vHost = MApi.lookup(CherryApi.class).findVirtualHost(host);
 		NavNode navRoot = vHost.getNavigationProvider().getNode("/");
 		
 		try {

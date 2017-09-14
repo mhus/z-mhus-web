@@ -24,6 +24,7 @@ import de.mhus.cherry.editor.impl.forms.ImageBrowser;
 import de.mhus.cherry.editor.impl.forms.LinkBrowser;
 import de.mhus.cherry.portal.api.control.CherryGuiApi;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
@@ -224,7 +225,7 @@ public class ControlUi extends UI implements CherryGuiApi {
 		if (role == null || accessControl == null || !accessControl.isUserSignedIn())
 			return false;
 
-		return Sop.getApi(AccessApi.class).hasGroupAccess(accessControl.getAccount(), getClass(), role, null);
+		return MApi.lookup(AccessApi.class).hasGroupAccess(accessControl.getAccount(), getClass(), role, null);
 		
 	}
 	

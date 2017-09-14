@@ -13,6 +13,7 @@ import de.mhus.cherry.portal.api.control.GuiUtil;
 import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MXml;
 import de.mhus.osgi.sop.api.Sop;
@@ -71,7 +72,7 @@ public class PageControlWidgets implements PageControlFactory {
 				});
 			}
 			
-			for (CaoNode c : Sop.getApi(WidgetApi.class).sortWidgets(content).getNodes()) {
+			for (CaoNode c : MApi.lookup(WidgetApi.class).sortWidgets(content).getNodes()) {
 				try {
 					Button b = new Button();
 					b.setHtmlContentAllowed(true);

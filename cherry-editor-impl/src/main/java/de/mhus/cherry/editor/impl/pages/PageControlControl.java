@@ -23,6 +23,7 @@ import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
@@ -126,11 +127,11 @@ public class PageControlControl extends MLog implements PageControlFactory {
 					UI.getCurrent().showNotification("Can't delete root");
 					return;
 				}
-				VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+				VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
 			
 //				CaoNode page = res.getParent();
 				CaoNode page = nav.getRes();
-				EditorFactory editor = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost, page);
+				EditorFactory editor = MApi.lookup(WidgetApi.class).getControlEditorFactory(vHost, page);
 			
 				ConfirmDialog dialog = new ConfirmDialog("Delete Page", "Really delete page and all sub pages", "Delete", "Cancel", new ConfirmDialog.Listener() {
 					
@@ -139,7 +140,7 @@ public class PageControlControl extends MLog implements PageControlFactory {
 						try {
 							if (dialog.isCancel()) return;
 							
-							boolean success = Sop.getApi(CherryApi.class).deleteNavNode(nav.getNav());
+							boolean success = MApi.lookup(CherryApi.class).deleteNavNode(nav.getNav());
 							
 							if (success)
 								UI.getCurrent().showNotification("Page deleted");
@@ -177,8 +178,8 @@ public class PageControlControl extends MLog implements PageControlFactory {
 							String title = dialog.getInputText();
 							String name = MFile.normalize(title);
 							
-							VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
-							NavNode newNode = Sop.getApi(CherryApi.class).createNavNode(vHost, nav.getNav(), null, name, title);
+							VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
+							NavNode newNode = MApi.lookup(CherryApi.class).createNavNode(vHost, nav.getNav(), null, name, title);
 
 							boolean success = editor.doPrepareCreatedWidget(newNode.getRes());
 							if (success)

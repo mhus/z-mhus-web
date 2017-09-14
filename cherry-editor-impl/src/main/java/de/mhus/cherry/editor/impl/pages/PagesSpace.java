@@ -36,6 +36,7 @@ import de.mhus.cherry.portal.api.control.PageControl;
 import de.mhus.cherry.portal.api.control.PageControlFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.Account;
@@ -144,7 +145,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		});
 		
 		controls = new HashMap<>();
-		AccessApi aaa = Sop.getApi(AccessApi.class);
+		AccessApi aaa = MApi.lookup(AccessApi.class);
 		Account account = aaa.getCurrentOrGuest().getAccount();
 		PageControl controlTab = null;
 		for (PageControlFactory factory : CherryUtil.orderServices( PagesSpace.class, PageControlFactory.class ) ) {
@@ -230,7 +231,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		container.addContainerProperty("icon", FontAwesome.class, null);
 		
 		String host = ((ControlUi)GuiUtil.getApi()).getHost();
-		VirtualHost vHost = Sop.getApi(CherryApi.class).findVirtualHost(host);
+		VirtualHost vHost = MApi.lookup(CherryApi.class).findVirtualHost(host);
 		NavNode navRoot = vHost.getNavigationProvider().getNode("/");
 		
 		try {
