@@ -10,6 +10,7 @@ import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MSystem;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
@@ -38,7 +39,7 @@ public class CherryCallContext implements CallContext {
 		httpPath = req.getPathInfo();
 		req.setAttribute(CallContext.REQUEST_ATTRIBUTE_NAME, this);
 		sessionId = req.getSession().getId();
-		sessionContext = Sop.getApi(InternalCherryApi.class).getCherrySession(sessionId);
+		sessionContext = MApi.lookup(InternalCherryApi.class).getCherrySession(sessionId);
 	}
 
 	public void setHttpResponse(HttpServletResponse res) {
@@ -167,7 +168,7 @@ public class CherryCallContext implements CallContext {
 	@Override
 	public AaaContext getAaaContext() {
 		// return every time the current context
-		return Sop.getApi(AccessApi.class).getCurrentOrGuest();
+		return MApi.lookup(AccessApi.class).getCurrentOrGuest();
 	}
 
 	@Override

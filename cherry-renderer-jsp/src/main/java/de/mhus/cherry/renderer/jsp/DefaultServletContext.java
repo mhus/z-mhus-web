@@ -11,6 +11,7 @@ import java.util.Set;
 
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.util.AbstractServletContext;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.util.FileResolver;
 import de.mhus.osgi.sop.api.Sop;
 
@@ -30,7 +31,7 @@ public class DefaultServletContext extends AbstractServletContext {
 
 	@Override
 	public String getMimeType(String file) {
-		return Sop.getApi(CherryApi.class).getMimeType(file);
+		return MApi.lookup(CherryApi.class).getMimeType(file);
 	}
 
 	@Override

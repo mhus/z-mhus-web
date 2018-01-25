@@ -67,7 +67,7 @@ import de.mhus.lib.vaadin.desktop.GuiLifecycle;
 import de.mhus.lib.vaadin.desktop.Navigable;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
-import de.mhus.osgi.sop.api.action.ActionDescriptor;
+import de.mhus.osgi.sop.api.operation.OperationDescriptor;
 
 public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecycle, StructureChangesListener {
 
@@ -271,15 +271,15 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		}
 		final CaoNode[] parentFinal = parent;
 		VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
-		Collection<ActionDescriptor> actions = vHost.getActions(CherryApi.ACTION_CREATE, parent);
-		for (ActionDescriptor action : actions) {
+		Collection<OperationDescriptor> actions = vHost.getActions(CherryApi.ACTION_CREATE, parent);
+		for (OperationDescriptor action : actions) {
 			Button b = new Button(action.getCaption());
 			b.setWidth("100%");
 			b.setStyleName("flatbutton");
 			b.setIcon(FontAwesome.ARROW_RIGHT);
 			b.setData(action);
 			b.addClickListener((event) -> {
-				ActionDescriptor a = (ActionDescriptor)event.getButton().getData();
+				OperationDescriptor a = (OperationDescriptor)event.getButton().getData();
 				ActionDialog.doExecuteAction(a, parentFinal);
 				createSlider.collapse();
 			});
@@ -499,7 +499,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			action = list.get(0).getValue();
 		}
 		
-		ActionDialog.doExecuteAction((ActionDescriptor) action, parentFinal);
+		ActionDialog.doExecuteAction((OperationDescriptor) action, parentFinal);
 	}
 
 	protected void doModify(Object action) {
@@ -514,7 +514,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 			}
 		} else {
 			final CaoNode[] parentFinal = CherryUtil.getCurrent(selectedNode);
-			ActionDialog.doExecuteAction((ActionDescriptor) action, parentFinal);
+			ActionDialog.doExecuteAction((OperationDescriptor) action, parentFinal);
 		}
 	}
 
@@ -522,8 +522,8 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		NavNode[] selectedNode = navigation.getSelectedNode();
 		if (selectedNode == null) return null;
 		LinkedList<Pair<String,Object>> list = new LinkedList<>();
-		Collection<ActionDescriptor> actions = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, CherryUtil.getCurrent(selectedNode));
-		for (ActionDescriptor action :actions) {
+		Collection<OperationDescriptor> actions = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_DELETE, CherryUtil.getCurrent(selectedNode));
+		for (OperationDescriptor action :actions) {
 			list.add(new Pair<String,Object>(action.getCaption(), action ) );
 		}
 		return list;
@@ -536,8 +536,8 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		LinkedList<Pair<String,Object>> list = new LinkedList<>();
 		list.add(new Pair<String, Object>("Open", "."));
 		
-		Collection<ActionDescriptor> actions = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_MODIFY, CherryUtil.getCurrent(selectedNode));
-		for (ActionDescriptor action :actions) {
+		Collection<OperationDescriptor> actions = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().getActions(CherryApi.ACTION_MODIFY, CherryUtil.getCurrent(selectedNode));
+		for (OperationDescriptor action :actions) {
 			list.add(new Pair<String,Object>(action.getCaption(), action ) );
 		}
 		

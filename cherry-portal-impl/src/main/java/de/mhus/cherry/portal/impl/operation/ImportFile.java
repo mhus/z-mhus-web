@@ -15,6 +15,7 @@ import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.definition.DefRoot;
@@ -72,7 +73,7 @@ public class ImportFile extends AbstractVaadinOperation {
 		CaoNode nav = navArray[0];
 		String name = context.getParameters().getString("name");
 		
-		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
 		
 		// create page node
 		CaoNode newFolder = null;

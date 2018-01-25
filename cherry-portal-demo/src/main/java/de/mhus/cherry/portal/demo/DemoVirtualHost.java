@@ -12,6 +12,7 @@ import de.mhus.cherry.portal.impl.CherryVirtualHost;
 import de.mhus.lib.cao.fdb.FdbCore;
 import de.mhus.lib.cao.fs.FsCore;
 import de.mhus.lib.cao.util.SharedDataSource;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MThread;
 import de.mhus.lib.core.MTimeInterval;
 import de.mhus.osgi.sop.api.Sop;
@@ -30,7 +31,7 @@ public class DemoVirtualHost extends CherryVirtualHost {
 			
 			@Override
 			public void run() {
-				CherryApi api = Sop.waitForApi(CherryApi.class, 10000);
+				CherryApi api = MApi.waitFor(CherryApi.class, 10000);
 				try {
 					// get my deploy descriptor to set data sources into bundle deployed resources
 					DeployDescriptor privDep = MThread.getWithTimeout(

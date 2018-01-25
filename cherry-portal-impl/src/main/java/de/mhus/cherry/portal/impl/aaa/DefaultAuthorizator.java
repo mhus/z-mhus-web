@@ -10,6 +10,7 @@ import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.action.CaoConfiguration;
 import de.mhus.lib.cao.auth.Authorizator;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MApi;
 import de.mhus.osgi.sop.api.Sop;
 
 public class DefaultAuthorizator implements Authorizator {
@@ -17,7 +18,7 @@ public class DefaultAuthorizator implements Authorizator {
 	@Override
 	public boolean hasReadAccess(CaoNode node) {
 		try {
-			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_READ );
+			return MApi.lookup(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_READ );
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;
@@ -27,7 +28,7 @@ public class DefaultAuthorizator implements Authorizator {
 	@Override
 	public boolean hasWriteAccess(CaoNode node) {
 		try {
-			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_WRITE);
+			return MApi.lookup(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_WRITE);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;
@@ -48,7 +49,7 @@ public class DefaultAuthorizator implements Authorizator {
 	@Override
 	public boolean hasStructureAccess(CaoNode node) {
 		try {
-			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_STRUCTURE);
+			return MApi.lookup(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_STRUCTURE);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;
@@ -58,7 +59,7 @@ public class DefaultAuthorizator implements Authorizator {
 	@Override
 	public boolean hasDeleteAccess(CaoNode node) {
 		try {
-			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_DELETE);
+			return MApi.lookup(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_DELETE);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;
@@ -68,7 +69,7 @@ public class DefaultAuthorizator implements Authorizator {
 	@Override
 	public boolean hasCreateAccess(CaoNode node, String name, IProperties properties) {
 		try {
-			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_CREATE);
+			return MApi.lookup(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_CREATE);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;
@@ -78,7 +79,7 @@ public class DefaultAuthorizator implements Authorizator {
 	@Override
 	public boolean hasContentAccess(CaoNode node, String rendition) {
 		try {
-			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_READ);
+			return MApi.lookup(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_READ);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;
@@ -88,7 +89,7 @@ public class DefaultAuthorizator implements Authorizator {
 	@Override
 	public boolean hasContentWriteAccess(CaoNode node, String rendition) {
 		try {
-			return Sop.getApi(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_RENDITION);
+			return MApi.lookup(CherryApi.class).hasResourceAccess(node, CherryApi.ACL_RENDITION);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;
@@ -133,25 +134,25 @@ public class DefaultAuthorizator implements Authorizator {
 		for (CaoNode n : list) {
 			switch (action.getName()) {
 			case CaoAction.CREATE:
-				if (!Sop.getApi(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_CREATE )) return false;
+				if (!MApi.lookup(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_CREATE )) return false;
 				break;
 			case CaoAction.DELETE:
-				if (!Sop.getApi(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_DELETE )) return false;
+				if (!MApi.lookup(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_DELETE )) return false;
 				break;
 			case CaoAction.DELETE_RENDITION:
-				if (!Sop.getApi(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_RENDITION )) return false;
+				if (!MApi.lookup(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_RENDITION )) return false;
 				break;
 			case CaoAction.MOVE:
-				if (!Sop.getApi(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_STRUCTURE )) return false;
+				if (!MApi.lookup(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_STRUCTURE )) return false;
 				break;
 			case CaoAction.RENAME:
-				if (!Sop.getApi(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_STRUCTURE )) return false;
+				if (!MApi.lookup(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_STRUCTURE )) return false;
 				break;
 			case CaoAction.UPDATE:
-				if (!Sop.getApi(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_WRITE )) return false;
+				if (!MApi.lookup(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_WRITE )) return false;
 				break;
 			case CaoAction.UPLOAD_RENDITION:
-				if (!Sop.getApi(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_RENDITION )) return false;
+				if (!MApi.lookup(CherryApi.class).hasResourceAccess(n, CherryApi.ACL_RENDITION )) return false;
 				break;
 			}
 		}

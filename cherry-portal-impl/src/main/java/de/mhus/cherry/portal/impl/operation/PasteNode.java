@@ -3,6 +3,7 @@ package de.mhus.cherry.portal.impl.operation;
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.definition.DefRoot;
 import de.mhus.lib.core.strategy.NotSuccessful;
 import de.mhus.lib.core.strategy.Operation;
@@ -21,12 +22,12 @@ public class PasteNode extends AbstractVaadinOperation {
 //	private static PasteAction action;
 	
 	public static void setAction(PasteAction action) {
-		IProperties session = Sop.getApi(CherryApi.class).getCurrentCall().getSession();
+		IProperties session = MApi.lookup(CherryApi.class).getCurrentCall().getSession();
 		session.put(SESSION_KEY, action);
 	}
 	
 	public static PasteAction getAction() {
-		IProperties session = Sop.getApi(CherryApi.class).getCurrentCall().getSession();
+		IProperties session = MApi.lookup(CherryApi.class).getCurrentCall().getSession();
 		return (PasteAction) session.get(SESSION_KEY);
 	}
 	

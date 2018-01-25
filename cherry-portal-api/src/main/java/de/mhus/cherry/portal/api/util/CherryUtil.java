@@ -24,6 +24,7 @@ import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.basics.Named;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
@@ -61,7 +62,7 @@ public class CherryUtil {
 	}
 	
 	public static <T extends Named> List<T> order(String configListName, List<T> list) {
-		CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
+		CallContext call = MApi.lookup(CherryApi.class).getCurrentCall();
 		if (call == null) return list;
 		VirtualHost vHost = call.getVirtualHost();
 		if (vHost == null) return list;
@@ -115,7 +116,7 @@ public class CherryUtil {
 
 		try {
 		
-			CallContext call = Sop.getApi(InternalCherryApi.class).createCall(servlet, request, response);
+			CallContext call = MApi.lookup(InternalCherryApi.class).createCall(servlet, request, response);
 			if (response != null && response.isCommitted()) return null;
 			
 			return call;
@@ -146,7 +147,7 @@ public class CherryUtil {
 	public static String getPublicDeployUrl(Object owner, String path) {
 		if (owner == null || path == null) return null;
 		Bundle bundle = FrameworkUtil.getBundle(owner.getClass());
-		DeployDescriptor desc = Sop.getApi(CherryApi.class ).getDeployDescritor( bundle ); 
+		DeployDescriptor desc = MApi.lookup(CherryApi.class ).getDeployDescritor( bundle ); 
 		if (desc == null) return null;
 		return desc.getWebPath(SPACE.PUBLIC) + path;
 	}

@@ -5,6 +5,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.util.JsonResourceRenderer;
+import de.mhus.lib.core.MApi;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.rest.JsonResult;
 
@@ -17,7 +18,7 @@ public class LoginHandler extends JsonResourceRenderer {
 		String username = call.getHttpRequest().getParameter("username");
 		String password = call.getHttpRequest().getParameter("password");
 		
-		InternalCherryApi intern = Sop.getApi(InternalCherryApi.class);
+		InternalCherryApi intern = MApi.lookup(InternalCherryApi.class);
 		String ret = intern.doLogin(username,password);
 		if (ret != null) {
 			res.put("_error", ret);

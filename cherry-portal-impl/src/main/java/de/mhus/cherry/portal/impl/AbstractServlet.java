@@ -11,6 +11,7 @@ import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.basics.Named;
+import de.mhus.lib.core.MApi;
 import de.mhus.osgi.sop.api.Sop;
 
 public abstract class AbstractServlet extends HttpServlet implements Named {
@@ -27,7 +28,7 @@ public abstract class AbstractServlet extends HttpServlet implements Named {
         try {
         	doService(call, req, res);
         } finally {
-        	Sop.getApi(InternalCherryApi.class).releaseCall(call);
+        	MApi.lookup(InternalCherryApi.class).releaseCall(call);
         }
 	}
 

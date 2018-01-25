@@ -27,6 +27,7 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.ProcessorContext;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.lang.DelegateClassLoader;
 import de.mhus.lib.core.util.FileResolver;
@@ -82,7 +83,7 @@ public class JspRendererContext extends MLog implements ProcessorContext {
 		}	
 		// libs coming with renderer (default libs)
 		{
-			File renderRoot = Sop.getApi(CherryApi.class).getDeployDescritor(bundle).getPath(SPACE.PRIVATE);
+			File renderRoot = MApi.lookup(CherryApi.class).getDeployDescritor(bundle).getPath(SPACE.PRIVATE);
 			File lib = new File (renderRoot,"WEB-INF/lib");
 			try {
 				if (lib.exists() && lib.isDirectory()) {

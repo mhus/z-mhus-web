@@ -9,6 +9,7 @@ import de.mhus.cherry.portal.api.ContentNodeResolver;
 import de.mhus.cherry.portal.api.NavNode;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MString;
 import de.mhus.osgi.sop.api.Sop;
 
@@ -50,7 +51,7 @@ public class DefaultContentNodeResolver implements ContentNodeResolver {
 	@Override
 	public String getRecursiveString(NavNode nav, String name) {
 		String suffix = nav.getMainRes().getName();
-		CherryApi api = Sop.getApi(CherryApi.class);
+		CherryApi api = MApi.lookup(CherryApi.class);
 		String value = api.getRecursiveString(nav.getNav(), name + "_" + suffix);
 		if (MString.isSet(value)) return value;
 		// fallback

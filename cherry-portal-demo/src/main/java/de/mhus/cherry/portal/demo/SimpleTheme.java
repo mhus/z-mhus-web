@@ -15,6 +15,7 @@ import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
+import de.mhus.lib.core.MApi;
 import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = ResourceRenderer.class, name="cherry_renderer_de.mhus.cherry.portal.impl.page.simpletheme")
@@ -27,7 +28,7 @@ public class SimpleTheme implements ResourceRenderer {
 	public void doRender(CallContext call) throws Exception {
 		String scope = (String)call.getAttribute(WidgetApi.CURRENT_THEME_SCOPE);
 
-		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
+		DeployDescriptor descriptor = MApi.lookup(CherryApi.class).getDeployDescritor(bundle);
 		File root = descriptor.getPath(SPACE.PRIVATE);
 		File file = null;
 		switch (scope) {
@@ -47,7 +48,7 @@ public class SimpleTheme implements ResourceRenderer {
 	@Override
 	public void doCollectResourceLinks(String name, Set<String> list) {
 		if (webPath == null)
-			webPath = Sop.getApi(CherryApi.class).getDeployDescritor(bundle).getWebPath(SPACE.PUBLIC);
+			webPath = MApi.lookup(CherryApi.class).getDeployDescritor(bundle).getWebPath(SPACE.PUBLIC);
 		
 		switch(name) {
 		case ResourceRenderer.RESOURCE_CSS:

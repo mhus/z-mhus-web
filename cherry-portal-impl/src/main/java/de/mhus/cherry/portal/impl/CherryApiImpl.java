@@ -28,6 +28,7 @@ import de.mhus.lib.cao.action.CaoConfiguration;
 import de.mhus.lib.cao.action.CreateConfiguration;
 import de.mhus.lib.cao.auth.AuthAccess;
 import de.mhus.lib.cao.auth.AuthNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.lib.errors.NotFoundException;
@@ -91,7 +92,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
 	@Override
 	public String getRecursiveString(CaoNode resource, String name) {
-		CacheApi cache = Sop.getApi(CacheApi.class);
+		CacheApi cache = MApi.lookup(CacheApi.class);
 		Container val = cache.get(resource, "cherry_recursice_string_" + name);
 		if (val != null) return val.getString();
 		
@@ -199,7 +200,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
 	@Override
 	public boolean hasResourceAccess(CaoNode node, String aclName) {
-		AccessApi aaa = Sop.getApi(AccessApi.class);
+		AccessApi aaa = MApi.lookup(AccessApi.class);
 		AaaContext context = aaa.getCurrentOrGuest();
 		return hasResourceAccess(context, node, aclName);
 	}

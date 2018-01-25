@@ -5,6 +5,7 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.definition.DefRoot;
 import de.mhus.lib.core.strategy.NotSuccessful;
 import de.mhus.lib.core.strategy.Operation;
@@ -61,7 +62,7 @@ public class CopyNode extends AbstractVaadinOperation {
 				}
 			}
 			
-			Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+			MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
 			
 			return res ? new Successful("") : new NotSuccessful("", "", -4);
 		}

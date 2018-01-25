@@ -23,6 +23,7 @@ import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.basics.Named;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.IReadProperties;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MTimeInterval;
@@ -76,7 +77,7 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 	public CallContext createCall(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res) throws IOException {
 
 		// check general security
-		SecurityApi sec = Sop.getApi(SecurityApi.class, false);
+		SecurityApi sec = MApi.lookup(SecurityApi.class);
 		if (sec != null) {
 			sec.checkHttpRequest(req, res);
 			if (res != null && res.isCommitted()) return null;
@@ -133,7 +134,7 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 		}
 		
 		// find logged in user and auto login
-        AccessApi access = Sop.getApi(AccessApi.class);
+        AccessApi access = MApi.lookup(AccessApi.class);
         AaaContext context = getContext( req.getSession().getId() );
         if (context == null) {
         	context = vHost.doLogin(new HttpServletRequestWrapper(req), new HttpServletResponseWrapper(res) );
@@ -173,7 +174,7 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 	@Override
 	public void releaseCall(CallContext call) {
 		
-        AccessApi access = Sop.getApi(AccessApi.class);
+        AccessApi access = MApi.lookup(AccessApi.class);
     	access.release(call.getAaaContext());
 		CherryApiImpl.instance.setCallContext(null);
 
@@ -212,7 +213,7 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 		
 		// for secure try to release
 		AaaContext current = (AaaContext)session.get(SESSION_ACCESS_NAME);
-		AccessApi api = Sop.getApi(AccessApi.class);
+		AccessApi api = MApi.lookup(AccessApi.class);
 		if (current != null) {
 			api.release(current);
 		}

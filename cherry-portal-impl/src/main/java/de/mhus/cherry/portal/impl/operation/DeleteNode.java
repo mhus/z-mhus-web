@@ -9,6 +9,7 @@ import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.definition.DefRoot;
 import de.mhus.lib.core.strategy.NotSuccessful;
 import de.mhus.lib.core.strategy.Operation;
@@ -59,7 +60,7 @@ public class DeleteNode extends AbstractVaadinOperation {
 				res = false; // TODO collect not successful
 		}
 		
-		Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
+		MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost().doUpdates();
 
 		return res ? new Successful(this) : new NotSuccessful(this, "Not", -1);
 	}

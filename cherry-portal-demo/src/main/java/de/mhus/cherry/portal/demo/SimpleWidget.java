@@ -16,6 +16,7 @@ import de.mhus.cherry.portal.api.ScriptRenderer;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.util.FileResolver;
 import de.mhus.osgi.sop.api.Sop;
@@ -28,7 +29,7 @@ public class SimpleWidget extends MLog implements ResourceRenderer {
 	
 	@Override
 	public void doRender(CallContext call) throws Exception {
-		CaoNode res = Sop.getApi(WidgetApi.class).getResource(call);
+		CaoNode res = MApi.lookup(WidgetApi.class).getResource(call);
 //		String title = res.getString("title");
 //		call.getHttpResponse().getOutputStream().println("<h2>Widget:"+title+"</h2>");
 		

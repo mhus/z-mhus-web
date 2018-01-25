@@ -6,6 +6,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.osgi.sop.api.Sop;
 
 public class HtmlHeadTag extends TagSupport {
@@ -15,7 +16,7 @@ public class HtmlHeadTag extends TagSupport {
 		try {
 			CallContext call = (CallContext)pageContext.getAttribute("call");
 			CaoNode res = (CaoNode)pageContext.getAttribute("resource");
-			String content = Sop.getApi(WidgetApi.class).getHtmlHead(call, res);
+			String content = MApi.lookup(WidgetApi.class).getHtmlHead(call, res);
 			pageContext.getOut().print(content);
 		} catch (Exception e) {
 			e.printStackTrace();

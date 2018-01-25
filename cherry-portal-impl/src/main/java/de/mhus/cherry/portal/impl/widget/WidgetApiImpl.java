@@ -17,6 +17,7 @@ import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.util.ListCaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MString;
 import de.mhus.osgi.sop.api.Sop;
@@ -67,11 +68,11 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 	@Override
 	public String getHtmlHead(CallContext call, CaoNode res) {
 		
-		CacheApi cache = Sop.getApi(CacheApi.class);
+		CacheApi cache = MApi.lookup(CacheApi.class);
 		String val = cache.getString(res, "widget_html_head");
 		if (val != null) return val;
 
-		CherryApi api = Sop.getApi(CherryApi.class);
+		CherryApi api = MApi.lookup(CherryApi.class);
 		
 		
 		HashSet<String> cssList = new HashSet<>();

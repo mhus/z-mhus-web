@@ -14,6 +14,7 @@ import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.ScriptRenderer;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.util.FileResolver;
 import de.mhus.osgi.sop.api.Sop;
@@ -28,8 +29,8 @@ public class JspRenderer extends MLog implements ScriptRenderer {
 	@Override
 	public void doRender(CallContext call, Bundle bundle, File file) throws Exception {
 		
-		DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
-		InternalCherryApi internal = Sop.getApi(InternalCherryApi.class);
+		DeployDescriptor descriptor = MApi.lookup(CherryApi.class).getDeployDescritor(bundle);
+		InternalCherryApi internal = MApi.lookup(InternalCherryApi.class);
 		FileResolver root = call.getVirtualHost().getPrivateFileResolver(bundle);
 		File tmp = descriptor.getPath(SPACE.TEMP);
 	 	

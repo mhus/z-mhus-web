@@ -8,7 +8,7 @@ import de.mhus.lib.errors.NotFoundException;
 public class DefaultRendererResolver implements RendererResolver {
 
 	@Override
-	public ResourceRenderer getRenderer(CallContext call) {
+	public ResourceRenderer getRenderer(CallContext call) throws NotFoundException {
 		
 		String httpMethod = call.getHttpMethod(); // already lower case
 		

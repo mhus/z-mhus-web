@@ -31,6 +31,7 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.DeployDescriptor;
 import de.mhus.cherry.portal.api.DeployDescriptor.SPACE;
 import de.mhus.cherry.portal.api.FileDeployer;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MThread;
@@ -77,7 +78,7 @@ public class CherryDeployServlet extends HttpServlet implements BundleListener {
 
 			@Override
 			public void run() {
-				Sop.waitForApi(CherryApi.class, 10000);
+				MApi.waitFor(CherryApi.class, 10000);
 				log.i("will initial deploy cherry resources");
 				context.addBundleListener(CherryDeployServlet.this);
 				refreshAll(SENSIVITY.CHECK);
@@ -218,7 +219,7 @@ public class CherryDeployServlet extends HttpServlet implements BundleListener {
 			}
 		} else {
 							
-			FileDeployer deployer = Sop.getApi(CherryApi.class).findFileDeployer(MFile.getFileSuffix(path));
+			FileDeployer deployer = MApi.lookup(CherryApi.class).findFileDeployer(MFile.getFileSuffix(path));
 			URL entry = bundle.getEntry(path);
 			if (deployer != null) {
 				deployer.doDeploy(root, path.substring(prefixLength), entry, config);

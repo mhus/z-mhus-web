@@ -63,8 +63,8 @@ import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.lib.servlet.ResponseWrapper;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
-import de.mhus.osgi.sop.api.action.ActionApi;
-import de.mhus.osgi.sop.api.action.ActionDescriptor;
+import de.mhus.osgi.sop.api.operation.OperationApi;
+import de.mhus.osgi.sop.api.operation.OperationDescriptor;
 
 public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
@@ -400,7 +400,7 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 	@Override
 	public ResourceProvider getResourceProvider(String name) {
-		CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
+		CallContext call = MApi.lookup(CherryApi.class).getCurrentCall();
 		name = name.toLowerCase();
 		
 		ResourceProvider provider = null;
@@ -632,15 +632,15 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 	}
 	
 	@Override
-	public Collection<ActionDescriptor> getActions(String type, CaoNode[] node) {
+	public Collection<OperationDescriptor> getActions(String type, CaoNode[] node) {
 		LinkedList<String> tags = new LinkedList<>();
 		tags.add( "control" );
 		tags.add( "caonode" );
 		tags.add( type );
 		
-		MProperties properties = new MProperties();
-		properties.put(CherryUtil.NODE, node);
-		List<ActionDescriptor> actions = Sop.getApi(ActionApi.class).getActions(tags, properties);
+//		MProperties properties = new MProperties();
+//		properties.put(CherryUtil.NODE, node);
+		List<OperationDescriptor> actions = MApi.lookup(OperationApi.class).findOperations(null,null,tags);
 		
 		actions = CherryUtil.order("control_action_" + type, actions, this);
 		return actions;
@@ -653,7 +653,7 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 	@Override
 	public void doPrepareCreatedWidget(CaoNode res) {
-		EditorFactory factory = Sop.getApi(WidgetApi.class).getControlEditorFactory(this, res);
+		EditorFactory factory = MApi.lookup(WidgetApi.class).getControlEditorFactory(this, res);
 		if (factory != null)
 			factory.doPrepareCreatedWidget(res);
 	}
@@ -688,7 +688,7 @@ public class AbstractVirtualHost extends MLog implements VirtualHost, Named {
 
 		public PrivateFileResolver(Bundle bundle) {
 			this.bundle = bundle;
-			DeployDescriptor descriptor = Sop.getApi(CherryApi.class).getDeployDescritor(bundle);
+			DeployDescriptor descriptor = MApi.lookup(CherryApi.class).getDeployDescritor(bundle);
 			if (descriptor != null)
 				root = descriptor.getPath(SPACE.PRIVATE);
 		}

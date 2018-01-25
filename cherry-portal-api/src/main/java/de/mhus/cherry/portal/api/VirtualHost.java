@@ -17,7 +17,7 @@ import de.mhus.lib.core.util.FileResolver;
 import de.mhus.lib.servlet.RequestWrapper;
 import de.mhus.lib.servlet.ResponseWrapper;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
-import de.mhus.osgi.sop.api.action.ActionDescriptor;
+import de.mhus.osgi.sop.api.operation.OperationDescriptor;
 
 public interface VirtualHost {
 
@@ -87,7 +87,7 @@ public interface VirtualHost {
 	 * @param node
 	 * @return 
 	 */
-	public Collection<ActionDescriptor> getActions(String type, CaoNode[] node);
+	public Collection<OperationDescriptor> getActions(String type, CaoNode[] node);
 	
 	public MEventHandler<StructureChangesListener> getStructureRegistry();
 

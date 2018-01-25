@@ -15,6 +15,7 @@ import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.definition.DefRoot;
@@ -58,7 +59,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 				ds.setProperties(properties);
 				
 				// Page Items
-				VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+				VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
 				{
 					Map<String, String> list = vHost.getContentNodeResolver().getDefaultPages();
 					LinkedList<Item> pageTypes = new LinkedList<>();
@@ -71,7 +72,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 				{
 					CaoNode[] navArray = CherryUtil.getNodeFromProperties(editorProperties);
 					CaoNode nav = navArray[0];
-					CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
+					CallContext call = MApi.lookup(CherryApi.class).getCurrentCall();
 					Collection<EditorFactory> list = call.getVirtualHost().getAvailablePageTypes(nav);
 					LinkedList<Item> pageTypeTypes = new LinkedList<>();
 					for (EditorFactory editor : list) {
@@ -100,7 +101,7 @@ public class CreateChildNavigation extends AbstractVaadinOperation {
 		String pageType = context.getParameters().getString("pageType");
 		String page = context.getParameters().getString("page");
 		
-		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
 		
 		// create navigation node
 		CaoNode newNavigation = null;

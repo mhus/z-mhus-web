@@ -14,6 +14,7 @@ import org.osgi.framework.FrameworkUtil;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.console.ConsoleTable;
 import de.mhus.lib.karaf.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
@@ -49,7 +50,7 @@ public class CmdVHost implements Action {
 			return null;
 		}
 		
-		VirtualHost vhost = Sop.getApi(CherryApi.class).findVirtualHost(host);
+		VirtualHost vhost = MApi.lookup(CherryApi.class).findVirtualHost(host);
 		if (vhost == null) {
 			System.out.println("vHost not found");
 			return null;

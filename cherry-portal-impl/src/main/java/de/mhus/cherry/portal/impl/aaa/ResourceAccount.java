@@ -59,7 +59,7 @@ public class ResourceAccount extends MLog implements Account {
 
 	@Override
 	public boolean validatePassword(String password) {
-		return MPassword.validatePassword(password, res.getString("password", null));
+		return MPassword.validatePasswordMD5(password, res.getString("password", null));
 	}
 
 	@Override

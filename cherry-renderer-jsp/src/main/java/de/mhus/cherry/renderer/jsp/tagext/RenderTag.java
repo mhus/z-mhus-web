@@ -8,6 +8,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.osgi.sop.api.Sop;
 
 public class RenderTag extends TagSupport {
@@ -36,7 +37,7 @@ public class RenderTag extends TagSupport {
 			e.printStackTrace();
 		}
 		try {
-			Sop.getApi(WidgetApi.class).doRender(call, res);
+			MApi.lookup(WidgetApi.class).doRender(call, res);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

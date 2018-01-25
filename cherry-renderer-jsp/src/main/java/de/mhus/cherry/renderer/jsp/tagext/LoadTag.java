@@ -6,6 +6,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import de.mhus.cherry.portal.api.CallContext;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.osgi.sop.api.Sop;
 
 public class LoadTag extends TagSupport {
@@ -16,7 +17,7 @@ public class LoadTag extends TagSupport {
 	public int doStartTag() throws JspException {
 		
 		CallContext call = (CallContext)pageContext.getRequest().getAttribute(CallContext.REQUEST_ATTRIBUTE_NAME);
-		CaoNode res = Sop.getApi(WidgetApi.class).getResource(call);
+		CaoNode res = MApi.lookup(WidgetApi.class).getResource(call);
 		
 		pageContext.setAttribute("call", call);
 		pageContext.setAttribute("resource", res);

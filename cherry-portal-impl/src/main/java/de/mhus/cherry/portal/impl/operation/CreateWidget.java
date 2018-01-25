@@ -15,6 +15,7 @@ import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.aspect.StructureControl;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.definition.DefRoot;
@@ -58,7 +59,7 @@ public class CreateWidget extends AbstractVaadinOperation {
 				ds.setProperties(properties);
 				
 				// Page Items
-				VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+				VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
 				// Page Type Items
 				{
 					CaoNode[] navArray = CherryUtil.getNodeFromProperties(editorProperties);
@@ -66,7 +67,7 @@ public class CreateWidget extends AbstractVaadinOperation {
 					
 					if (!CherryUtil.isPageNode(null, nav)) nav = nav.getParent();
 					
-					CallContext call = Sop.getApi(CherryApi.class).getCurrentCall();
+					CallContext call = MApi.lookup(CherryApi.class).getCurrentCall();
 					Collection<EditorFactory> list = call.getVirtualHost().getAvailableWidgetTypes(nav);
 					LinkedList<Item> pageTypeTypes = new LinkedList<>();
 					for (EditorFactory editor : list) {
@@ -94,7 +95,7 @@ public class CreateWidget extends AbstractVaadinOperation {
 		boolean hidden = context.getParameters().getBoolean("hidden", true);
 		String type = context.getParameters().getString("widget");
 		
-		VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
+		VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
 		
 		// create page node
 		CaoNode newWidget = null;

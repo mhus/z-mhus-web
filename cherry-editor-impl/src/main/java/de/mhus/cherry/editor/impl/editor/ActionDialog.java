@@ -9,6 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.mhus.cherry.editor.impl.ControlUi;
 import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.strategy.DefaultTaskContext;
@@ -17,7 +18,8 @@ import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.lib.vaadin.DialogControl;
 import de.mhus.lib.vaadin.ModalDialog;
 import de.mhus.lib.vaadin.operation.VaadinOperation;
-import de.mhus.osgi.sop.api.action.ActionDescriptor;
+import de.mhus.osgi.sop.api.operation.OperationApi;
+import de.mhus.osgi.sop.api.operation.OperationDescriptor;
 
 public class ActionDialog extends ModalDialog implements DialogControl {
 
@@ -105,9 +107,10 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 		confirm.setEnabled(saveable);
 	}
 
-	public static void doExecuteAction(ActionDescriptor action, CaoNode[] node) {
-		Operation oper = action.getAction().adaptTo(Operation.class);
+	public static void doExecuteAction(OperationDescriptor action, CaoNode[] node) {
 		
+		// this is only working for local operations
+		Operation oper = action.adaptTo(Operation.class);
 		
 		if (oper != null && oper instanceof VaadinOperation) {
 			final VaadinOperation o = (VaadinOperation)oper;
@@ -135,7 +138,8 @@ public class ActionDialog extends ModalDialog implements DialogControl {
 			MProperties parameters = new MProperties();
 			parameters.put(CherryUtil.NODE, node);
 			try {
-				OperationResult result = action.getAction().doExecute(parameters, null);
+				OperationResult result = MApi.lookup(OperationApi.class).doExecute(action,parameters);
+//				OperationResult result = action.getAction().doExecute(parameters, null);
 				showResult(action.getCaption(), result);
 			} catch (Exception e) {
 				MLogUtil.log().d(e);

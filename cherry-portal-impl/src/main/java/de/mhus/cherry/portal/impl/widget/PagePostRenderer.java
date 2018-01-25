@@ -11,6 +11,7 @@ import de.mhus.cherry.portal.api.ResourceRenderer;
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.cherry.portal.impl.renderer.DefaultHeadRenderer;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.osgi.sop.api.Sop;
 
@@ -20,14 +21,14 @@ public class PagePostRenderer extends MLog implements ResourceRenderer {
 	@Override
 	public void doRender(CallContext call) throws Exception {
 		CaoNode res = call.getResource();
-		if (!Sop.getApi(CherryApi.class).hasResourceAccess(res, CherryApi.ACL_EXECUTE )) {
+		if (!MApi.lookup(CherryApi.class).hasResourceAccess(res, CherryApi.ACL_EXECUTE )) {
 			call.getVirtualHost().sendError(call, HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
 			
 		DefaultHeadRenderer.doRenderHead(call);
 		
-		Sop.getApi(WidgetApi.class).doAction(call, res);
+		MApi.lookup(WidgetApi.class).doAction(call, res);
 
 	}
 

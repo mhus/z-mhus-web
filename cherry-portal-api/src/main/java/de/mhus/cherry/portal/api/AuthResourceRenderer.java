@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
@@ -18,7 +19,7 @@ public abstract class AuthResourceRenderer extends MLog implements ResourceRende
 	public final void doRender(CallContext call) throws Exception {
 		String[] acl = getAcl();
 		if (acl != null) {
-			AaaContext context = Sop.getApi(AccessApi.class).getCurrentOrGuest();
+			AaaContext context = MApi.lookup(AccessApi.class).getCurrentOrGuest();
 			if (!AaaUtil.hasAccess(context.getAccount(), acl)) {
 				call.getVirtualHost().sendError(call, HttpServletResponse.SC_UNAUTHORIZED);
 				return;

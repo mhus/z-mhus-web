@@ -3,6 +3,7 @@ package de.mhus.cherry.portal.impl.aaa;
 import de.mhus.cherry.portal.api.InternalCherryApi;
 import de.mhus.cherry.portal.api.LoginHandler;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.util.Base64;
 import de.mhus.lib.core.util.MUri;
 import de.mhus.lib.servlet.RequestWrapper;
@@ -32,13 +33,13 @@ public class BasicAuthHandler implements LoginHandler {
         if (parts.length > 0) username = MUri.decode(parts[0]);
         if (parts.length > 1) password = MUri.decode(parts[1]);
         
-        AccessApi api = Sop.getApi(AccessApi.class);
+        AccessApi api = MApi.lookup(AccessApi.class);
         String ticket = api.createUserTicket(username, password);
         AaaContext context = api.process(ticket);
         
         // destroy session after request
 		String sessionId = request.getSessionId();
-		IProperties session = Sop.getApi(InternalCherryApi.class).getCherrySession(sessionId);
+		IProperties session = MApi.lookup(InternalCherryApi.class).getCherrySession(sessionId);
         session.setBoolean(InternalCherryApi.SESSION_DESTROY_ON_RELEASE, true);
         
 		return context;

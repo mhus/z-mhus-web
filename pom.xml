@@ -50,7 +50,8 @@
     <properties>
         <scr.packages>*</scr.packages>
         <felix.scr.version>1.6.0</felix.scr.version>
-        <karaf.version>4.0.4</karaf.version>
+        <karaf.version>4.0.10</karaf.version>
+        <karaf.tool.version>4.0.10</karaf.tool.version>
         <bndlib.version>1.50.0</bndlib.version>
         <felix.metatype.version>1.0.10</felix.metatype.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -64,9 +65,10 @@
 		<gwt.plugin.version>2.2.0</gwt.plugin.version>
 		<osgi.version>5.0.0</osgi.version>	
 		<jaxws.version>1.0-MR1</jaxws.version>
-		<mhulib.version>3.3.1-SNAPSHOT</mhulib.version>
-  		<osgitools.version>1.3.1-SNAPSHOT</osgitools.version>
-  		<ports.version>1.3.1-SNAPSHOT</ports.version>
+		<mhulib.version>3.3.2-SNAPSHOT</mhulib.version>
+  		<osgitools.version>1.3.2-SNAPSHOT</osgitools.version>
+  		<sop.version>1.3.1-SNAPSHOT</sop.version>
+  		<ports.version>1.3.2-SNAPSHOT</ports.version>
 		<javax.mail.version>1.4.1</javax.mail.version>
 		<javax.activation.version>1.1.1</javax.activation.version>
         <felix.version>4.2.4</felix.version>
@@ -110,8 +112,11 @@
 	    </plugin>		
 
             <plugin>
-                <groupId>org.apache.karaf.tooling</groupId>
+                <groupId>de.mhus.ports.karaf.tooling</groupId>
                 <artifactId>karaf-services-maven-plugin</artifactId>
+                <configuration>
+                	<artifactInclude>.*mhu.*</artifactInclude>
+                </configuration>
             </plugin>
 		
     </plugins>
@@ -119,9 +124,9 @@
     	<pluginManagement>
 			<plugins>
                 <plugin>
-                    <groupId>org.apache.karaf.tooling</groupId>
+                    <groupId>de.mhus.ports.karaf.tooling</groupId>
                     <artifactId>karaf-services-maven-plugin</artifactId>
-                    <version>${karaf.version}</version>
+                    <version>${karaf.tool.version}</version>
                     <executions>
                         <execution>
                             <id>service-metadata-generate</id>
@@ -129,6 +134,9 @@
                             <goals>
                                 <goal>service-metadata-generate</goal>
                             </goals>
+			                <configuration>
+			                	<artifactInclude>.*mhu.*</artifactInclude>
+			                </configuration>
                         </execution>
                     </executions>
                 </plugin>

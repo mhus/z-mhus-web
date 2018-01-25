@@ -8,6 +8,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import de.mhus.cherry.portal.api.WidgetApi;
 import de.mhus.lib.cao.CaoNode;
+import de.mhus.lib.core.MApi;
 import de.mhus.osgi.sop.api.Sop;
 
 public class WidgetsTag extends TagSupport {
@@ -42,9 +43,9 @@ public class WidgetsTag extends TagSupport {
 		res = Util.findRes(res, name, pageContext);
 
 		if (container != null) {
-			nodes = Sop.getApi(WidgetApi.class).sortWidgetsIntoContainers(res, container).getNodes();
+			nodes = MApi.lookup(WidgetApi.class).sortWidgetsIntoContainers(res, container).getNodes();
 		} else {
-			nodes = Sop.getApi(WidgetApi.class).sortWidgets(res).getNodes();
+			nodes = MApi.lookup(WidgetApi.class).sortWidgets(res).getNodes();
 		}
 		nodes = res.getNodes();
 		

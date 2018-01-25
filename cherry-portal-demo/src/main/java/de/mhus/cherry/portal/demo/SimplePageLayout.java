@@ -25,6 +25,7 @@ import de.mhus.cherry.portal.api.control.EditorFactory;
 import de.mhus.cherry.portal.api.control.LayoutPanel;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.cao.CaoWritableElement;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.osgi.sop.api.Sop;
 
@@ -88,9 +89,9 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 		
 		readOnly = false;
 		Collection<CaoNode> allNodes = new TreeSet<CaoNode>( (a,b) -> { return a.getId().compareTo(b.getId()); } );
-		allNodes.addAll(Sop.getApi(WidgetApi.class).sortWidgets(res).getNodes());
+		allNodes.addAll(MApi.lookup(WidgetApi.class).sortWidgets(res).getNodes());
 		for (CaoNode child : allNodes) {
-			if (!Sop.getApi(CherryApi.class).hasResourceAccess(child, CherryApi.ACL_STRUCTURE) ) {
+			if (!MApi.lookup(CherryApi.class).hasResourceAccess(child, CherryApi.ACL_STRUCTURE) ) {
 				readOnly = true;
 				break;
 			}
@@ -124,14 +125,14 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 
 			
 		for (int i = 0; i < stack.length; i++) {
-			Collection<CaoNode> nodes = Sop.getApi(WidgetApi.class).sortWidgetsIntoContainers(res, "" + i).getNodes();
+			Collection<CaoNode> nodes = MApi.lookup(WidgetApi.class).sortWidgetsIntoContainers(res, "" + i).getNodes();
 			for (CaoNode child : nodes) {
 				if (child.getBoolean(CherryApi.NAV_HIDDEN, false)) continue;
 				Label l = new Label(child.getName());
 				l.setData(child);
 				
-				VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
-				EditorFactory editorFactory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost, child);
+				VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
+				EditorFactory editorFactory = MApi.lookup(WidgetApi.class).getControlEditorFactory(vHost, child);
 				Component preview = null;
 				if (editorFactory != null) {
 					preview = editorFactory.createPreview(child);
@@ -154,8 +155,8 @@ public class SimplePageLayout extends LayoutPanel implements org.vaadin.addons.p
 			Label l = new Label(child.getName());
 			l.setData(child);
 			
-			VirtualHost vHost = Sop.getApi(CherryApi.class).getCurrentCall().getVirtualHost();
-			EditorFactory editorFactory = Sop.getApi(WidgetApi.class).getControlEditorFactory(vHost, child);
+			VirtualHost vHost = MApi.lookup(CherryApi.class).getCurrentCall().getVirtualHost();
+			EditorFactory editorFactory = MApi.lookup(WidgetApi.class).getControlEditorFactory(vHost, child);
 			Component preview = null;
 			if (editorFactory != null) {
 				preview = editorFactory.createPreview(child);
