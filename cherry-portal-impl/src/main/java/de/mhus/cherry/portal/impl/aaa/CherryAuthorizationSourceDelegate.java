@@ -24,4 +24,17 @@ public class CherryAuthorizationSourceDelegate implements AuthorizationSource {
 
 	}
 
+	@Override
+	public String getResourceAccessAcl(Account account, String aclName) {
+		CallContext call = MApi.lookup(CherryApi.class).getCurrentCall();
+		if (call == null)
+			return null;
+		
+		VirtualHost vHost = call.getVirtualHost();
+		if (vHost == null)
+			return null;
+		
+		return vHost.getAuthorizationSource().getResourceAccessAcl(account, aclName);
+	}
+
 }

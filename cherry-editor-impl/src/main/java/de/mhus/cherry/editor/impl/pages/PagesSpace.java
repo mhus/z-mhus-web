@@ -149,7 +149,7 @@ public class PagesSpace extends VerticalLayout implements Navigable, GuiLifecycl
 		Account account = aaa.getCurrentOrGuest().getAccount();
 		PageControl controlTab = null;
 		for (PageControlFactory factory : CherryUtil.orderServices( PagesSpace.class, PageControlFactory.class ) ) {
-			if (aaa.hasGroupAccess(account, PagesSpace.class, factory.getName(), "create")) {
+			if (aaa.hasGroupAccess(account, PagesSpace.class, factory.getName(), "create", null)) {
 				String name = factory.getName();
 				PageControl control = factory.createPageControl();
 				controls.put(control, name);

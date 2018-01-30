@@ -225,7 +225,7 @@ public class ControlUi extends UI implements CherryGuiApi {
 		if (role == null || accessControl == null || !accessControl.isUserSignedIn())
 			return false;
 
-		return MApi.lookup(AccessApi.class).hasGroupAccess(accessControl.getAccount(), getClass(), role, null);
+		return MApi.lookup(AccessApi.class).hasGroupAccess(accessControl.getAccount(), getClass(), role, null, null);
 		
 	}
 	

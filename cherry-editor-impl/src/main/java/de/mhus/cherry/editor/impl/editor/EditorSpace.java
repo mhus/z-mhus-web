@@ -615,7 +615,7 @@ public class EditorSpace extends VerticalLayout implements Navigable, GuiLifecyc
 		AccessApi aaa = MApi.lookup(AccessApi.class);
 		Account account = aaa.getCurrentOrGuest().getAccount();
 		for (EditorControlFactory factory : CherryUtil.orderServices(EditorSpace.class, EditorControlFactory.class)) {
-			if (aaa.hasGroupAccess(account, EditorSpace.class, factory.getName(), "create")) {
+			if (aaa.hasGroupAccess(account, EditorSpace.class, factory.getName(), "create", null)) {
 				EditorControl c = factory.createEditorControl(res, editorFactory);
 				if (c != null) {
 					tabs.addTab(c, factory.getName());

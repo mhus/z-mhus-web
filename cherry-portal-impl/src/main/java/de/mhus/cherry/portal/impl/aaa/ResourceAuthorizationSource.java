@@ -37,4 +37,23 @@ public class ResourceAuthorizationSource extends MLog implements AuthorizationSo
 		return AaaUtil.hasAccess(account, aclParts);
 	}
 
+	@Override
+	public String getResourceAccessAcl(Account account, String acl) {
+		String space = "general";
+		String name = acl;
+		if (!acl.startsWith("_") && MString.isIndex(acl, '_')) {
+			space = MString.beforeIndex(acl, '_');
+			name = MString.afterIndex(acl, '_');
+		}
+		CaoNode res = provider.getResource("/acls/" + space + "/" + name + ".acl");
+		if (res == null) {
+			log().w("acl not found", acl, space, name);
+			return null;
+		}
+		String aclString = res.getString("acl", null);
+		if (aclString == null) return "";
+		
+		return aclString;
+	}
+
 }
