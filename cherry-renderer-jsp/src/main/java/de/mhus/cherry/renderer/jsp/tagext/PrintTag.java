@@ -63,7 +63,7 @@ public class PrintTag extends TagSupport {
 					value = res.getId();
 				else
 				if (attribute.equals("#navlink")) {
-					StringBuffer link = new StringBuffer();
+					StringBuilder link = new StringBuilder();
 					CaoNode cur = res;
 					int max = 20;
 					while (true) {

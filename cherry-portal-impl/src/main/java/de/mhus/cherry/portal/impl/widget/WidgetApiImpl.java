@@ -89,7 +89,7 @@ public class WidgetApiImpl extends MLog implements WidgetApi {
 			}
 		}
 		
-		StringBuffer out = new StringBuffer();
+		StringBuilder out = new StringBuilder();
 		for (String item : cssList)
 			out.append("<link rel=\"stylesheet\" href=\"").append(item).append("\"/>");
 			
