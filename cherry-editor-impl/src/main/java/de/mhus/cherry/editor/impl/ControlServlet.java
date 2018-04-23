@@ -24,7 +24,6 @@ import de.mhus.cherry.portal.api.util.CherryUtil;
 import de.mhus.lib.basics.Named;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.form.ActivatorAdapterProvider;
-import de.mhus.osgi.sop.api.Sop;
 
 @Component(provide = Servlet.class, properties = { "alias=/.control" }, name="CHERRYGUI",servicefactory=true)
 @VaadinServletConfiguration(ui=ControlUi.class, productionMode=false)
@@ -74,7 +73,8 @@ public class ControlServlet extends VaadinServlet implements Named {
 		}
 	}
 
-    public String getName() {
+    @Override
+	public String getName() {
 		return "control";
 	}
 

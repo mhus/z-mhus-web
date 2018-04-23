@@ -26,14 +26,12 @@ import de.mhus.cherry.portal.api.control.CherryGuiApi;
 import de.mhus.lib.cao.CaoNode;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MString;
-import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.security.AccessControl;
 import de.mhus.lib.vaadin.VaadinAccessControl;
 import de.mhus.lib.vaadin.desktop.Desktop;
 import de.mhus.lib.vaadin.desktop.GuiSpaceService;
 import de.mhus.lib.vaadin.login.LoginScreen;
-import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 @Theme("cherrytheme")
@@ -44,8 +42,7 @@ import de.mhus.osgi.sop.api.aaa.AccessApi;
 public class ControlUi extends UI implements CherryGuiApi {
 
 	private static final long serialVersionUID = 1L;
-	private static Log log = Log.getLog(ControlUi.class);
-	private MenuBar menuBar;
+//	private static Log log = Log.getLog(ControlUi.class);
 	private AccessControl accessControl;
 	private Desktop desktop;
 	private ServiceTracker<GuiSpaceService,GuiSpaceService> spaceTracker;
@@ -70,17 +67,20 @@ public class ControlUi extends UI implements CherryGuiApi {
 
 
         desktop = new Desktop(this) {
-        	private MenuItem menuTrace;
+			private static final long serialVersionUID = 1L;
+			private MenuItem menuTrace;
 			private Refresher refresher;
         	
-        	protected void initGui() {
+        	@Override
+			protected void initGui() {
         		super.initGui();
         		
         		refresher = new Refresher();
         		refresher.setRefreshInterval(1000);
         		refresher.addListener(new Refresher.RefreshListener() {
-        			
-        			@Override
+					private static final long serialVersionUID = 1L;
+
+					@Override
         			public void refresh(Refresher source) {
         				doTick();
         			}
@@ -88,8 +88,9 @@ public class ControlUi extends UI implements CherryGuiApi {
         		addExtension(refresher);
 
         		menuTrace = menuUser.addItem("Trace An", new MenuBar.Command() {
-        			
-        			@Override
+					private static final long serialVersionUID = 1L;
+
+					@Override
         			public void menuSelected(MenuItem selectedItem) {
         				if (getTrailConfig() == null) {
         					setTrailConfig("MAP");
@@ -126,7 +127,9 @@ public class ControlUi extends UI implements CherryGuiApi {
         accessControl = new UiAccessControl(request);
         if (!accessControl.isUserSignedIn()) {
             setContent(new LoginScreen(accessControl, new LoginScreen.LoginListener() {
-                @Override
+				private static final long serialVersionUID = 1L;
+
+				@Override
                 public void loginSuccessful() {
                     showMainView();
                 }
@@ -216,6 +219,7 @@ public class ControlUi extends UI implements CherryGuiApi {
 		return context;
 	}
 		
+	@Override
 	public AccessControl getAccessControl() {
 		return accessControl;
 	}
@@ -233,8 +237,8 @@ public class ControlUi extends UI implements CherryGuiApi {
 	
 
 	@Override
-	public Subject getCurrentUser() {
-		return (Subject)getSession().getAttribute(VaadinAccessControl.SUBJECT_ATTR);
+	public String getCurrentUserName() {
+		return String.valueOf((Subject)getSession().getAttribute(VaadinAccessControl.SUBJECT_ATTR));
 	}
 
 	public void requestBegin(HttpServletRequest request) {

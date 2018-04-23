@@ -48,6 +48,11 @@
     </developer>
   </developers>
     <properties>
+    	<mhulib.version>3.3.3</mhulib.version>
+  		<osgitools.version>1.3.4</osgitools.version>
+  		<sop.version>1.3.1</sop.version>
+  		<ports.version>1.3.4</ports.version>
+    
         <scr.packages>*</scr.packages>
         <felix.scr.version>1.6.0</felix.scr.version>
         <karaf.version>4.0.10</karaf.version>
@@ -65,10 +70,6 @@
 		<gwt.plugin.version>2.2.0</gwt.plugin.version>
 		<osgi.version>5.0.0</osgi.version>	
 		<jaxws.version>1.0-MR1</jaxws.version>
-		<mhulib.version>3.3.2-SNAPSHOT</mhulib.version>
-  		<osgitools.version>1.3.2-SNAPSHOT</osgitools.version>
-  		<sop.version>1.3.1-SNAPSHOT</sop.version>
-  		<ports.version>1.3.2-SNAPSHOT</ports.version>
 		<javax.mail.version>1.4.1</javax.mail.version>
 		<javax.activation.version>1.1.1</javax.activation.version>
         <felix.version>4.2.4</felix.version>
