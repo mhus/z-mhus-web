@@ -27,34 +27,41 @@
 		<dependency>
 			<groupId>de.mhus.ports</groupId>
 			<artifactId>vaadin-easyuploads</artifactId>
-			<version>${ports.version}</version>
+			<version>${ports.vaadin.version}</version>
 		</dependency>
 		
         <dependency>
 			<groupId>de.mhus.ports</groupId>
 			<artifactId>vaadin-sliderpanel</artifactId>
-			<version>${ports.version}</version>
+			<version>${ports.vaadin.version}</version>
         </dependency>
         <dependency>
 			<groupId>de.mhus.ports</groupId>
 			<artifactId>vaadin-contextmenu</artifactId>
-			<version>${ports.version}</version>
+			<version>${ports.vaadin.version}</version>
         </dependency>
         <dependency>
 			<groupId>de.mhus.ports</groupId>
 			<artifactId>vaadin-refresher</artifactId>
-			<version>${ports.version}</version>
+			<version>${ports.vaadin.version}</version>
         </dependency>
         <dependency>
 			<groupId>de.mhus.ports</groupId>
 			<artifactId>vaadin-ckeditor</artifactId>
-			<version>${ports.version}</version>
+			<version>${ports.vaadin.version}</version>
         </dependency>
         <dependency>
 			<groupId>de.mhus.ports</groupId>
 			<artifactId>vaadin-portallayout</artifactId>
-			<version>${ports.version}</version>
+			<version>${ports.vaadin.version}</version>
         </dependency>
+		
+		<dependency>
+			<groupId>de.mhus.osgi</groupId>
+			<artifactId>mhu-osgi-services</artifactId>
+			<version>${osgitools.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		
     </dependencies>
 

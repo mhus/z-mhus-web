@@ -70,8 +70,15 @@
         <dependency>
 			<groupId>de.mhus.ports</groupId>
 			<artifactId>vaadin-portallayout</artifactId>
-			<version>${ports.version}</version>
+			<version>${ports.vaadin.version}</version>
         </dependency>
+		
+       	<dependency>
+			<groupId>de.mhus.osgi</groupId>
+			<artifactId>mhu-osgi-services</artifactId>
+			<version>${osgitools.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		
     </dependencies>
 
