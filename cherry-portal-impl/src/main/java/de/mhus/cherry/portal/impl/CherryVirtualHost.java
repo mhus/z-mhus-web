@@ -30,7 +30,7 @@ import de.mhus.lib.cao.util.DefaultStructureControl;
 import de.mhus.lib.cao.util.SharedDataSource;
 import de.mhus.lib.core.MThread;
 import de.mhus.lib.core.MTimeInterval;
-import de.mhus.lib.karaf.cao.CaoDataSourceUtil;
+import de.mhus.osgi.services.cao.CaoDataSourceUtil;
 import de.mhus.osgi.sop.api.Sop;
 
 /*

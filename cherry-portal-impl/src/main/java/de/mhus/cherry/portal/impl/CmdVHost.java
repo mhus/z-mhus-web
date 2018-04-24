@@ -16,7 +16,7 @@ import de.mhus.cherry.portal.api.CherryApi;
 import de.mhus.cherry.portal.api.VirtualHost;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.console.ConsoleTable;
-import de.mhus.lib.karaf.MOsgi;
+import de.mhus.osgi.services.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
 
 @Command(scope = "cherry", name = "vhost", description = "Virtual Host Management")
@@ -39,7 +39,7 @@ public class CmdVHost implements Action {
 
 			ConsoleTable out = new ConsoleTable();
 			out.setHeaderValues("Name", "Type","Bundle");
-			for ( de.mhus.lib.karaf.MOsgi.Service<VirtualHost> ref : MOsgi.getServiceRefs(VirtualHost.class, null)) {
+			for ( MOsgi.Service<VirtualHost> ref : MOsgi.getServiceRefs(VirtualHost.class, null)) {
 				VirtualHost vhost = ref.getService();
 				String item = ref.getName();
 				if (item.startsWith("cherry_virtual_host_")) item = item.substring("cherry_virtual_host_".length());

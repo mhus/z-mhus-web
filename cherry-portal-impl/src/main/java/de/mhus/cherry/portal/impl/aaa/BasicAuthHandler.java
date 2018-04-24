@@ -35,7 +35,7 @@ public class BasicAuthHandler implements LoginHandler {
         
         AccessApi api = MApi.lookup(AccessApi.class);
         String ticket = api.createUserTicket(username, password);
-        AaaContext context = api.process(ticket);
+        AaaContext context = api.process(ticket, null); // TODO set locale
         
         // destroy session after request
 		String sessionId = request.getSessionId();

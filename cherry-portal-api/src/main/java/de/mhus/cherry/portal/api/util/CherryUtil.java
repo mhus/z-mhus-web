@@ -28,7 +28,7 @@ import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.logging.Log;
 import de.mhus.lib.core.logging.MLogUtil;
-import de.mhus.lib.karaf.MOsgi;
+import de.mhus.osgi.services.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
 
 public class CherryUtil {

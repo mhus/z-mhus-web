@@ -218,7 +218,7 @@ public class InternalCherryApiImpl extends MLog implements InternalCherryApi, Bu
 			api.release(current);
 		}
 		
-		AaaContext context = api.process(api.createUserTicket(username,password));
+		AaaContext context = api.process(api.createUserTicket(username,password), null); //TODO set Locale
 		if (context == null) {
 			return "wrong user or password";
 		}

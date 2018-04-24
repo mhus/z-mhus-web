@@ -32,7 +32,7 @@ import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.strategy.OperationResult;
 import de.mhus.lib.errors.NotFoundException;
-import de.mhus.lib.karaf.MOsgi;
+import de.mhus.osgi.services.MOsgi;
 import de.mhus.osgi.sop.api.Sop;
 import de.mhus.osgi.sop.api.aaa.AaaContext;
 import de.mhus.osgi.sop.api.aaa.AaaUtil;
