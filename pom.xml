@@ -148,20 +148,6 @@
   </build>
 
   <modules>
-    <module>cherry-portal-api</module>
-    <module>cherry-portal-impl</module>
-    <module>cherry-editor-theme</module>
-    <module>cherry-editor-impl</module>
-    <module>cherry-renderer-jsp</module>
-    <module>cherry-renderer-velocity</module>
-    <module>cherry-content-base</module>
-    <module>cherry-editor-widgets</module>
-    <module>cherry-portal-demo</module>
-
-    <module>cherry-deploy-less</module>
-    <module>cherry-deploy-sass</module>
-    
-    <module>cherry-karaf-feature</module>
   </modules>
 
 

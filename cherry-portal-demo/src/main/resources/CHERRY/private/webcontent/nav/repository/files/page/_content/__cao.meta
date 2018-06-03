@@ -1,9 +1,0 @@
-#Thu Nov 10 01:46:33 CET 2016
-cherry\:renderer=de.mhus.cherry.portal.impl.page.SimplePage
-_id=ab153b50-c3f5-4986-a560-b09bc605995b
-cherry\:retType=page
-cherry\:editor=de.mhus.cherry.portal.demo.simpleeditorfactory
-acl\:read=*
-text=Ipsur
-title=Page
-data:pub=pub:/
