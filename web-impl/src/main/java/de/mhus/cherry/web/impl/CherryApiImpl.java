@@ -21,7 +21,7 @@ import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.util.TimeoutMap;
 import de.mhus.osgi.services.util.MServiceTracker;
 
-@Component
+@Component(immediate=true)
 public class CherryApiImpl extends MLog implements CherryApi {
 
 	private static CherryApiImpl instance;
@@ -120,6 +120,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		
 		String host = request.getHeader("Host");
 		VirtualHost vHost = findVirtualHost(host);
+		if (vHost == null) return null;
 		
 		CherryCallContext call = new CherryCallContext();
 		call.setHttpRequest(request);

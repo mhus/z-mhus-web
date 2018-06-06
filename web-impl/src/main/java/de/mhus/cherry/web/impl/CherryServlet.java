@@ -24,6 +24,10 @@ public class CherryServlet extends HttpServlet {
 		try {
 			
 			CallContext call = CherryApiImpl.instance().createCall(this, request, response);
+			if (call == null || call.getVirtualHost() == null) {
+				sendNotFoundError(response);
+				return;
+			}
 			if (response != null && response.isCommitted()) return;
 			
 			call.getVirtualHost().processRequest(call);
@@ -33,6 +37,14 @@ public class CherryServlet extends HttpServlet {
 			sendInternalError(response,t);
 		}
 
+	}
+
+	private void sendNotFoundError(HttpServletResponse response) {
+		if (response.isCommitted()) return; // can't send error any more
+		try {
+			response.sendError(404);
+		} catch (IOException e) {
+		}
 	}
 
 	private void sendInternalError(HttpServletResponse response, Throwable t) {
