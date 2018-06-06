@@ -1,16 +1,16 @@
 package de.mhus.cherry.web.api;
 
-import java.io.File;
+import java.io.IOException;
 
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.config.IConfig;
 
-public interface WebSpace {
+public interface VirtualHost {
 
-	File getConfigDirectory();
-	File getProjectRoot();
-	File getPageRoot();
-	
+	public void sendError(CallContext context, int sc) throws IOException;
+
+	public void processRequest(CallContext context);
+
 	/**
 	 * Get WebSpace configuration'
 	 * 
