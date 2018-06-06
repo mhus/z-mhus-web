@@ -23,5 +23,11 @@ public interface VirtualHost {
 	 * @return Properties container
 	 */
 	IProperties getProperties();
+
+	public String getVirtualHostAlias();
+
+	public void start(CherryApi api);
+
+	public void stop(CherryApi api);
 	
 }

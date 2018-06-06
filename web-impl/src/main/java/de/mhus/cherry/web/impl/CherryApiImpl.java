@@ -1,9 +1,12 @@
 package de.mhus.cherry.web.impl;
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 
 import aQute.bnd.annotation.component.Activate;
@@ -16,28 +19,59 @@ import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.util.TimeoutMap;
-import de.mhus.lib.errors.NotFoundException;
-import de.mhus.osgi.services.MOsgi;
+import de.mhus.osgi.services.util.MServiceTracker;
 
 @Component
 public class CherryApiImpl extends MLog implements CherryApi {
 
 	private static CherryApiImpl instance;
 	private ThreadLocal<CallContext> calls = new ThreadLocal<>();
-	public TimeoutMap<String, SessionContext> globalSession = new TimeoutMap<>();
+	private TimeoutMap<String, SessionContext> globalSession = new TimeoutMap<>();
+	private HashMap<String,VirtualHost> vHosts = new HashMap<>();
+	
+	MServiceTracker<VirtualHost> vHostTracker = new MServiceTracker<VirtualHost>(VirtualHost.class) {
+		
+		@Override
+		protected void removeService(ServiceReference<VirtualHost> reference, VirtualHost service) {
+			removeVirtualHost(service);
+		}
+		
+		@Override
+		protected void addService(ServiceReference<VirtualHost> reference, VirtualHost service) {
+			addVirtualHost(service);
+		}
+	};
 
 	public static CherryApiImpl instance() {
 		return instance;
+	}
+
+	protected void addVirtualHost(VirtualHost service) {
+		synchronized (vHosts) {
+			service.start(this);
+			VirtualHost old = vHosts.put(service.getVirtualHostAlias(), service);
+			if (old != null)
+				old.stop(this);
+		}
+	}
+
+	protected void removeVirtualHost(VirtualHost service) {
+		synchronized (vHosts) {
+			vHosts.remove(service.getVirtualHostAlias());
+			service.stop(this);
+		}
 	}
 
 	@Activate
 	public void doActivate(ComponentContext ctx) {
 		log().i("Start Cherry");
 		instance = this;
+		vHostTracker.start();
 	}
 	
 	@Deactivate
 	public void doDeactivate(ComponentContext ctx) {
+		vHostTracker.stop();
 		instance = null;
 	}
 
@@ -47,17 +81,13 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	}
 
 	public VirtualHost findVirtualHost(String host) {
-		VirtualHost provider = null;
-		try {
-			provider = MOsgi.getService(VirtualHost.class, MOsgi.filterServiceName("cherry_virtual_host_" + host));
-		} catch (NotFoundException e) {}
-		if (provider == null) {
-			try {
-				provider = MOsgi.getService(VirtualHost.class, MOsgi.filterServiceName("cherry_virtual_host_default"));
-			} catch (NotFoundException e) {}
+		synchronized (vHosts) {
+			VirtualHost vHost = vHosts.get(host);
+			if (vHost == null) {
+				vHost = vHosts.get("*");
+			}
+			return vHost;
 		}
-		
-		return provider;
 	}
 
 	@Override
