@@ -5,12 +5,10 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.console.ConsoleTable;
-import de.mhus.osgi.services.MOsgi;
 
 @Command(scope = "cherry", name = "vhost", description = "Virtual Host Management")
 @Service
@@ -31,21 +29,28 @@ public class CmdVHost implements Action {
 		if (cmd.equals("list")) {
 
 			ConsoleTable out = new ConsoleTable();
-			out.setHeaderValues("Name", "Type","Bundle");
-			for ( MOsgi.Service<VirtualHost> ref : MOsgi.getServiceRefs(VirtualHost.class, null)) {
-				VirtualHost vhost = ref.getService();
-				String item = ref.getName();
-				if (item.startsWith("cherry_virtual_host_")) item = item.substring("cherry_virtual_host_".length());
-				Bundle bundle = FrameworkUtil.getBundle(vhost.getClass());
-				out.addRowValues(item, vhost.getClass().getName(), bundle.getSymbolicName());
+			out.setHeaderValues("Alias", "Type","Bundle");
+
+			for (VirtualHost vhost : CherryApiImpl.instance().getVirtualHosts()) {
+				Bundle bundle = vhost.getBundle();
+				out.addRowValues(vhost.getVirtualHostAlias(), vhost.getClass().getName(), bundle.getSymbolicName() + "[" + bundle.getBundleId() + "]");
 			}
 			out.print(System.out);
 			return null;
 		}
-		
+		if (cmd.equals("release")) {
+			CherryApiImpl.instance().setCallContext(null);
+			printCurrentVHost();
+			return null;
+		}
+		if (cmd.equals("current")) {
+			printCurrentVHost();
+			return null;
+		}
+
 		VirtualHost vhost = CherryApiImpl.instance().findVirtualHost(host);
 		if (vhost == null) {
-			System.out.println("vHost not found");
+			System.out.println("vHost not found: " + host);
 			return null;
 		}
 
@@ -58,14 +63,13 @@ public class CmdVHost implements Action {
 			CherryApiImpl.instance().setCallContext(callContext);
 			printCurrentVHost();
 		} else
-		if (cmd.equals("release")) {
-			CherryApiImpl.instance().setCallContext(null);
-			printCurrentVHost();
-		} else
-		if (cmd.equals("current")) {
-			printCurrentVHost();
+		if (cmd.equals("restart")) {
+			vhost.stop(CherryApiImpl.instance());
+			vhost.start(CherryApiImpl.instance());
+			System.out.println("OK");
+		} else {
+			System.out.println("Command not found");
 		}
-		
 		
 		return null;
 	}

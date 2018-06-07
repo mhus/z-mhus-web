@@ -1,5 +1,8 @@
 package de.mhus.cherry.web.api;
 
-public interface SessionContext {
+import de.mhus.lib.core.IProperties;
 
+public interface SessionContext extends IProperties {
+
+	String getSessionId();
 }

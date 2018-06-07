@@ -4,8 +4,8 @@ import java.io.File;
 
 public interface VirtualWebSpace extends VirtualHost {
 
-	File getConfigDirectory();
+	File getConfigRoot();
 	File getProjectRoot();
-	File getPageRoot();
+	File getDocumentRoot();
 	
 }

@@ -21,20 +21,28 @@ public class CherryServlet extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 	
+		CallContext call = null;
 		try {
 			
-			CallContext call = CherryApiImpl.instance().createCall(this, request, response);
-			if (call == null || call.getVirtualHost() == null) {
+			call = CherryApiImpl.instance().createCallContext(this, request, response);
+			if (call == null) {
 				sendNotFoundError(response);
 				return;
 			}
-			if (response != null && response.isCommitted()) return;
 			
-			call.getVirtualHost().processRequest(call);
+			call.getVirtualHost().doRequest(call);
 			
 		} catch (Throwable t) {
 			MLogUtil.log().w(t);
 			sendInternalError(response,t);
+		} finally {
+			try {
+				if (call != null) {
+					call.getVirtualHost().doFiltersEnd(call);
+				}
+			} catch (Throwable t) {
+				MLogUtil.log().w(t);
+			}
 		}
 
 	}

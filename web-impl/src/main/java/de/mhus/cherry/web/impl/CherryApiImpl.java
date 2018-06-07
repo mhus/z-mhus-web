@@ -1,6 +1,7 @@
 package de.mhus.cherry.web.impl;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +17,13 @@ import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.api.SessionContext;
 import de.mhus.cherry.web.api.VirtualHost;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.util.TimeoutMap;
+import de.mhus.lib.errors.MException;
 import de.mhus.osgi.services.util.MServiceTracker;
+import de.mhus.osgi.sop.api.security.SecurityApi;
 
 @Component(immediate=true)
 public class CherryApiImpl extends MLog implements CherryApi {
@@ -34,10 +38,12 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		@Override
 		protected void removeService(ServiceReference<VirtualHost> reference, VirtualHost service) {
 			removeVirtualHost(service);
+			service.setBundle(null);
 		}
 		
 		@Override
 		protected void addService(ServiceReference<VirtualHost> reference, VirtualHost service) {
+			service.setBundle(reference.getBundle());
 			addVirtualHost(service);
 		}
 	};
@@ -48,7 +54,12 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
 	protected void addVirtualHost(VirtualHost service) {
 		synchronized (vHosts) {
-			service.start(this);
+			try {
+				service.start(this);
+			} catch (Throwable t) {
+				log().e("Can't add virtual host",service.getVirtualHostAlias(), t);
+				return;
+			}
 			VirtualHost old = vHosts.put(service.getVirtualHostAlias(), service);
 			if (old != null)
 				old.stop(this);
@@ -102,7 +113,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	public SessionContext getCherrySession(String sessionId) {
 		SessionContext ret = globalSession.get(sessionId);
 		if (ret == null) {
-			ret = new CherrySessionContext();
+			ret = new CherrySessionContext(sessionId);
 			globalSession.put(sessionId, ret);
 		}
 		return ret;
@@ -115,20 +126,38 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			calls.remove();
 	}
 
-	public CallContext createCall(HttpServlet servlet, HttpServletRequest request,
-	        HttpServletResponse response) {
+	@Override
+	public CallContext createCallContext(HttpServlet servlet, HttpServletRequest request,
+	        HttpServletResponse response) throws MException {
 		
+		// check general security
+		SecurityApi sec = MApi.lookup(SecurityApi.class);
+		if (sec != null) {
+			sec.checkHttpRequest(request, response);
+			if (response.isCommitted()) return null;
+		}
+
+		// find vhost
 		String host = request.getHeader("Host");
 		VirtualHost vHost = findVirtualHost(host);
 		if (vHost == null) return null;
 		
+		// create call context
 		CherryCallContext call = new CherryCallContext();
 		call.setHttpRequest(request);
 		call.setHttpResponse(response);
 		call.setHttpServlet(servlet);
 		call.setVirtualHost(vHost);
-		
+
+		// execute filters
+		if (!vHost.doFiltersBegin(call)) return null;
+		if (response.isCommitted()) return null; // for secure
+
 		return call;
+	}
+
+	public LinkedList<VirtualHost> getVirtualHosts() {
+		return new LinkedList<>(vHosts.values());
 	}
 
 }
