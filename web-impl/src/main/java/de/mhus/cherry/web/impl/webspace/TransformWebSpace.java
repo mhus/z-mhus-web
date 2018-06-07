@@ -2,6 +2,7 @@ package de.mhus.cherry.web.impl.webspace;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.UUID;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MDate;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
+import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.system.IApi;
 import de.mhus.lib.errors.MException;
@@ -24,15 +26,19 @@ public class TransformWebSpace extends AbstractWebSpace {
 	private String index = "index.html";
 	private String[] extensionOrder = new String[] { "twig" };
 	private String[] removeExtensions = new String[] { ".html", ".htm" };
+	private File templateRoot;
 
 	@Override
 	public void start(CherryApi api) throws MException {
 		super.start(api);
 		cDir = getConfig().getNode("transform");
+		templateRoot = getDocumentRoot();
 		if (cDir != null) {
 			characterEncoding = cDir.getString("characterEncoding", null);
 			if (cDir.isProperty("indexe"))
 				index = cDir.getString("index");
+			if (cDir.isProperty("templateRoot"))
+				templateRoot = findTemplateFile(cDir.getString("templateRoot"));
 		}
 	}
 
@@ -50,19 +56,9 @@ public class TransformWebSpace extends AbstractWebSpace {
 
 	@Override
 	protected void doHeadRequest(CallContext context) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void doGetRequest(CallContext context) throws Exception {
 		String path = context.getHttpPath();
 		path = MFile.normalizePath(path);
-		File file = new File(getDocumentRoot(), path);
-		if (!file.exists()) {
-			sendError(context, HttpServletResponse.SC_NOT_FOUND);
-			return;
-		}
+		File file = new File(templateRoot, path);
 		if (file.exists()) {
 			if (file.isDirectory()) {
 				path = path + "/" + index;
@@ -72,7 +68,45 @@ public class TransformWebSpace extends AbstractWebSpace {
 				sendError(context, HttpServletResponse.SC_NOT_FOUND);
 				return;
 			} else {
-				prepareHead(context,file, path);
+				prepareHead(context,file, file, path);
+				return;
+			}
+		}
+		
+		String orgPath = path;
+		// find template
+		for (String extension : removeExtensions) {
+			if (path.endsWith(extension)) {
+				path = path.substring(0, path.length()-extension.length());
+				break;
+			}
+		}
+		
+		for (String extension : extensionOrder) {
+			String p = path + "." + extension;
+			file = new File(templateRoot, p);
+			if (file.exists() && file.isFile()) {
+				prepareHead(context, file, null, orgPath);
+			}
+		}
+	}
+
+	@Override
+	protected void doGetRequest(CallContext context) throws Exception {
+		String path = context.getHttpPath();
+		path = MFile.normalizePath(path);
+		File file = new File(templateRoot, path);
+
+		if (file.exists()) {
+			if (file.isDirectory()) {
+				path = path + "/" + index;
+			} else
+			if (hasTransformExtension(path)) {
+				// path = MString.beforeLastIndex(path, '.');
+				sendError(context, HttpServletResponse.SC_NOT_FOUND);
+				return;
+			} else {
+				prepareHead(context,file, file, path);
 				try {
 					FileInputStream is = new FileInputStream(file);
 					ServletOutputStream os = context.getHttpResponse().getOutputStream();
@@ -86,7 +120,8 @@ public class TransformWebSpace extends AbstractWebSpace {
 				return;
 			}
 		}
-		
+
+		String orgPath = path;
 		// find template
 		for (String extension : removeExtensions) {
 			if (path.endsWith(extension)) {
@@ -97,9 +132,9 @@ public class TransformWebSpace extends AbstractWebSpace {
 		
 		for (String extension : extensionOrder) {
 			String p = path + "." + extension;
-			file = new File(p);
+			file = new File(templateRoot, p);
 			if (file.exists() && file.isFile()) {
-				doTransform(context, file, path);
+				doTransform(context, file, path, orgPath);
 				return;
 			}
 		}
@@ -113,11 +148,18 @@ public class TransformWebSpace extends AbstractWebSpace {
 		return false;
 	}
 
-	private void doTransform(CallContext context, File from, String path) {
+	private void doTransform(CallContext context, File from, String path, String orgPath) {
+		
 		MProperties param = new MProperties();
-		File to = MApi.getFile(IApi.SCOPE.TMP, "");
+		param.put("session", context.getSession());
+		param.put("sessionId", context.getSessionId());
+		param.put("request", context.getHttpRequest().getParameterMap());
+		param.put("path", context.getHttpPath());
+		
+		File to = MApi.getFile(IApi.SCOPE.TMP, UUID.randomUUID().toString());
 		try {
 			TransformUtil.transform(from, to, getDocumentRoot(), null, null, param, null);
+			prepareHead(context,from, to, orgPath);
 			
 			FileInputStream is = new FileInputStream(to);
 			ServletOutputStream os = context.getHttpResponse().getOutputStream();
@@ -133,14 +175,25 @@ public class TransformWebSpace extends AbstractWebSpace {
 		
 	}
 
-	protected void prepareHead(CallContext context, File file, String path) {
-		String mimeType = context.getMimeType(file.getName());
+	protected void prepareHead(CallContext context, File from, File to, String path) {
+		String mimeType = context.getMimeType(path);
 		HttpServletResponse resp = context.getHttpResponse();
 		if (mimeType != null)
 			resp.setContentType(mimeType);
-		resp.setContentLengthLong(file.length());
+		if (to != null)
+			resp.setContentLengthLong(to.length());
 		resp.setCharacterEncoding(characterEncoding);
-		resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(file.lastModified()));
+		resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(from.lastModified()));
+	}
+
+	public File findTemplateFile(String path) {
+		if (path.startsWith("/")) {
+			if (MSystem.isWindows())
+				return new File(path.substring(1));
+			else
+				return new File(path);
+		}
+		return new File(getDocumentRoot(), path);
 	}
 
 }
