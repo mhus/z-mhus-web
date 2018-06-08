@@ -1,8 +1,0 @@
-cherry:theme=de.mhus.cherry.portal.impl.page.simpletheme
-title=Root
-acl:read=*
-acl:write=editor
-acl:create=editor
-acl:delete=editor
-acl:structure=editor
-acl:rendition=editor
