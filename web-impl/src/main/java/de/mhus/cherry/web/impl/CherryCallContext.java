@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.web.api.CallContext;
-import de.mhus.cherry.web.api.SessionContext;
+import de.mhus.cherry.web.api.Session;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MSystem;
@@ -18,7 +18,6 @@ public class CherryCallContext implements CallContext {
 	private VirtualHost virtualHost;
 	private HttpServlet httpServlet;
 	private String sessionId;
-	private SessionContext sessionContext;
 
 	public void setHttpRequest(HttpServletRequest req) {
 		httpRequest = req;
@@ -26,7 +25,6 @@ public class CherryCallContext implements CallContext {
 		httpPath = req.getPathInfo();
 		req.setAttribute(CallContext.REQUEST_ATTRIBUTE_NAME, this);
 		sessionId = req.getSession().getId();
-		sessionContext = CherryApiImpl.instance().getCherrySession(sessionId);
 	}
 
 	public void setHttpResponse(HttpServletResponse res) {
@@ -73,10 +71,15 @@ public class CherryCallContext implements CallContext {
 	}
 
 	@Override
-	public SessionContext getSession() {
-		return sessionContext;
+	public Session getSession() {
+		return CherryApiImpl.instance().getCherrySession(this, sessionId);
 	}
 
+	@Override
+	public boolean isSession() {
+		return CherryApiImpl.instance().isCherrySession(sessionId);
+	}
+	
 	@Override
 	public void setAttribute(String name, Object value) {
 		httpRequest.setAttribute(name, value);
@@ -95,12 +98,6 @@ public class CherryCallContext implements CallContext {
 	@Override
 	public String getSessionId() {
 		return sessionId;
-	}
-
-	@Override
-	public String getMimeType(String file) {
-		String extension = MFile.getFileSuffix(file);
-		return MFile.getMimeType(extension);
 	}
 
 }

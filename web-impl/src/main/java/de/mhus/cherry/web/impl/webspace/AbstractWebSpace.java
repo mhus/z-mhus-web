@@ -1,6 +1,7 @@
 package de.mhus.cherry.web.impl.webspace;
 
 import java.io.File;
+import java.util.Map.Entry;
 
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.api.VirtualWebSpace;
@@ -35,15 +36,28 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		config = MConfig.find(configRoot, "server", true);
 		if (config == null)
 			throw new MException("config for webspace not found",root);
+		// get server config
 		cServer = config.getNode("server");
 		if (cServer == null)
 			throw new MException("server in config not found",root);
+		// get alias
 		alias = cServer.getString("alias");
+		// get config root
 		if (cServer.isProperty("configurationRoot"))
 			configRoot = findProjectFile(cServer.getString("configurationRoot"));
+		// get default header entries
+		IConfig cHeaders = cServer.getNode("headers");
+		if (cHeaders != null) {
+			for (Entry<String, Object> entry : cHeaders.entrySet())
+				headers.put(entry.getKey(), String.valueOf(entry.getValue()));
+		}
+		// document root
 		documentRoot = findProjectFile(cServer.getString("documentRoot", "html"));
+		// trace options
 		traceErrors = cServer.getBoolean("traceErrors", false);
 		traceAccess = cServer.getBoolean("traceAccess", false);
+		// defaultMimeType
+		defaultMimeType = cServer.getString("defaultMimeType", defaultMimeType);
 	}
 	
 	public File findProjectFile(String path) {

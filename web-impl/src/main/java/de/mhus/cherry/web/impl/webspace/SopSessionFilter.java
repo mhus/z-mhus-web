@@ -15,7 +15,7 @@ import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 public class SopSessionFilter extends MLog implements CherryFilter {
 
-	public static final String PARAMETER_NAME = "__sop_user_ticket";
+	public static final String SESSION_PARAMETER_NAME = "__sop_user_ticket";
 	public static final String CONTEXT_PARAMETER_AAA_CONTEXT = "__sop_aaa_context";
 
 	@Override
@@ -33,7 +33,7 @@ public class SopSessionFilter extends MLog implements CherryFilter {
 			
 			AccessApi aaa = MApi.lookup(AccessApi.class);
 			
-			String userTicket = context.getSession().getString(PARAMETER_NAME,null);
+			String userTicket = context.getSession().getString(SESSION_PARAMETER_NAME,null);
 			if (userTicket == null) return true; // guest?
 			
 			Locale locale = req.getLocale();
@@ -68,7 +68,7 @@ public class SopSessionFilter extends MLog implements CherryFilter {
 		AccessApi aaa = MApi.lookup(AccessApi.class);
 		
 		String userTicket = aaa.createUserTicket(user, pass);
-		context.getSession().setString(PARAMETER_NAME, userTicket);
+		context.getSession().setString(SESSION_PARAMETER_NAME, userTicket);
 
 		Locale locale = context.getHttpRequest().getLocale();
 		userContext = aaa.process(userTicket, locale);
@@ -83,7 +83,7 @@ public class SopSessionFilter extends MLog implements CherryFilter {
 		AccessApi aaa = MApi.lookup(AccessApi.class);
 		aaa.release(userContext);
 
-		context.getSession().remove(PARAMETER_NAME);
+		context.getSession().remove(SESSION_PARAMETER_NAME);
 		context.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, null);
 		
 	}

@@ -2,6 +2,7 @@ package de.mhus.cherry.web.impl;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.WeakHashMap;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,12 +16,11 @@ import aQute.bnd.annotation.component.Component;
 import aQute.bnd.annotation.component.Deactivate;
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
-import de.mhus.cherry.web.api.SessionContext;
+import de.mhus.cherry.web.api.Session;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
-import de.mhus.lib.core.util.TimeoutMap;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.services.util.MServiceTracker;
 import de.mhus.osgi.sop.api.security.SecurityApi;
@@ -28,9 +28,11 @@ import de.mhus.osgi.sop.api.security.SecurityApi;
 @Component(immediate=true)
 public class CherryApiImpl extends MLog implements CherryApi {
 
+	public static final String SESSION_PARAMETER_SESSION = "__cherry_global_session";
+	
 	private static CherryApiImpl instance;
 	private ThreadLocal<CallContext> calls = new ThreadLocal<>();
-	private TimeoutMap<String, SessionContext> globalSession = new TimeoutMap<>();
+	private WeakHashMap<String, Session> globalSession = new WeakHashMap<>();
 	private HashMap<String,VirtualHost> vHosts = new HashMap<>();
 	
 	MServiceTracker<VirtualHost> vHostTracker = new MServiceTracker<VirtualHost>(VirtualHost.class) {
@@ -103,18 +105,23 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
 	@Override
 	public String getMimeType(String file) {
-		CallContext call = getCurrentCall();
-		if (call != null)
-			return call.getMimeType(file);
 		String extension = MFile.getFileSuffix(file);
 		return MFile.getMimeType(extension);
 	}
 
-	public SessionContext getCherrySession(String sessionId) {
-		SessionContext ret = globalSession.get(sessionId);
+	public boolean isCherrySession(String sessionId) {
+		Session ret = globalSession.get(sessionId);
+		return ret != null;
+	}
+	
+	public Session getCherrySession(CallContext context, String sessionId) {
+		Session ret = globalSession.get(sessionId);
 		if (ret == null) {
-			ret = new CherrySessionContext(sessionId);
+			if (context == null) return null;
+			ret = new CherrySession(sessionId);
 			globalSession.put(sessionId, ret);
+			// put into http session to create a reference until http session time out
+			context.getHttpRequest().getSession().setAttribute(SESSION_PARAMETER_SESSION, globalSession); 
 		}
 		return ret;
 	}

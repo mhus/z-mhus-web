@@ -46,4 +46,6 @@ public interface VirtualHost {
 
 	public void doFiltersEnd(CallContext call) throws MException;
 	
+	String getMimeType(String file);
+
 }

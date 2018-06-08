@@ -15,10 +15,10 @@ public interface CallContext {
 	String getHttpPath();
 	HttpServlet getHttpServlet();
 	String getHttpMethod();
-	SessionContext getSession();
+	Session getSession();
 	void setAttribute(String name, Object value);
 	Object getAttribute(String name);
 	String getSessionId();
-	String getMimeType(String file);
+	boolean isSession();
 	
 }

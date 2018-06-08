@@ -2,7 +2,9 @@ package de.mhus.cherry.web.impl;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +16,7 @@ import de.mhus.cherry.web.api.CherryActiveArea;
 import de.mhus.cherry.web.api.CherryFilter;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.config.IConfig;
@@ -28,8 +31,11 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	private MProperties properties = new MProperties();
 	private Bundle bundle;
 	protected LinkedList<CherryFilter> filters = new LinkedList<>();
+	protected LinkedList<CherryFilter> filtersReverse = new LinkedList<>();
 	protected LinkedList<ActiveAreaContainer> areas = new LinkedList<>();
-
+	protected HashMap<String, String> headers = new HashMap<>();
+	protected String defaultMimeType = MFile.DEFAULT_MIME;
+	
 	@Override
 	public void sendError(CallContext context, int sc) {
 		if (traceAccess)
@@ -67,6 +73,10 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 			String method = context.getHttpMethod();
 			if (traceAccess)
 				log().i("access",alias,context.getHttpRequest().getRemoteAddr(),method,context.getHttpPath());
+			
+			for (Entry<String, String> entry : headers.entrySet())
+				context.getHttpResponse().setHeader(entry.getKey(), entry.getValue());
+			
 			switch (method) {
 			case "get":
 				doGetRequest(context);
@@ -170,7 +180,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	@Override
 	public void doFiltersEnd(CallContext call) throws MException {
 		// do not synchronize - it's to slow
-		for (CherryFilter filter : filters) {
+		for (CherryFilter filter : filtersReverse) {
 			filter.doFilterEnd(call);
 		}
 	}
@@ -184,6 +194,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 
 	public void addFilter(CherryFilter filter) {
 		filters.add(filter);
+		filtersReverse.add(0,filter);
 	}
 	
 	public void addArea(String alias, CherryActiveArea area) {
@@ -198,5 +209,11 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		String alias;
 		CherryActiveArea area;
 	}
-	
+
+	@Override
+	public String getMimeType(String file) {
+		String extension = MFile.getFileSuffix(file);
+		return MFile.getMimeType(extension, defaultMimeType);
+	}
+
 }

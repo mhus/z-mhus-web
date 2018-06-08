@@ -107,7 +107,7 @@ public class DirectoryWebSpace extends AbstractWebSpace {
 	}
 
 	protected void prepareHead(CallContext context, File file) {
-		String mimeType = context.getMimeType(file.getName());
+		String mimeType = getMimeType(file.getName());
 		HttpServletResponse resp = context.getHttpResponse();
 		if (mimeType != null)
 			resp.setContentType(mimeType);
