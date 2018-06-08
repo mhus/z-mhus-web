@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <bean id="webspace" class="de.mhus.cherry.web.impl.webspace.DirectoryWebSpace">
+        <property name="root" value="/tmp/webspace"/>
+    </bean>
+
+    <service id="webspaceService" interface="de.mhus.cherry.web.api.VirtualHost" ref="webspace"/>
+    
+</blueprint>
