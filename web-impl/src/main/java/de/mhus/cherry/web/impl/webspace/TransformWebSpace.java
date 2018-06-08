@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.UUID;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -156,7 +155,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 				sendError(context, HttpServletResponse.SC_NOT_FOUND);
 				return;
 			} else {
-				prepareHead(context,file, file, path);
+				prepareHead(context,file, path);
 				return;
 			}
 		}
@@ -174,7 +173,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 			String p = path + extension;
 			file = new File(templateRoot, p);
 			if (file.exists() && file.isFile()) {
-				prepareHead(context, file, null, orgPath);
+				prepareHead(context, file, orgPath);
 			}
 		}
 		
@@ -191,13 +190,14 @@ public class TransformWebSpace extends AbstractWebSpace {
 		if (file.exists()) {
 			if (file.isDirectory()) {
 				path = path + "/" + index;
-			} else
+				file = new File(templateRoot, path);
+			}
 			if (hasTransformExtension(path)) {
 				// path = MString.beforeLastIndex(path, '.');
 				sendError(context, HttpServletResponse.SC_NOT_FOUND);
 				return;
 			} else {
-				prepareHead(context,file, file, path);
+				prepareHead(context,file, path);
 				try {
 					boolean isHtml = hasHtmlExtension(path);
 					ServletOutputStream os = context.getHttpResponse().getOutputStream();
@@ -267,35 +267,24 @@ public class TransformWebSpace extends AbstractWebSpace {
 		param.put("request", context.getHttpRequest().getParameterMap());
 		param.put("path", context.getHttpPath());
 		
-		File to = new File(tmpRoot, UUID.randomUUID().toString());
 		try {
-			TransformUtil.transform(from, to, getDocumentRoot(), null, null, param, null);
 			if (orgPath != null)
-				prepareHead(context,from, to, orgPath);
-			
-			FileInputStream is = new FileInputStream(to);
+				prepareHead(context,from, orgPath);
 			ServletOutputStream os = context.getHttpResponse().getOutputStream();
-			MFile.copyFile(is, os);
+			TransformUtil.transform(from, os, getDocumentRoot(), null, null, param, null);
 			os.flush();
-			is.close();
-			
 		} catch (Exception e) {
 			log().e(alias,from,e);
 			if (orgPath != null)
 				sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		} finally {
-			to.delete();
 		}
-		
 	}
 
-	protected void prepareHead(CallContext context, File from, File to, String path) {
+	protected void prepareHead(CallContext context, File from, String path) {
 		String mimeType = getMimeType(path);
 		HttpServletResponse resp = context.getHttpResponse();
 		if (mimeType != null)
 			resp.setContentType(mimeType);
-		if (to != null)
-			resp.setContentLengthLong(to.length());
 		resp.setCharacterEncoding(characterEncoding);
 		resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(from.lastModified()));
 	}
@@ -323,7 +312,6 @@ public class TransformWebSpace extends AbstractWebSpace {
 		
 		if (errorTemplate != null) {
 
-			File to = null;
 			try {
 				MProperties param = new MProperties();
 				param.put("session", context.getSession().pub());
@@ -333,22 +321,14 @@ public class TransformWebSpace extends AbstractWebSpace {
 				param.put("error", sc);
 				param.put("errorMsg", errorCodes.getOrDefault(sc, ""));
 				
-				to = new File(tmpRoot, UUID.randomUUID().toString());
-				TransformUtil.transform(errorTemplate, to, getDocumentRoot(), null, null, param, null);
-				
-				FileInputStream is = new FileInputStream(to);
 				ServletOutputStream os = context.getHttpResponse().getOutputStream();
+				TransformUtil.transform(errorTemplate, os, getDocumentRoot(), null, null, param, null);
 				context.getHttpResponse().setContentType("text/html");
 				context.getHttpResponse().setCharacterEncoding(characterEncoding);
-				MFile.copyFile(is, os);
 				os.flush();
-				is.close();
 				
 			} catch (Throwable e) {
 				log().e(alias,errorTemplate,e);
-			} finally {
-				if (to != null) 
-					to.delete();
 			}
 			return;
 		}

@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.Session;
 import de.mhus.cherry.web.api.VirtualHost;
-import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MSystem;
 
 public class CherryCallContext implements CallContext {
