@@ -30,7 +30,6 @@ public class TransformWebSpace extends AbstractWebSpace {
 	private String[] removeExtensions = new String[] { ".html", ".htm" };
 	private String[] htmlExtensions = new String[] { ".html", ".htm" };
 	private File templateRoot;
-	private File tmpRoot;
 	private File htmlHeader = null;
 	private File htmlFooter = null;
 	private File errorTemplate = null;
@@ -84,15 +83,12 @@ public class TransformWebSpace extends AbstractWebSpace {
 		super.start(api);
 		cDir = getConfig().getNode("transform");
 		templateRoot = getDocumentRoot();
-		tmpRoot = MApi.getFile(IApi.SCOPE.TMP, "");
 		if (cDir != null) {
 			characterEncoding = cDir.getString("characterEncoding", null);
 			if (cDir.isProperty("indexe"))
 				index = cDir.getString("index");
 			if (cDir.isProperty("templateRoot"))
 				templateRoot = findTemplateFile(cDir.getString("templateRoot"));
-			if (cDir.isProperty("tmpRoot"))
-				tmpRoot = findProjectFile(cDir.getString("tmpRoot"));
 			if (cDir.isProperty("extensionOrder")) {
 				extensionOrder = cDir.getString("extensionOrder").split(",");
 				MCollection.updateEach(extensionOrder, e -> "." + e );
