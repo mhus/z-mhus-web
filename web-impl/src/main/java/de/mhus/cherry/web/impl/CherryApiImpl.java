@@ -59,18 +59,28 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			try {
 				service.start(this);
 			} catch (Throwable t) {
-				log().e("Can't add virtual host",service.getVirtualHostAlias(), t);
+				log().e("Can't add virtual host",service.getName(), t);
 				return;
 			}
-			VirtualHost old = vHosts.put(service.getVirtualHostAlias(), service);
-			if (old != null)
-				old.stop(this);
+			String[] aliases = service.getVirtualHostAliases();
+			for (String alias : aliases) {
+				log().i("add",alias);
+				VirtualHost old = vHosts.put(alias, service);
+				if (old != null)
+					old.stop(this);
+			}
 		}
 	}
 
 	protected void removeVirtualHost(VirtualHost service) {
 		synchronized (vHosts) {
-			vHosts.remove(service.getVirtualHostAlias());
+			vHosts.entrySet().removeIf(e -> { 
+				if (service == e.getValue()) {
+					log().i("remove",e.getKey());
+					return true;
+				}
+				return false;
+				});
 			service.stop(this);
 		}
 	}

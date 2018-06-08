@@ -10,14 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
-import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MCollection;
 import de.mhus.lib.core.MDate;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
-import de.mhus.lib.core.system.IApi;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.transform.api.TransformUtil;
 
@@ -270,7 +268,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 			TransformUtil.transform(from, os, getDocumentRoot(), null, null, param, null);
 			os.flush();
 		} catch (Exception e) {
-			log().e(alias,from,e);
+			log().e(name,from,e);
 			if (orgPath != null)
 				sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
@@ -298,11 +296,11 @@ public class TransformWebSpace extends AbstractWebSpace {
 	@Override
 	public void sendError(CallContext context, int sc) {
 		if (traceAccess)
-			log().i(alias,"error",context.getHttpRequest().getRemoteAddr(),context.getHttpMethod(),context.getHttpPath(),sc);
+			log().i(name,context.getHttpHost(),"error",context.getHttpRequest().getRemoteAddr(),context.getHttpMethod(),context.getHttpPath(),sc);
 		if (traceErrors)
-			log().i(alias,sc,Thread.currentThread().getStackTrace());
+			log().i(name,context.getHttpHost(),sc,Thread.currentThread().getStackTrace());
 		if (context.getHttpResponse().isCommitted()) {
-			log().w("Can't send error to committed content",alias,sc);
+			log().w("Can't send error to committed content",name,sc);
 			return;
 		}
 		
@@ -324,7 +322,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 				os.flush();
 				
 			} catch (Throwable e) {
-				log().e(alias,errorTemplate,e);
+				log().e(name,errorTemplate,e);
 			}
 			return;
 		}

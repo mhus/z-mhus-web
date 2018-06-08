@@ -17,6 +17,7 @@ public class CherryCallContext implements CallContext {
 	private VirtualHost virtualHost;
 	private HttpServlet httpServlet;
 	private String sessionId;
+	private String host;
 
 	public void setHttpRequest(HttpServletRequest req) {
 		httpRequest = req;
@@ -24,6 +25,7 @@ public class CherryCallContext implements CallContext {
 		httpPath = req.getPathInfo();
 		req.setAttribute(CallContext.REQUEST_ATTRIBUTE_NAME, this);
 		sessionId = req.getSession().getId();
+		host = req.getHeader("Host");
 	}
 
 	public void setHttpResponse(HttpServletResponse res) {
@@ -97,6 +99,11 @@ public class CherryCallContext implements CallContext {
 	@Override
 	public String getSessionId() {
 		return sessionId;
+	}
+
+	@Override
+	public String getHttpHost() {
+		return host;
 	}
 
 }

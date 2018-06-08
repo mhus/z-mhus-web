@@ -20,5 +20,6 @@ public interface CallContext {
 	Object getAttribute(String name);
 	String getSessionId();
 	boolean isSession();
+	String getHttpHost();
 	
 }

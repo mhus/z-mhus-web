@@ -26,7 +26,8 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 
 	protected boolean traceErrors;
 	protected boolean traceAccess;
-	protected String alias;
+	protected String[] aliases;
+	protected String name = getClass().getCanonicalName();
 	protected IConfig config;
 	private MProperties properties = new MProperties();
 	private Bundle bundle;
@@ -39,11 +40,11 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	@Override
 	public void sendError(CallContext context, int sc) {
 		if (traceAccess)
-			log().i(alias,"error",context.getHttpRequest().getRemoteAddr(),context.getHttpMethod(),context.getHttpPath(),sc);
+			log().i(name,context.getHttpHost(),"error",context.getHttpRequest().getRemoteAddr(),context.getHttpMethod(),context.getHttpPath(),sc);
 		if (traceErrors)
-			log().i(alias,sc,Thread.currentThread().getStackTrace());
+			log().i(name,context.getHttpHost(),sc,Thread.currentThread().getStackTrace());
 		if (context.getHttpResponse().isCommitted()) {
-			log().w("Can't send error to committed content",alias,sc);
+			log().w("Can't send error to committed content",name,sc);
 			return;
 		}
 		try {
@@ -72,7 +73,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 			
 			String method = context.getHttpMethod();
 			if (traceAccess)
-				log().i("access",alias,context.getHttpRequest().getRemoteAddr(),method,context.getHttpPath());
+				log().i("access",name,context.getHttpRequest().getRemoteAddr(),method,context.getHttpPath());
 			
 			for (Entry<String, String> entry : headers.entrySet())
 				context.getHttpResponse().setHeader(entry.getKey(), entry.getValue());
@@ -103,7 +104,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 				doConnectRequest(context);
 				break;
 			default:
-				log().w("Unknown http method",alias,method);
+				log().w("Unknown http method",name,method);
 			}
 		} catch (Throwable t) {
 			sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -129,7 +130,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 
 	protected void doOptionsRequest(CallContext context) throws Exception {
 		HttpServletResponse res = context.getHttpResponse();
-		res.setHeader("cherry-alias", context.getVirtualHost().getVirtualHostAlias());
+		res.setHeader("cherry-name", context.getVirtualHost().getName());
 		res.setHeader("Allow", config.getString("allow", "GET,HEAD,POST,PUT,DELETE,OPTIONS,TRACE"));
 	}
 
@@ -154,8 +155,8 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	}
 
 	@Override
-	public String getVirtualHostAlias() {
-		return alias;
+	public String[] getVirtualHostAliases() {
+		return aliases;
 	}
 
 	@Override
@@ -170,6 +171,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 
 	@Override
 	public boolean doFiltersBegin(CallContext call) throws MException {
+		if (filters == null || filters.size() == 0) return true;
 		// do not synchronize - it's to slow
 		for (CherryFilter filter : filters) {
 			if (!filter.doFilterBegin(call)) return false;
@@ -179,6 +181,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 
 	@Override
 	public void doFiltersEnd(CallContext call) throws MException {
+		if (filters == null || filters.size() == 0) return;
 		// do not synchronize - it's to slow
 		for (CherryFilter filter : filtersReverse) {
 			filter.doFilterEnd(call);
@@ -186,6 +189,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	}
 
 	public CherryActiveArea findArea(String path) {
+		if (areas == null || areas.size() == 0) return null;
 		// do not synchronize - it's to slow
 		for (ActiveAreaContainer area : areas)
 			if (path.startsWith(area.alias)) return area.area;
@@ -214,6 +218,11 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	public String getMimeType(String file) {
 		String extension = MFile.getFileSuffix(file);
 		return MFile.getMimeType(extension, defaultMimeType);
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }

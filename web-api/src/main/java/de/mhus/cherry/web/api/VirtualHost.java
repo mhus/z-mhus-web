@@ -8,9 +8,9 @@ import de.mhus.lib.errors.MException;
 
 public interface VirtualHost {
 
-	public void sendError(CallContext context, int sc);
+	void sendError(CallContext context, int sc);
 
-	public void doRequest(CallContext context);
+	void doRequest(CallContext context);
 
 	/**
 	 * Get WebSpace configuration'
@@ -25,15 +25,15 @@ public interface VirtualHost {
 	 */
 	IProperties getProperties();
 
-	public String getVirtualHostAlias();
+	String[] getVirtualHostAliases();
 
-	public void start(CherryApi api) throws MException;
+	void start(CherryApi api) throws MException;
 
-	public void stop(CherryApi api);
+	void stop(CherryApi api);
 
-	public void setBundle(Bundle bundle);
+	void setBundle(Bundle bundle);
 	
-	public Bundle getBundle();
+	Bundle getBundle();
 
 	/**
 	 * Return true if the filters where successful and the page can be displayed.
@@ -42,10 +42,12 @@ public interface VirtualHost {
 	 * @return true if ok
 	 * @throws MException 
 	 */
-	public boolean doFiltersBegin(CallContext call) throws MException;
+	boolean doFiltersBegin(CallContext call) throws MException;
 
-	public void doFiltersEnd(CallContext call) throws MException;
+	void doFiltersEnd(CallContext call) throws MException;
 	
 	String getMimeType(String file);
+
+	String getName();
 
 }
