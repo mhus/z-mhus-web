@@ -166,10 +166,6 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		call.setHttpServlet(servlet);
 		call.setVirtualHost(vHost);
 
-		// execute filters
-		if (!vHost.doFiltersBegin(call)) return null;
-		if (response.isCommitted()) return null; // for secure
-
 		return call;
 	}
 

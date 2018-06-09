@@ -35,16 +35,8 @@ public class CherryServlet extends HttpServlet {
 		} catch (Throwable t) {
 			MLogUtil.log().w(t);
 			sendInternalError(response,t);
-		} finally {
-			try {
-				if (call != null) {
-					call.getVirtualHost().doFiltersEnd(call);
-				}
-			} catch (Throwable t) {
-				MLogUtil.log().w(t);
-			}
 		}
-
+		
 	}
 
 	private void sendNotFoundError(HttpServletResponse response) {

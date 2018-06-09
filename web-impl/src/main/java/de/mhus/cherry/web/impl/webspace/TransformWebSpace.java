@@ -16,6 +16,7 @@ import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.transform.api.TransformUtil;
 
@@ -31,51 +32,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 	private File htmlHeader = null;
 	private File htmlFooter = null;
 	private File errorTemplate = null;
-
-	private static final HashMap<Integer, String> errorCodes = new HashMap<Integer, String>() {
-	    private static final long serialVersionUID = 1L;
-	    {
-	      put(100, "Continue");
-	      put(101, "Switching Protocols");
-	      put(200, "OK");
-	      put(201, "Created");
-	      put(202, "Accepted");
-	      put(203, "Non-Authoritative Information");
-	      put(204, "No Content");
-	      put(205, "Reset Content");
-	      put(300, "Multiple Choices");
-	      put(301, "Moved Permanently");
-	      put(302, "Found");
-	      put(303, "See Other");
-	      put(304, "Not Modified");
-	      put(305, "Use Proxy");
-	      put(307, "Temporary Redirect");
-	      put(400, "Bad Request");
-	      put(401, "Unauthorized");
-	      put(402, "Payment Required");
-	      put(403, "Forbidden");
-	      put(404, "Not Found");
-	      put(405, "Method Not Allowed");
-	      put(406, "Not Acceptable");
-	      put(407, "Proxy Authentication Required");
-	      put(408, "Request Time-out");
-	      put(409, "Conflict");
-	      put(410, "Gone");
-	      put(411, "Length Required");
-	      put(412, "Precondition Failed");
-	      put(413, "Request Entity Too Large");
-	      put(414, "Request-URI Too Large");
-	      put(415, "Unsupported Media Type");
-	      put(416, "Requested range not satisfiable");
-	      put(417, "SlimExpectation Failed");
-	      put(500, "Internal Server Error");
-	      put(501, "Not Implemented");
-	      put(502, "Bad Gateway");
-	      put(503, "Service Unavailable");
-	      put(504, "Gateway Time-out");
-	      put(505, "HTTP Version not supported");
-	    }
-	  };	
+	
 	@Override
 	public void start(CherryApi api) throws MException {
 		super.start(api);
@@ -88,15 +45,15 @@ public class TransformWebSpace extends AbstractWebSpace {
 			if (cDir.isProperty("templateRoot"))
 				templateRoot = findTemplateFile(cDir.getString("templateRoot"));
 			if (cDir.isProperty("extensionOrder")) {
-				extensionOrder = cDir.getString("extensionOrder").split(",");
+				extensionOrder = MConfig.toStringArray(cDir.getNode("extensionOrder").getNodes(), "value");
 				MCollection.updateEach(extensionOrder, e -> "." + e );
 			}
 			if (cDir.isProperty("removeExtensions")) {
-				removeExtensions = cDir.getString("removeExtensions").split(",");
+				removeExtensions = MConfig.toStringArray(cDir.getNode("removeExtensions").getNodes(), "value");
 				MCollection.updateEach(removeExtensions, e -> "." + e );
 			}
 			if (cDir.isProperty("htmlExtensions")) {
-				htmlExtensions = cDir.getString("htmlExtensions").split(",");
+				htmlExtensions = MConfig.toStringArray(cDir.getNode("htmlExtensions").getNodes(), "value");
 				MCollection.updateEach(htmlExtensions, e -> "." + e );
 			}
 			if (cDir.isProperty("header")) {
@@ -197,7 +154,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 					ServletOutputStream os = context.getHttpResponse().getOutputStream();
 					
 					if (isHtml && htmlHeader != null) {
-						doTransform(context, htmlHeader, null, null);
+						doTransform(context, htmlHeader);
 					}
 					
 					FileInputStream is = new FileInputStream(file);
@@ -205,7 +162,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 					is.close();
 
 					if (isHtml && htmlFooter != null) {
-						doTransform(context, htmlFooter, null, null);
+						doTransform(context, htmlFooter);
 					}
 
 					os.flush();
@@ -231,7 +188,12 @@ public class TransformWebSpace extends AbstractWebSpace {
 			String p = path + extension;
 			file = new File(templateRoot, p);
 			if (file.exists() && file.isFile()) {
-				doTransform(context, file, path, orgPath);
+				prepareHead(context,file, orgPath);
+				try {
+					doTransform(context, file);
+				} catch (Throwable t) {
+					sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				}
 				return;
 			}
 		}
@@ -239,21 +201,28 @@ public class TransformWebSpace extends AbstractWebSpace {
 		sendError(context, HttpServletResponse.SC_NOT_FOUND);
 	}
 
-	private boolean hasTransformExtension(String path) {
+	public boolean hasTransformExtension(String path) {
 		for (String extension : extensionOrder) {
 			if (path.endsWith(extension)) return true;
 		}
 		return false;
 	}
 
-	private boolean hasHtmlExtension(String path) {
+	public boolean hasHtmlExtension(String path) {
 		for (String extension : htmlExtensions) {
 			if (path.endsWith(extension)) return true;
 		}
 		return false;
 	}
 
-	private void doTransform(CallContext context, File from, String path, String orgPath) {
+	/**
+	 * Transform file into response.
+	 * 
+	 * @param context
+	 * @param from
+	 * @throws Exception 
+	 */
+	public void doTransform(CallContext context, File from) throws Exception {
 		
 		MProperties param = new MProperties();
 		param.put("session", context.getSession().pub());
@@ -261,17 +230,9 @@ public class TransformWebSpace extends AbstractWebSpace {
 		param.put("request", context.getHttpRequest().getParameterMap());
 		param.put("path", context.getHttpPath());
 		
-		try {
-			if (orgPath != null)
-				prepareHead(context,from, orgPath);
-			ServletOutputStream os = context.getHttpResponse().getOutputStream();
-			TransformUtil.transform(from, os, getDocumentRoot(), null, null, param, null);
-			os.flush();
-		} catch (Exception e) {
-			log().e(name,from,e);
-			if (orgPath != null)
-				sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		}
+		ServletOutputStream os = context.getHttpResponse().getOutputStream();
+		TransformUtil.transform(from, os, getDocumentRoot(), null, null, param, null);
+		os.flush();
 	}
 
 	protected void prepareHead(CallContext context, File from, String path) {
@@ -313,7 +274,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 				param.put("request", context.getHttpRequest().getParameterMap());
 				param.put("path", context.getHttpPath());
 				param.put("error", sc);
-				param.put("errorMsg", errorCodes.getOrDefault(sc, ""));
+				param.put("errorMsg", MSystem.HTTP_STATUS_CODES.getOrDefault(sc, ""));
 				
 				ServletOutputStream os = context.getHttpResponse().getOutputStream();
 				TransformUtil.transform(errorTemplate, os, getDocumentRoot(), null, null, param, null);

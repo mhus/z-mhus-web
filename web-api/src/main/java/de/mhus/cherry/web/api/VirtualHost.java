@@ -35,17 +35,6 @@ public interface VirtualHost {
 	
 	Bundle getBundle();
 
-	/**
-	 * Return true if the filters where successful and the page can be displayed.
-	 * 
-	 * @param call
-	 * @return true if ok
-	 * @throws MException 
-	 */
-	boolean doFiltersBegin(CallContext call) throws MException;
-
-	void doFiltersEnd(CallContext call) throws MException;
-	
 	String getMimeType(String file);
 
 	String getName();

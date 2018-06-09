@@ -4,6 +4,13 @@ import de.mhus.lib.errors.MException;
 
 public interface CherryActiveArea {
 
-	public void doRequest(CallContext context) throws MException;
+	/**
+	 * Return true if the area was able to consume the call.
+	 * 
+	 * @param context
+	 * @return true if consumed
+	 * @throws MException
+	 */
+	public boolean doRequest(CallContext call) throws MException;
 
 }

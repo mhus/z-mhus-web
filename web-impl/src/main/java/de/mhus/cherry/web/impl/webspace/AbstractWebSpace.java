@@ -3,13 +3,16 @@ package de.mhus.cherry.web.impl.webspace;
 import java.io.File;
 import java.util.Map.Entry;
 
+import de.mhus.cherry.web.api.CherryActiveArea;
 import de.mhus.cherry.web.api.CherryApi;
+import de.mhus.cherry.web.api.CherryFilter;
 import de.mhus.cherry.web.api.VirtualWebSpace;
 import de.mhus.cherry.web.impl.AbstractVirtualHost;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.errors.MException;
+import de.mhus.osgi.services.util.OsgiBundleClassLoader;
 
 public abstract class AbstractWebSpace extends AbstractVirtualHost implements VirtualWebSpace {
 
@@ -41,7 +44,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		if (cServer == null)
 			throw new MException("server in config not found",root);
 		// get alias
-		aliases = cServer.getString("aliases").split(",");
+		aliases = MConfig.toStringArray(cServer.getNode("aliases").getNodes(), "value");
 		if (aliases.length == 0)
 			throw new MException("no alias is set for vHost",root);
 		// set name
@@ -63,6 +66,35 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		traceAccess = cServer.getBoolean("traceAccess", false);
 		// defaultMimeType
 		defaultMimeType = cServer.getString("defaultMimeType", defaultMimeType);
+		// load filters
+		OsgiBundleClassLoader loader = new OsgiBundleClassLoader();
+		if (cServer.getNode("filters") != null) {
+			for (String clazzName : MConfig.toStringArray(cServer.getNode("filters").getNodes(), "value")) {
+				try {
+					Class<?> clazz = loader.loadClass(clazzName);
+					addFilter((CherryFilter) clazz.newInstance());
+				} catch (ClassNotFoundException e) {
+					throw new MException("filter not found",clazzName);
+				} catch (Throwable e) {
+					throw new MException("can't instanciate filter",clazzName,e);
+				}
+			}
+		}
+		// load active areas
+		if (cServer.getNode("areas") != null) {
+			for (IConfig areaDef : cServer.getNode("areas").getNodes()) {
+				String areaName = areaDef.getString("name");
+				String areaClazzName = areaDef.getString("class");
+				try {
+					Class<?> clazz = loader.loadClass(areaClazzName);
+					addArea(areaName, (CherryActiveArea) clazz.newInstance());
+				} catch (ClassNotFoundException e) {
+					throw new MException("area not found",areaClazzName);
+				} catch (Throwable e) {
+					throw new MException("can't instanciate area",areaClazzName,e);
+				}			
+			}
+		}
 	}
 	
 	public File findProjectFile(String path) {

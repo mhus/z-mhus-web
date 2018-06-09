@@ -20,10 +20,13 @@ import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
 
 public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 
+	public static final String CALL_FILTER_CNT = "__call_filter_cnt";
+	
 	protected boolean traceErrors;
 	protected boolean traceAccess;
 	protected String[] aliases;
@@ -59,55 +62,64 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	 * 
 	 * See https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
 	 * 
-	 * @param context
+	 * @param call
 	 */
 	@Override
-	public void doRequest(CallContext context) {
-		
+	public void doRequest(CallContext call) {
 		try {
-			CherryActiveArea area = findArea(context.getHttpPath());
-			if (area != null) {
-				area.doRequest(context);
-				return;
-			}
 			
-			String method = context.getHttpMethod();
+			// execute filters
+			if (!doFiltersBegin(call)) 
+				return;
+			
+			if (doActiveAreas(call))
+				return;
+			
+			String method = call.getHttpMethod();
 			if (traceAccess)
-				log().i("access",name,context.getHttpRequest().getRemoteAddr(),method,context.getHttpPath());
+				log().i("access",name,call.getHttpRequest().getRemoteAddr(),method,call.getHttpPath());
 			
 			for (Entry<String, String> entry : headers.entrySet())
-				context.getHttpResponse().setHeader(entry.getKey(), entry.getValue());
+				call.getHttpResponse().setHeader(entry.getKey(), entry.getValue());
 			
 			switch (method) {
 			case "get":
-				doGetRequest(context);
+				doGetRequest(call);
 				break;
 			case "head":
-				doHeadRequest(context);
+				doHeadRequest(call);
 				break;
 			case "post":
-				doPostRequest(context);
+				doPostRequest(call);
 				break;
 			case "put":
-				doPutRequest(context);
+				doPutRequest(call);
 				break;
 			case "delete":
-				doDeleteRequest(context);
+				doDeleteRequest(call);
 				break;
 			case "options":
-				doOptionsRequest(context);
+				doOptionsRequest(call);
 				break;
 			case "trace":
-				doTraceRequest(context);
+				doTraceRequest(call);
 				break;
 			case "connect":
-				doConnectRequest(context);
+				doConnectRequest(call);
 				break;
 			default:
 				log().w("Unknown http method",name,method);
 			}
 		} catch (Throwable t) {
-			sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			sendError(call, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} finally {
+			try {
+				if (call != null) {
+					doFiltersEnd(call);
+				}
+			} catch (Throwable t) {
+				MLogUtil.log().w(t);
+			}
 		}
 	}
 
@@ -169,31 +181,43 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		return bundle;
 	}
 
-	@Override
 	public boolean doFiltersBegin(CallContext call) throws MException {
 		if (filters == null || filters.size() == 0) return true;
 		// do not synchronize - it's to slow
+		int cnt = 0; // count number of filters executed
 		for (CherryFilter filter : filters) {
-			if (!filter.doFilterBegin(call)) return false;
+			if (!filter.doFilterBegin(call)) {
+				call.setAttribute(CALL_FILTER_CNT, cnt);
+				return false;
+			}
+			cnt++;
 		}
+		call.setAttribute(CALL_FILTER_CNT, cnt);
 		return true;
 	}
 
-	@Override
 	public void doFiltersEnd(CallContext call) throws MException {
 		if (filters == null || filters.size() == 0) return;
 		// do not synchronize - it's to slow
+		int cnt = filtersReverse.size();
+		int done = (int) call.getAttribute(CALL_FILTER_CNT);
 		for (CherryFilter filter : filtersReverse) {
-			filter.doFilterEnd(call);
+			if (cnt <= done) // do only end for filter they had begin called, expect the one returned false
+				filter.doFilterEnd(call);
+			cnt--;
 		}
 	}
 
-	public CherryActiveArea findArea(String path) {
-		if (areas == null || areas.size() == 0) return null;
+	public boolean doActiveAreas(CallContext call) throws MException {
+		if (areas == null || areas.size() == 0) return false;
+		String path = call.getHttpPath();
 		// do not synchronize - it's to slow
 		for (ActiveAreaContainer area : areas)
-			if (path.startsWith(area.alias)) return area.area;
-		return null;
+			if (path.startsWith(area.alias)) {
+				if (area.area.doRequest(call))
+					return true;
+			}
+		return false;
 	}
 
 	public void addFilter(CherryFilter filter) {
