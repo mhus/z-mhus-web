@@ -11,8 +11,8 @@ public interface CherryFilter {
 	 * @return true if ok
 	 * @throws MException 
 	 */
-	public boolean doFilterBegin(CallContext context) throws MException;
+	public boolean doFilterBegin(CallContext call) throws MException;
 
-	public void doFilterEnd(CallContext context) throws MException;
+	public void doFilterEnd(CallContext call) throws MException;
 
 }

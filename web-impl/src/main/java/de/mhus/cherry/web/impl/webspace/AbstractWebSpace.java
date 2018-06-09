@@ -83,11 +83,11 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		// load active areas
 		if (cServer.getNode("areas") != null) {
 			for (IConfig areaDef : cServer.getNode("areas").getNodes()) {
-				String areaName = areaDef.getString("name");
+				String areaPath = areaDef.getString("path");
 				String areaClazzName = areaDef.getString("class");
 				try {
 					Class<?> clazz = loader.loadClass(areaClazzName);
-					addArea(areaName, (CherryActiveArea) clazz.newInstance());
+					addArea(areaPath, (CherryActiveArea) clazz.newInstance());
 				} catch (ClassNotFoundException e) {
 					throw new MException("area not found",areaClazzName);
 				} catch (Throwable e) {
