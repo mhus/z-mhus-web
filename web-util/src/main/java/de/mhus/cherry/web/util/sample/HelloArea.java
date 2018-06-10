@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl.webspace;
+package de.mhus.cherry.web.util.sample;
 
 import java.io.IOException;
 import java.util.Date;

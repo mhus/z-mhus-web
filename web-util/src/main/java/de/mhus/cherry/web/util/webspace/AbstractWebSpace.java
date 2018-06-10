@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl.webspace;
+package de.mhus.cherry.web.util.webspace;
 
 import java.io.File;
 import java.util.Map.Entry;
@@ -7,7 +7,7 @@ import de.mhus.cherry.web.api.WebArea;
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.api.VirtualWebSpace;
-import de.mhus.cherry.web.impl.AbstractVirtualHost;
+import de.mhus.cherry.web.util.AbstractVirtualHost;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;

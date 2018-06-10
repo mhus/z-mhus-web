@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl;
+package de.mhus.cherry.web.util;
 
 import java.io.IOException;
 import java.util.Enumeration;

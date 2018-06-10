@@ -186,7 +186,7 @@
   <modules>
     <module>web-api</module>
     <module>web-impl</module>
-    <module>web-sop-rest-proxy</module>
+    <module>web-util</module>
   </modules>
 
 

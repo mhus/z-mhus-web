@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl.webspace;
+package de.mhus.cherry.web.util.filter;
 
 import java.util.Locale;
 

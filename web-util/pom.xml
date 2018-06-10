@@ -19,7 +19,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>web-sop-rest-proxy</artifactId>
+	<artifactId>web-util</artifactId>
 	<packaging>bundle</packaging>
 
 	<parent>
@@ -40,9 +40,10 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>
-							de.mhus.cherry.web.sop.rest*;version=${project.version}
+							de.mhus.cherry.web.util*;version=${project.version}
 						</Export-Package>
 						<Import-Package>
+							de.mhus.osgi.transform.*;resolution:=optional,
 							*
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
@@ -59,6 +60,20 @@
 			<artifactId>web-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+	    <dependency>
+	    	<groupId>de.mhus.osgi</groupId>
+	    	<artifactId>mhu-sop-api</artifactId>
+	    	<version>${sop.version}</version>
+	    </dependency>
+	    
+		<dependency>
+			<groupId>de.mhus.osgi</groupId>
+			<artifactId>mhu-transform-api</artifactId>
+			<version>${transform.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
 	</dependencies>
 
 

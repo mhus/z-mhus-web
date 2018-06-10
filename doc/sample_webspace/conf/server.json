@@ -1,0 +1,23 @@
+{
+	"server": {
+		"aliases": ["*"],
+		"configurationRoot": "conf",
+		"documentRoot": "html",
+		"traceAccess": true,
+		"defaultMimeType": "text/html",
+		"filters": ["de.mhus.cherry.web.util.sample.TraceFilter"],
+		"areas":[
+			{
+				"path":"/hello",
+				"class":"de.mhus.cherry.web.util.sample.HelloArea"
+			}
+		]
+	},
+	"transform": {
+		"extensionOrder": ["*","twig"],
+		"templateRoot":"page",
+		"error": "includes/error.twig",
+		"header": "includes/header.twig",
+		"footer": "includes/footer.twig"
+	}
+}

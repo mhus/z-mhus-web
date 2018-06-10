@@ -43,7 +43,6 @@
 							de.mhus.cherry.web.impl.*;version=${project.version}
 						</Export-Package>
 						<Import-Package>
-							de.mhus.osgi.transform.*;resolution:=optional,
 							*
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
@@ -66,13 +65,6 @@
 	    	<artifactId>mhu-sop-api</artifactId>
 	    	<version>${sop.version}</version>
 	    </dependency>
-
-		<dependency>
-			<groupId>de.mhus.osgi</groupId>
-			<artifactId>mhu-transform-api</artifactId>
-			<version>${transform.version}</version>
-			<scope>provided</scope>
-		</dependency>
 		
 	</dependencies>
 

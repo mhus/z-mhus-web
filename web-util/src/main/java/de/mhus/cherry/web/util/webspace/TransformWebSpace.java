@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl.webspace;
+package de.mhus.cherry.web.util.webspace;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
+import de.mhus.cherry.web.util.webspace.AbstractWebSpace;
 import de.mhus.cherry.web.api.CanTransform;
 import de.mhus.lib.core.MCollection;
 import de.mhus.lib.core.MDate;

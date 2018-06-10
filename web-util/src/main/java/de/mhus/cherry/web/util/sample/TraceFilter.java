@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl.webspace;
+package de.mhus.cherry.web.util.sample;
 
 import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.api.InternalCallContext;
