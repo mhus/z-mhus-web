@@ -3,9 +3,9 @@ package de.mhus.cherry.web.impl.webspace;
 import java.io.File;
 import java.util.Map.Entry;
 
-import de.mhus.cherry.web.api.CherryActiveArea;
+import de.mhus.cherry.web.api.WebArea;
 import de.mhus.cherry.web.api.CherryApi;
-import de.mhus.cherry.web.api.CherryFilter;
+import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.api.VirtualWebSpace;
 import de.mhus.cherry.web.impl.AbstractVirtualHost;
 import de.mhus.lib.core.MSystem;
@@ -72,7 +72,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 			for (String clazzName : MConfig.toStringArray(cServer.getNode("filters").getNodes(), "value")) {
 				try {
 					Class<?> clazz = loader.loadClass(clazzName);
-					addFilter((CherryFilter) clazz.newInstance());
+					addFilter((WebFilter) clazz.newInstance());
 				} catch (ClassNotFoundException e) {
 					throw new MException("filter not found",clazzName);
 				} catch (Throwable e) {
@@ -87,7 +87,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 				String areaClazzName = areaDef.getString("class");
 				try {
 					Class<?> clazz = loader.loadClass(areaClazzName);
-					addArea(areaPath, (CherryActiveArea) clazz.newInstance());
+					addArea(areaPath, (WebArea) clazz.newInstance());
 				} catch (ClassNotFoundException e) {
 					throw new MException("area not found",areaClazzName);
 				} catch (Throwable e) {

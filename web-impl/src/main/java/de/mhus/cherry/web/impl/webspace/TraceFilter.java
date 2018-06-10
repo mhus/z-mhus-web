@@ -1,30 +1,30 @@
 package de.mhus.cherry.web.impl.webspace;
 
-import de.mhus.cherry.web.api.CallContext;
-import de.mhus.cherry.web.api.CherryFilter;
+import de.mhus.cherry.web.api.WebFilter;
+import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MTimeInterval;
 import de.mhus.lib.errors.MException;
 
-public class TraceFilter extends MLog implements CherryFilter {
+public class TraceFilter extends MLog implements WebFilter {
 
 	private static final String CALL_START = "filter_TraceFilter_start";
 
 	@Override
-	public boolean doFilterBegin(CallContext context) throws MException {
+	public boolean doFilterBegin(InternalCallContext call) throws MException {
 		long start = System.currentTimeMillis();
-		context.setAttribute(CALL_START, start);
-		log().i("access",context.getHttpHost(),context.getHttpMethod(),context.getHttpPath());
+		call.setAttribute(CALL_START, start);
+		log().i("access",call.getHttpHost(),call.getHttpMethod(),call.getHttpPath());
 		return true;
 	}
 
 	@Override
-	public void doFilterEnd(CallContext context) throws MException {
-		Long start = (Long) context.getAttribute(CALL_START);
+	public void doFilterEnd(InternalCallContext call) throws MException {
+		Long start = (Long) call.getAttribute(CALL_START);
 		if (start != null) {
 			long duration = System.currentTimeMillis() - start;
 			String durationStr = MTimeInterval.getIntervalAsString(duration);
-			log().i("duration",durationStr,duration,context.getHttpHost(),context.getHttpMethod(),context.getHttpPath());
+			log().i("duration",durationStr,duration,call.getHttpHost(),call.getHttpMethod(),call.getHttpPath());
 		}
 	}
 

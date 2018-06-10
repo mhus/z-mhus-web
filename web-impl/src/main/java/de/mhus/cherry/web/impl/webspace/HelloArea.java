@@ -4,16 +4,16 @@ import java.io.IOException;
 import java.util.Date;
 
 import de.mhus.cherry.web.api.CallContext;
-import de.mhus.cherry.web.api.CherryActiveArea;
+import de.mhus.cherry.web.api.WebArea;
 import de.mhus.lib.errors.MException;
 
-public class HelloArea implements CherryActiveArea {
+public class HelloArea implements WebArea {
 
 	@Override
 	public boolean doRequest(CallContext call) throws MException {
 		
 		try {
-			call.getHttpResponse().getWriter().write("Hello " + new Date());
+			call.getWriter().write("Hello " + new Date());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

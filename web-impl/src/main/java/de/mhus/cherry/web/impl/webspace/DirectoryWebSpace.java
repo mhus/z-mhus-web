@@ -2,8 +2,8 @@ package de.mhus.cherry.web.impl.webspace;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.OutputStream;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.web.api.CallContext;
@@ -15,7 +15,6 @@ import de.mhus.lib.errors.MException;
 
 public class DirectoryWebSpace extends AbstractWebSpace {
 
-	String characterEncoding = "utf-8";
 	private IConfig cDir;
 	private String[] indexes = new String[] {"index.html"};
 	
@@ -24,7 +23,7 @@ public class DirectoryWebSpace extends AbstractWebSpace {
 		super.start(api);
 		cDir = getConfig().getNode("directory");
 		if (cDir != null) {
-			characterEncoding = cDir.getString("characterEncoding", null);
+			charsetEncoding = cDir.getString("characterEncoding", null);
 			if (cDir.isProperty("indexes"))
 				indexes = cDir.getString("indexes").split(",");
 		}
@@ -84,7 +83,7 @@ public class DirectoryWebSpace extends AbstractWebSpace {
 		
 		try {
 			FileInputStream is = new FileInputStream(file);
-			ServletOutputStream os = context.getHttpResponse().getOutputStream();
+			OutputStream os = context.getOutputStream();
 			MFile.copyFile(is, os);
 			os.close();
 			is.close();
@@ -112,7 +111,7 @@ public class DirectoryWebSpace extends AbstractWebSpace {
 		if (mimeType != null)
 			resp.setContentType(mimeType);
 		resp.setContentLengthLong(file.length());
-		resp.setCharacterEncoding(characterEncoding);
+		resp.setCharacterEncoding(charsetEncoding);
 		resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(file.lastModified()));
 	}
 

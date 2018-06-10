@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import aQute.bnd.annotation.component.Component;
-import de.mhus.cherry.web.api.CallContext;
+import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.lib.core.logging.MLogUtil;
 
 @Component(provide = Servlet.class, properties="alias=/*", name="CherryServlet",servicefactory=true)
@@ -21,7 +21,7 @@ public class CherryServlet extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 	
-		CallContext call = null;
+		InternalCallContext call = null;
 		try {
 			
 			call = CherryApiImpl.instance().createCallContext(this, request, response);

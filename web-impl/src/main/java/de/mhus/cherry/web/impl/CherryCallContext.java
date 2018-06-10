@@ -1,15 +1,22 @@
 package de.mhus.cherry.web.impl;
 
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.web.api.CallContext;
-import de.mhus.cherry.web.api.Session;
+import de.mhus.cherry.web.api.InternalCallContext;
+import de.mhus.cherry.web.api.WebSession;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.MSystem;
+import de.mhus.lib.core.logging.MLogUtil;
 
-public class CherryCallContext implements CallContext {
+public class CherryCallContext implements InternalCallContext {
 
 	private HttpServletRequest httpRequest;
 	private HttpServletResponse httpResponse;
@@ -18,18 +25,23 @@ public class CherryCallContext implements CallContext {
 	private HttpServlet httpServlet;
 	private String sessionId;
 	private String host;
+	private OutputStream outputStream = null;
+	private OutputStreamWriter writer;
 
-	public void setHttpRequest(HttpServletRequest req) {
+	public CherryCallContext(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res, VirtualHost vHost) {
 		httpRequest = req;
 		if (req == null) return;
 		httpPath = req.getPathInfo();
 		req.setAttribute(CallContext.REQUEST_ATTRIBUTE_NAME, this);
 		sessionId = req.getSession().getId();
 		host = req.getHeader("Host");
-	}
-
-	public void setHttpResponse(HttpServletResponse res) {
+		
 		httpResponse = res;
+		outputStream = new HttpWrapperOutoutStream(res);
+		
+		httpServlet = servlet;
+		virtualHost = vHost;
+
 	}
 
 	@Override
@@ -45,14 +57,6 @@ public class CherryCallContext implements CallContext {
 	@Override
 	public String getHttpPath() {
 		return httpPath;
-	}
-
-	public void setVirtualHost(VirtualHost vHost) {
-		virtualHost = vHost;
-	}
-
-	public void setHttpServlet(HttpServlet servlet) {
-		httpServlet = servlet;
 	}
 
 	@Override
@@ -72,7 +76,7 @@ public class CherryCallContext implements CallContext {
 	}
 
 	@Override
-	public Session getSession() {
+	public WebSession getSession() {
 		return CherryApiImpl.instance().getCherrySession(this, sessionId);
 	}
 
@@ -104,6 +108,30 @@ public class CherryCallContext implements CallContext {
 	@Override
 	public String getHttpHost() {
 		return host;
+	}
+
+	@Override
+	public OutputStream getOutputStream() {
+		return outputStream;
+	}
+
+	@Override
+	public void setOutputStream(OutputStream os) {
+		if (os != null)
+			outputStream = os;
+	}
+
+	@Override
+	public synchronized Writer getWriter() {
+		if (writer == null) {
+			try {
+				writer = new OutputStreamWriter(outputStream, virtualHost.getCharsetEncoding());
+			} catch (UnsupportedEncodingException e) {
+				MLogUtil.log().e(e);
+				return null;
+			}
+		}
+		return writer;
 	}
 
 }

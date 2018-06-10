@@ -3,13 +3,14 @@ package de.mhus.cherry.web.impl.webspace;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.OutputStream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
+import de.mhus.cherry.web.api.CanTransform;
 import de.mhus.lib.core.MCollection;
 import de.mhus.lib.core.MDate;
 import de.mhus.lib.core.MFile;
@@ -20,18 +21,17 @@ import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.transform.api.TransformUtil;
 
-public class TransformWebSpace extends AbstractWebSpace {
+public class TransformWebSpace extends AbstractWebSpace implements CanTransform {
 
-	String characterEncoding = "utf-8";
-	private IConfig cDir;
-	private String index = "index.html";
-	private String[] extensionOrder = new String[] { ".twig" };
-	private String[] removeExtensions = new String[] { ".html", ".htm" };
-	private String[] htmlExtensions = new String[] { ".html", ".htm" };
-	private File templateRoot;
-	private File htmlHeader = null;
-	private File htmlFooter = null;
-	private File errorTemplate = null;
+	protected IConfig cDir;
+	protected String index = "index.html";
+	protected String[] extensionOrder = new String[] { ".twig" };
+	protected String[] removeExtensions = new String[] { ".html", ".htm" };
+	protected String[] htmlExtensions = new String[] { ".html", ".htm" };
+	protected File templateRoot;
+	protected File htmlHeader = null;
+	protected File htmlFooter = null;
+	protected File errorTemplate = null;
 	
 	@Override
 	public void start(CherryApi api) throws MException {
@@ -39,7 +39,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 		cDir = getConfig().getNode("transform");
 		templateRoot = getDocumentRoot();
 		if (cDir != null) {
-			characterEncoding = cDir.getString("characterEncoding", null);
+			charsetEncoding = cDir.getString("characterEncoding", null);
 			if (cDir.isProperty("indexe"))
 				index = cDir.getString("index");
 			if (cDir.isProperty("templateRoot"))
@@ -151,7 +151,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 				prepareHead(context,file, path);
 				try {
 					boolean isHtml = hasHtmlExtension(path);
-					ServletOutputStream os = context.getHttpResponse().getOutputStream();
+					OutputStream os = context.getOutputStream();
 					
 					if (isHtml && htmlHeader != null) {
 						doTransform(context, htmlHeader);
@@ -222,7 +222,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 	 * @param from
 	 * @throws Exception 
 	 */
-	public void doTransform(CallContext context, File from) throws Exception {
+	protected void doTransform(CallContext context, File from) throws Exception {
 		
 		MProperties param = new MProperties();
 		param.put("session", context.getSession().pub());
@@ -230,7 +230,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 		param.put("request", context.getHttpRequest().getParameterMap());
 		param.put("path", context.getHttpPath());
 		
-		ServletOutputStream os = context.getHttpResponse().getOutputStream();
+		OutputStream os = context.getOutputStream();
 		TransformUtil.transform(from, os, getDocumentRoot(), null, null, param, null);
 		os.flush();
 	}
@@ -240,7 +240,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 		HttpServletResponse resp = context.getHttpResponse();
 		if (mimeType != null)
 			resp.setContentType(mimeType);
-		resp.setCharacterEncoding(characterEncoding);
+		resp.setCharacterEncoding(charsetEncoding);
 		resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(from.lastModified()));
 	}
 
@@ -279,7 +279,7 @@ public class TransformWebSpace extends AbstractWebSpace {
 				ServletOutputStream os = context.getHttpResponse().getOutputStream();
 				TransformUtil.transform(errorTemplate, os, getDocumentRoot(), null, null, param, null);
 				context.getHttpResponse().setContentType("text/html");
-				context.getHttpResponse().setCharacterEncoding(characterEncoding);
+				context.getHttpResponse().setCharacterEncoding(charsetEncoding);
 				os.flush();
 				
 			} catch (Throwable e) {
@@ -294,6 +294,18 @@ public class TransformWebSpace extends AbstractWebSpace {
 		} catch (IOException e) {
 			log().t(e);
 		}
+	}
+
+	@Override
+	public File getTemplateRoot() {
+		return templateRoot;
+	}
+	
+	@Override
+	public void doTransform(CallContext context, String template) throws Exception {
+		template = MFile.normalizePath(template);
+		File from = new File(templateRoot, template);
+		doTransform(context, from);
 	}
 
 }

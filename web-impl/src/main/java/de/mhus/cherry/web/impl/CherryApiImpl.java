@@ -16,7 +16,8 @@ import aQute.bnd.annotation.component.Component;
 import aQute.bnd.annotation.component.Deactivate;
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
-import de.mhus.cherry.web.api.Session;
+import de.mhus.cherry.web.api.InternalCallContext;
+import de.mhus.cherry.web.api.WebSession;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
@@ -32,7 +33,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	
 	private static CherryApiImpl instance;
 	private ThreadLocal<CallContext> calls = new ThreadLocal<>();
-	private WeakHashMap<String, Session> globalSession = new WeakHashMap<>();
+	private WeakHashMap<String, WebSession> globalSession = new WeakHashMap<>();
 	private HashMap<String,VirtualHost> vHosts = new HashMap<>();
 	
 	MServiceTracker<VirtualHost> vHostTracker = new MServiceTracker<VirtualHost>(VirtualHost.class) {
@@ -120,12 +121,12 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	}
 
 	public boolean isCherrySession(String sessionId) {
-		Session ret = globalSession.get(sessionId);
+		WebSession ret = globalSession.get(sessionId);
 		return ret != null;
 	}
 	
-	public Session getCherrySession(CallContext context, String sessionId) {
-		Session ret = globalSession.get(sessionId);
+	public WebSession getCherrySession(CallContext context, String sessionId) {
+		WebSession ret = globalSession.get(sessionId);
 		if (ret == null) {
 			if (context == null) return null;
 			ret = new CherrySession(sessionId);
@@ -144,7 +145,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	}
 
 	@Override
-	public CallContext createCallContext(HttpServlet servlet, HttpServletRequest request,
+	public InternalCallContext createCallContext(HttpServlet servlet, HttpServletRequest request,
 	        HttpServletResponse response) throws MException {
 		
 		// check general security
@@ -160,11 +161,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		if (vHost == null) return null;
 		
 		// create call context
-		CherryCallContext call = new CherryCallContext();
-		call.setHttpRequest(request);
-		call.setHttpResponse(response);
-		call.setHttpServlet(servlet);
-		call.setVirtualHost(vHost);
+		CherryCallContext call = new CherryCallContext(servlet, request, response, vHost);
 
 		return call;
 	}

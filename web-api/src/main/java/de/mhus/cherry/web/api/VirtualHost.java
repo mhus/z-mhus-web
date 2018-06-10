@@ -8,9 +8,9 @@ import de.mhus.lib.errors.MException;
 
 public interface VirtualHost {
 
-	void sendError(CallContext context, int sc);
+	void sendError(CallContext call, int sc);
 
-	void doRequest(CallContext context);
+	void doRequest(InternalCallContext call);
 
 	/**
 	 * Get WebSpace configuration'
@@ -38,5 +38,7 @@ public interface VirtualHost {
 	String getMimeType(String file);
 
 	String getName();
+
+	String getCharsetEncoding();
 
 }

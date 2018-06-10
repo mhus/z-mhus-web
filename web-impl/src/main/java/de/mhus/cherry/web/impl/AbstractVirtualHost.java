@@ -12,13 +12,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.osgi.framework.Bundle;
 
 import de.mhus.cherry.web.api.CallContext;
-import de.mhus.cherry.web.api.CherryActiveArea;
-import de.mhus.cherry.web.api.CherryFilter;
+import de.mhus.cherry.web.api.WebArea;
+import de.mhus.cherry.web.api.WebFilter;
+import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
+import de.mhus.lib.core.MString;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
@@ -34,11 +36,12 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	protected IConfig config;
 	private MProperties properties = new MProperties();
 	private Bundle bundle;
-	protected LinkedList<CherryFilter> filters = new LinkedList<>();
-	protected LinkedList<CherryFilter> filtersReverse = new LinkedList<>();
+	protected LinkedList<WebFilter> filters = new LinkedList<>();
+	protected LinkedList<WebFilter> filtersReverse = new LinkedList<>();
 	protected LinkedList<ActiveAreaContainer> areas = new LinkedList<>();
 	protected HashMap<String, String> headers = new HashMap<>();
 	protected String defaultMimeType = MFile.DEFAULT_MIME;
+	protected String charsetEncoding = MString.CHARSET_UTF_8;
 	
 	@Override
 	public void sendError(CallContext context, int sc) {
@@ -65,7 +68,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	 * @param call
 	 */
 	@Override
-	public void doRequest(CallContext call) {
+	public void doRequest(InternalCallContext call) {
 		try {
 			
 			// execute filters
@@ -181,11 +184,11 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		return bundle;
 	}
 
-	public boolean doFiltersBegin(CallContext call) throws MException {
+	public boolean doFiltersBegin(InternalCallContext call) throws MException {
 		if (filters == null || filters.size() == 0) return true;
 		// do not synchronize - it's to slow
 		int cnt = 0; // count number of filters executed
-		for (CherryFilter filter : filters) {
+		for (WebFilter filter : filters) {
 			if (!filter.doFilterBegin(call)) {
 				call.setAttribute(CALL_FILTER_CNT, cnt);
 				return false;
@@ -196,19 +199,19 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		return true;
 	}
 
-	public void doFiltersEnd(CallContext call) throws MException {
+	public void doFiltersEnd(InternalCallContext call) throws MException {
 		if (filters == null || filters.size() == 0) return;
 		// do not synchronize - it's to slow
 		int cnt = filtersReverse.size();
 		int done = (int) call.getAttribute(CALL_FILTER_CNT);
-		for (CherryFilter filter : filtersReverse) {
+		for (WebFilter filter : filtersReverse) {
 			if (cnt <= done) // do only end for filter they had begin called, expect the one returned false
 				filter.doFilterEnd(call);
 			cnt--;
 		}
 	}
 
-	public boolean doActiveAreas(CallContext call) throws MException {
+	public boolean doActiveAreas(InternalCallContext call) throws MException {
 		if (areas == null || areas.size() == 0) return false;
 		String path = call.getHttpPath();
 		// do not synchronize - it's to slow
@@ -220,22 +223,22 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		return false;
 	}
 
-	public void addFilter(CherryFilter filter) {
+	public void addFilter(WebFilter filter) {
 		filters.add(filter);
 		filtersReverse.add(0,filter);
 	}
 	
-	public void addArea(String alias, CherryActiveArea area) {
+	public void addArea(String alias, WebArea area) {
 		areas.add(new ActiveAreaContainer(alias, area));
 	}
 	
 	protected class ActiveAreaContainer {
-		public ActiveAreaContainer(String alias, CherryActiveArea area) {
+		public ActiveAreaContainer(String alias, WebArea area) {
 			this.area = area;
 			this.alias = alias;
 		}
 		String alias;
-		CherryActiveArea area;
+		WebArea area;
 	}
 
 	@Override
@@ -247,6 +250,11 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public String getCharsetEncoding() {
+		return charsetEncoding;
 	}
 
 }

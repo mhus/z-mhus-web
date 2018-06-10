@@ -55,11 +55,7 @@ public class CmdVHost implements Action {
 		}
 
 		if (cmd.equals("use")) {
-			CherryCallContext callContext = new CherryCallContext();
-			callContext.setHttpRequest(null);
-			callContext.setHttpResponse(new CherryResponseWrapper(null));
-			callContext.setHttpServlet(null);
-			callContext.setVirtualHost(vhost);
+			CherryCallContext callContext = new CherryCallContext(null, null, new CherryResponseWrapper(null), vhost);
 			CherryApiImpl.instance().setCallContext(callContext);
 			printCurrentVHost();
 		} else

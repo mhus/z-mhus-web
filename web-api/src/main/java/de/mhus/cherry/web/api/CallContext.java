@@ -1,5 +1,8 @@
 package de.mhus.cherry.web.api;
 
+import java.io.OutputStream;
+import java.io.Writer;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,11 +18,23 @@ public interface CallContext {
 	String getHttpPath();
 	HttpServlet getHttpServlet();
 	String getHttpMethod();
-	Session getSession();
+	WebSession getSession();
 	void setAttribute(String name, Object value);
 	Object getAttribute(String name);
 	String getSessionId();
 	boolean isSession();
 	String getHttpHost();
 	
+	/**
+	 * Use this to get the output stream from http response to get the filter chain stream.
+	 * 
+	 * @return current output stream
+	 */
+	OutputStream getOutputStream();
+	
+	/**
+	 * This will return a writer bound to the output stream
+	 * @return The writer
+	 */
+	Writer getWriter();
 }

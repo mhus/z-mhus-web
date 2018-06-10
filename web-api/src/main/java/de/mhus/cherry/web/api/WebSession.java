@@ -2,7 +2,7 @@ package de.mhus.cherry.web.api;
 
 import de.mhus.lib.core.IProperties;
 
-public interface Session extends IProperties {
+public interface WebSession extends IProperties {
 
 	String getSessionId();
 	
