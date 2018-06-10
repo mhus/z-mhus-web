@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.Date;
 
 import de.mhus.cherry.web.api.CallContext;
+import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebArea;
+import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.errors.MException;
 
 public class HelloArea implements WebArea {
@@ -20,6 +22,12 @@ public class HelloArea implements WebArea {
 		}
 		
 		return true;
+	}
+
+	@Override
+	public void doInitialize(VirtualHost vHost, IConfig config) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

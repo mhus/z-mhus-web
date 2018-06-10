@@ -69,14 +69,17 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		// load filters
 		OsgiBundleClassLoader loader = new OsgiBundleClassLoader();
 		if (cServer.getNode("filters") != null) {
-			for (String clazzName : MConfig.toStringArray(cServer.getNode("filters").getNodes(), "value")) {
+			for (IConfig filterDef : cServer.getNode("filters").getNodes()) {
+				String filterClazzName = filterDef.getString("class");
 				try {
-					Class<?> clazz = loader.loadClass(clazzName);
-					addFilter((WebFilter) clazz.newInstance());
+					Class<?> clazz = loader.loadClass(filterClazzName);
+					WebFilter filter = (WebFilter) clazz.newInstance();
+					filter.doInitialize(this, filterDef);
+					addFilter(filter);
 				} catch (ClassNotFoundException e) {
-					throw new MException("filter not found",clazzName);
+					throw new MException("filter not found",filterClazzName);
 				} catch (Throwable e) {
-					throw new MException("can't instanciate filter",clazzName,e);
+					throw new MException("can't instanciate filter",filterClazzName,e);
 				}
 			}
 		}
@@ -87,7 +90,9 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 				String areaClazzName = areaDef.getString("class");
 				try {
 					Class<?> clazz = loader.loadClass(areaClazzName);
-					addArea(areaPath, (WebArea) clazz.newInstance());
+					WebArea area = (WebArea) clazz.newInstance();
+					area.doInitialize(this, areaDef);
+					addArea(areaPath, area);
 				} catch (ClassNotFoundException e) {
 					throw new MException("area not found",areaClazzName);
 				} catch (Throwable e) {

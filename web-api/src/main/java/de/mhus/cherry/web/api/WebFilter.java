@@ -1,9 +1,12 @@
 package de.mhus.cherry.web.api;
 
+import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.errors.MException;
 
 public interface WebFilter {
 
+	void doInitialize(VirtualHost vHost, IConfig config) throws MException;
+	
 	/**
 	 * Return true if the page can be displayed. false will
 	 * prevent processing of the page
@@ -11,8 +14,8 @@ public interface WebFilter {
 	 * @return true if ok
 	 * @throws MException 
 	 */
-	public boolean doFilterBegin(InternalCallContext call) throws MException;
+	boolean doFilterBegin(InternalCallContext call) throws MException;
 
-	public void doFilterEnd(InternalCallContext call) throws MException;
+	void doFilterEnd(InternalCallContext call) throws MException;
 
 }

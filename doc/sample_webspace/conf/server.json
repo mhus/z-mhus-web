@@ -5,7 +5,11 @@
 		"documentRoot": "html",
 		"traceAccess": true,
 		"defaultMimeType": "text/html",
-		"filters": ["de.mhus.cherry.web.util.sample.TraceFilter"],
+		"filters": [
+		    {
+		    	"class":"de.mhus.cherry.web.util.sample.TraceFilter"
+		    }
+		],
 		"areas":[
 			{
 				"path":"/hello",
