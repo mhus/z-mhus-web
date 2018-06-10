@@ -25,7 +25,6 @@ public class SopSessionFilter extends MLog implements WebFilter {
 	public boolean doFilterBegin(InternalCallContext call) throws MException {
 		try {
 			HttpServletRequest req = call.getHttpRequest();
-			
 	
 			String authHeader = req.getHeader("authorization");
 			if (authHeader != null) {
@@ -36,13 +35,14 @@ public class SopSessionFilter extends MLog implements WebFilter {
 			
 			AccessApi aaa = MApi.lookup(AccessApi.class);
 			
-			String userTicket = call.getSession().getString(SESSION_PARAMETER_NAME,null);
-			if (userTicket == null) return true; // guest?
-			
-			Locale locale = req.getLocale();
-			AaaContext userContext = aaa.process(userTicket, locale);
-			call.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
-			
+			if (call.isSession()) {
+				String userTicket = call.getSession().getString(SESSION_PARAMETER_NAME,null);
+				if (userTicket == null) return true; // guest?
+				
+				Locale locale = req.getLocale();
+				AaaContext userContext = aaa.process(userTicket, locale);
+				call.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
+			}
 		} catch (Throwable t) {
 			throw new MException(t);
 		}
