@@ -20,7 +20,7 @@ public class FilterToService implements WebFilter {
 	public void doInitialize(VirtualHost vHost, IConfig config) throws MException {
 		this.config = config.getNode("config");
 		serviceName = config.getString("service");
-		vHost = this.vHost;
+		this.vHost = vHost;
 	}
 
 	@Override
