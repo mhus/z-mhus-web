@@ -185,8 +185,9 @@
 
   <modules>
     <module>web-api</module>
-    <module>web-impl</module>
+    <module>web-core</module>
     <module>web-util</module>
+    <module>web-jetty</module>
   </modules>
 
 

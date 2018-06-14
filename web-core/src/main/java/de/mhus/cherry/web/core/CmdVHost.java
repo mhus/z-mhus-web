@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl;
+package de.mhus.cherry.web.core;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;

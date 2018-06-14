@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl;
+package de.mhus.cherry.web.core;
 
 import de.mhus.cherry.web.api.WebSession;
 import de.mhus.lib.core.IProperties;

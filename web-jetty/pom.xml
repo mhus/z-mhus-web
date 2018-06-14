@@ -19,7 +19,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>web-impl</artifactId>
+	<artifactId>web-jetty</artifactId>
 	<packaging>bundle</packaging>
 
 	<parent>
@@ -40,7 +40,7 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>
-							de.mhus.cherry.web.impl.*;version=${project.version}
+							de.mhus.cherry.web.jetty.*;version=${project.version}
 						</Export-Package>
 						<Import-Package>
 							*
@@ -57,6 +57,11 @@
 		<dependency>
 			<groupId>de.mhus.cherry</groupId>
 			<artifactId>web-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.mhus.cherry</groupId>
+			<artifactId>web-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		

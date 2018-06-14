@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl;
+package de.mhus.cherry.web.core;
 
 import java.util.HashMap;
 import java.util.LinkedList;

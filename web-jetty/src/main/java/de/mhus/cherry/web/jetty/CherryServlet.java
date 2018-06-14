@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.impl;
+package de.mhus.cherry.web.jetty;
 
 import java.io.IOException;
 
@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import aQute.bnd.annotation.component.Component;
 import de.mhus.cherry.web.api.InternalCallContext;
+import de.mhus.cherry.web.core.CherryApiImpl;
 import de.mhus.lib.core.logging.MLogUtil;
 
 @Component(provide = Servlet.class, properties="alias=/*", name="CherryServlet",servicefactory=true)
