@@ -3,6 +3,7 @@ package de.mhus.cherry.web.api;
 import java.io.OutputStream;
 import java.io.Writer;
 
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +17,7 @@ public interface CallContext {
 	
 	VirtualHost getVirtualHost();
 	String getHttpPath();
-	HttpServlet getHttpServlet();
+	Servlet getHttpServlet();
 	String getHttpMethod();
 	WebSession getSession();
 	void setAttribute(String name, Object value);

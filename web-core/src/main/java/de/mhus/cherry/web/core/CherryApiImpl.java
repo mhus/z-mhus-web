@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.WeakHashMap;
 
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -145,7 +146,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	}
 
 	@Override
-	public InternalCallContext createCallContext(HttpServlet servlet, HttpServletRequest request,
+	public InternalCallContext createCallContext(Servlet servlet, HttpServletRequest request,
 	        HttpServletResponse response) throws MException {
 		
 		// check general security

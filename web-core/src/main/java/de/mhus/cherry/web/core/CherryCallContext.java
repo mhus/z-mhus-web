@@ -5,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,13 +23,13 @@ public class CherryCallContext implements InternalCallContext {
 	private HttpServletResponse httpResponse;
 	private String httpPath;
 	private VirtualHost virtualHost;
-	private HttpServlet httpServlet;
+	private Servlet httpServlet;
 	private String sessionId;
 	private String host;
 	private OutputStream outputStream = null;
 	private OutputStreamWriter writer;
 
-	public CherryCallContext(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res, VirtualHost vHost) {
+	public CherryCallContext(Servlet servlet, HttpServletRequest req, HttpServletResponse res, VirtualHost vHost) {
 		httpRequest = req;
 		if (req == null) return;
 		httpPath = req.getPathInfo();
@@ -65,7 +66,7 @@ public class CherryCallContext implements InternalCallContext {
 	}
 
 	@Override
-	public HttpServlet getHttpServlet() {
+	public Servlet getHttpServlet() {
 		return httpServlet;
 	}
 

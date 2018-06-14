@@ -188,6 +188,7 @@
     <module>web-core</module>
     <module>web-util</module>
     <module>web-jetty</module>
+    <module>web-javaxt</module>
   </modules>
 
 
