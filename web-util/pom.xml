@@ -44,6 +44,7 @@
 						</Export-Package>
 						<Import-Package>
 							de.mhus.osgi.transform.*;resolution:=optional,
+							de.mhus.osgi.sop.*;resolution:=optional,
 							*
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>

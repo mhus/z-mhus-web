@@ -1,4 +1,8 @@
 
+feature:repo-add mvn:de.mhus.osgi/mhu-karaf-feature/1.4.2-SNAPSHOT/xml/features
+feature:install mhu-osgi-base
+feature:install http
+
 install -s mvn:de.mhus.cherry/web-api/1.0.0-SNAPSHOT
 install -s mvn:de.mhus.cherry/web-core/1.0.0-SNAPSHOT
 install -s mvn:de.mhus.cherry/web-util/1.0.0-SNAPSHOT

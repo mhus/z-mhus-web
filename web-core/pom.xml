@@ -59,13 +59,7 @@
 			<artifactId>web-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
-	    <dependency>
-	    	<groupId>de.mhus.osgi</groupId>
-	    	<artifactId>mhu-sop-api</artifactId>
-	    	<version>${sop.version}</version>
-	    </dependency>
-		
+			
 	</dependencies>
 
 

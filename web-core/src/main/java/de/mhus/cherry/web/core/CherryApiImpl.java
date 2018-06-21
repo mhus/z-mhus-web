@@ -24,8 +24,8 @@ import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.errors.MException;
+import de.mhus.lib.servlet.security.SecurityApi;
 import de.mhus.osgi.services.util.MServiceTracker;
-import de.mhus.osgi.sop.api.security.SecurityApi;
 
 @Component(immediate=true)
 public class CherryApiImpl extends MLog implements CherryApi {
@@ -152,7 +152,8 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		// check general security
 		SecurityApi sec = MApi.lookup(SecurityApi.class);
 		if (sec != null) {
-			sec.checkHttpRequest(request, response);
+			if (!sec.checkHttpRequest(request, response))
+				return null;
 			if (response.isCommitted()) return null;
 		}
 
