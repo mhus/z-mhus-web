@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.WeakHashMap;
 
 import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,8 +17,8 @@ import aQute.bnd.annotation.component.Deactivate;
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.api.InternalCallContext;
-import de.mhus.cherry.web.api.WebSession;
 import de.mhus.cherry.web.api.VirtualHost;
+import de.mhus.cherry.web.api.WebSession;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
@@ -91,7 +90,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	public void doActivate(ComponentContext ctx) {
 		log().i("Start Cherry");
 		instance = this;
-		vHostTracker.start();
+		vHostTracker.start(ctx);
 	}
 	
 	@Deactivate
