@@ -6,14 +6,13 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.InternalCallContext;
-import de.mhus.cherry.web.api.WebSession;
 import de.mhus.cherry.web.api.VirtualHost;
+import de.mhus.cherry.web.api.WebSession;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.logging.MLogUtil;
 

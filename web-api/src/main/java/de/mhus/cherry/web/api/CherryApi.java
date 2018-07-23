@@ -1,7 +1,6 @@
 package de.mhus.cherry.web.api;
 
 import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
