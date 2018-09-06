@@ -106,8 +106,18 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	}
 
 	public VirtualHost findVirtualHost(String host) {
+		// TODO use caching
 		synchronized (vHosts) {
 			VirtualHost vHost = vHosts.get(host);
+			if (vHost == null) {
+				// remove port
+				int p = host.indexOf(':');
+				if (p > 0)
+					host = host.substring(0, p) + ":*";
+				else
+					host = host + ":*";
+				vHost = vHosts.get(host);
+			}
 			if (vHost == null) {
 				vHost = vHosts.get("*");
 			}
