@@ -33,12 +33,14 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	protected File htmlHeader = null;
 	protected File htmlFooter = null;
 	protected File errorTemplate = null;
+	protected MProperties environment = null;
 	
 	@Override
 	public void start(CherryApi api) throws MException {
 		super.start(api);
 		cDir = getConfig().getNode("transform");
 		templateRoot = getDocumentRoot();
+		environment = new MProperties();
 		if (cDir != null) {
 			charsetEncoding = cDir.getString("characterEncoding", null);
 			if (cDir.isProperty("indexe"))
@@ -76,6 +78,12 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 				errorTemplate = new File(getDocumentRoot(), error);
 				if (!errorTemplate.exists()) {
 					log().w("ignore error template",errorTemplate.getAbsolutePath());
+				}
+			}
+			IConfig cEnv = cDir.getNode("environment");
+			if (cEnv != null) {
+				for (String key : cEnv.getPropertyKeys()) {
+					environment.put(key, cEnv.get(key));
 				}
 			}
 		}
@@ -225,7 +233,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	 */
 	protected void doTransform(CallContext context, File from) throws Exception {
 		
-		MProperties param = new MProperties();
+		MProperties param = new MProperties(environment);
 		param.put("session", context.getSession().pub());
 		param.put("sessionId", context.getSessionId());
 		param.put("request", context.getHttpRequest().getParameterMap());

@@ -1,5 +1,7 @@
 package de.mhus.cherry.web.api;
 
+import java.util.Set;
+
 import org.osgi.framework.Bundle;
 
 import de.mhus.lib.core.IProperties;
@@ -25,7 +27,7 @@ public interface VirtualHost {
 	 */
 	IProperties getProperties();
 
-	String[] getVirtualHostAliases();
+	Set<String> getVirtualHostAliases();
 
 	void start(CherryApi api) throws MException;
 

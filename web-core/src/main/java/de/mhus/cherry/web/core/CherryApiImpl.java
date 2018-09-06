@@ -2,6 +2,7 @@ package de.mhus.cherry.web.core;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.servlet.Servlet;
@@ -63,7 +64,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 				log().e("Can't add virtual host",service.getName(), t);
 				return;
 			}
-			String[] aliases = service.getVirtualHostAliases();
+			Set<String> aliases = service.getVirtualHostAliases();
 			for (String alias : aliases) {
 				log().i("add",alias);
 				VirtualHost old = vHosts.put(alias, service);

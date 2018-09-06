@@ -3,8 +3,10 @@ package de.mhus.cherry.web.util;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,11 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.osgi.framework.Bundle;
 
 import de.mhus.cherry.web.api.CallContext;
-import de.mhus.cherry.web.api.WebArea;
-import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
+import de.mhus.cherry.web.api.WebArea;
+import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.lib.core.IProperties;
+import de.mhus.lib.core.MCollection;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
@@ -31,7 +34,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	
 	protected boolean traceErrors;
 	protected boolean traceAccess;
-	protected String[] aliases;
+	private Set<String> aliases;
 	protected String name = getClass().getCanonicalName();
 	protected IConfig config;
 	private MProperties properties = new MProperties();
@@ -42,6 +45,10 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	protected HashMap<String, String> headers = new HashMap<>();
 	protected String defaultMimeType = MFile.DEFAULT_MIME;
 	protected String charsetEncoding = MString.CHARSET_UTF_8;
+
+	private String[] externalAliases;
+
+	private String firstAlias;
 	
 	@Override
 	public void sendError(CallContext context, int sc) {
@@ -169,8 +176,34 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		return properties;
 	}
 
+	/**
+	 * Set a comma separated list of aliases. Use this in a blueprint.
+	 * @param aliases
+	 */
+	public void setAliases(String aliases) {
+		this.externalAliases = aliases.split(",");
+	}
+	
+	protected void setConfigAliases(String[] aliases) {
+		// merge external configured aliases with internal aliases
+		LinkedList<String> a = new LinkedList<>();
+		// external configuration
+		if (externalAliases != null)
+			MCollection.addAll(a, externalAliases);
+		// configured aliases
+		if (aliases != null)
+			MCollection.addAll(a, aliases);
+		// set
+		this.aliases = new HashSet<>(a);
+		this.firstAlias = a.size() == 0 ? "?" : a.getFirst();
+	}
+	
+	public String getFirstAlias() {
+		return firstAlias;
+	}
+	
 	@Override
-	public String[] getVirtualHostAliases() {
+	public Set<String> getVirtualHostAliases() {
 		return aliases;
 	}
 

@@ -44,11 +44,9 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		if (cServer == null)
 			throw new MException("server in config not found",root);
 		// get alias
-		aliases = MConfig.toStringArray(cServer.getNode("aliases").getNodes(), "value");
-		if (aliases.length == 0)
-			throw new MException("no alias is set for vHost",root);
+		setConfigAliases(MConfig.toStringArray(cServer.getNode("aliases").getNodes(), "value"));
 		// set name
-		name = aliases[0]; // default
+		name = getFirstAlias(); // default
 		name = cServer.getString("name", name);
 		// get config root
 		if (cServer.isProperty("configurationRoot"))
@@ -117,7 +115,6 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		root = null;
 		config = null;
 		cServer = null;
-		aliases = null;
 	}
 
 	@Override
