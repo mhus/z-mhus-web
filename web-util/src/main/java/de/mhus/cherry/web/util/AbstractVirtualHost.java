@@ -298,9 +298,16 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		this.profile = profile;
 	}
 	
-	public String getConfigName() {
-		if (MString.isEmpty(profile)) return "server";
-		return "server_" + MFile.normalize(profile);
+	/**
+	 * combine the name of the config file or section with the current profile name. If
+	 * profile is not set the name itself will be returned.
+	 * 
+	 * @param name Name of the config or section
+	 * @return Combined name with profile
+	 */
+	public String prepareConfigName(String name) {
+		if (MString.isEmpty(profile)) return name;
+		return MFile.normalize(profile) + "_" + name;
 	}
 
 }

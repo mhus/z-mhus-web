@@ -1,7 +1,8 @@
 package de.mhus.cherry.web.core;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -192,8 +193,8 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		return call;
 	}
 
-	public LinkedList<VirtualHost> getVirtualHosts() {
-		return new LinkedList<>(vHosts.values());
+	public Map<String, VirtualHost> getVirtualHosts() {
+		return Collections.unmodifiableMap(vHosts);
 	}
 
 }

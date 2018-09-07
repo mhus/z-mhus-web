@@ -1,5 +1,7 @@
 package de.mhus.cherry.web.core;
 
+import java.util.Map.Entry;
+
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -29,11 +31,12 @@ public class CmdVHost implements Action {
 		if (cmd.equals("list")) {
 
 			ConsoleTable out = new ConsoleTable();
-			out.setHeaderValues("Name","Alias", "Type","Bundle");
+			out.setHeaderValues("Alias","Name","Type","Bundle");
 
-			for (VirtualHost vhost : CherryApiImpl.instance().getVirtualHosts()) {
+			for (Entry<String, VirtualHost> entry : CherryApiImpl.instance().getVirtualHosts().entrySet()) {
+				VirtualHost vhost = entry.getValue();
 				Bundle bundle = vhost.getBundle();
-				out.addRowValues(vhost.getName(),vhost.getVirtualHostAliases(), vhost.getClass().getName(), bundle.getSymbolicName() + "[" + bundle.getBundleId() + "]");
+				out.addRowValues(entry.getKey(), vhost.getName(), vhost.getClass().getName(), bundle.getSymbolicName() + "[" + bundle.getBundleId() + "]");
 			}
 			out.print(System.out);
 			return null;

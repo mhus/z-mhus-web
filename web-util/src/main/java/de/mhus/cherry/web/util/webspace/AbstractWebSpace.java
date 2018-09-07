@@ -36,7 +36,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		if (!configRoot.exists() || !configRoot.isDirectory())
 			configRoot = root; // fall back to root directory
 		
-		config = MConfig.find(configRoot, getConfigName(), true);
+		config = MConfig.find(configRoot, prepareConfigName("server"), true);
 		if (config == null)
 			throw new MException("config for webspace not found",root);
 		// get server config
