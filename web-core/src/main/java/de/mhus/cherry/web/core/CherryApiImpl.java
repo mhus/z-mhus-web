@@ -23,6 +23,7 @@ import de.mhus.cherry.web.api.WebSession;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.cfg.CfgInt;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.servlet.security.SecurityApi;
 import de.mhus.osgi.services.util.MServiceTracker;
@@ -31,11 +32,13 @@ import de.mhus.osgi.services.util.MServiceTracker;
 public class CherryApiImpl extends MLog implements CherryApi {
 
 	public static final String SESSION_PARAMETER_SESSION = "__cherry_global_session";
+	private static CfgInt CFG_MAX_VHOST_CACHE_SIZE = new CfgInt(CherryApi.class, "maxVHostCacheSize", 200);
 	
 	private static CherryApiImpl instance;
 	private ThreadLocal<CallContext> calls = new ThreadLocal<>();
 	private WeakHashMap<String, WebSession> globalSession = new WeakHashMap<>();
 	private HashMap<String,VirtualHost> vHosts = new HashMap<>();
+	private HashMap<String,VirtualHost> vHostsCache = new HashMap<>();
 	
 	MServiceTracker<VirtualHost> vHostTracker = new MServiceTracker<VirtualHost>(VirtualHost.class) {
 		
@@ -58,6 +61,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
 	protected void addVirtualHost(VirtualHost service) {
 		synchronized (vHosts) {
+			vHostsCache.clear();
 			try {
 				service.start(this);
 			} catch (Throwable t) {
@@ -76,6 +80,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
 	protected void removeVirtualHost(VirtualHost service) {
 		synchronized (vHosts) {
+			vHostsCache.clear();
 			vHosts.entrySet().removeIf(e -> { 
 				if (service == e.getValue()) {
 					log().i("remove",e.getKey());
@@ -106,21 +111,30 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	}
 
 	public VirtualHost findVirtualHost(String host) {
-		// TODO use caching
 		synchronized (vHosts) {
-			VirtualHost vHost = vHosts.get(host);
+			// get from cache
+			VirtualHost vHost = null;
+			vHost = vHostsCache.get(host);
+			if (vHost != null) return vHost;
+			
+			// loopup
+			vHost = vHosts.get(host);
 			if (vHost == null) {
 				// remove port
-				int p = host.indexOf(':');
+				String h = host;
+				int p = h.indexOf(':');
 				if (p > 0)
-					host = host.substring(0, p) + ":*";
+					h = h.substring(0, p) + ":*";
 				else
-					host = host + ":*";
-				vHost = vHosts.get(host);
+					h = h + ":*";
+				vHost = vHosts.get(h);
 			}
 			if (vHost == null) {
 				vHost = vHosts.get("*");
 			}
+			// save to cache
+			if (vHost != null && vHostsCache.size() < CFG_MAX_VHOST_CACHE_SIZE.value())
+				vHostsCache.put(host, vHost);
 			return vHost;
 		}
 	}

@@ -47,8 +47,8 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	protected String charsetEncoding = MString.CHARSET_UTF_8;
 
 	private String[] externalAliases;
-
-	private String firstAlias;
+	private String firstAlias; // use as name default
+	private String profile;
 	
 	@Override
 	public void sendError(CallContext context, int sc) {
@@ -288,6 +288,19 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	@Override
 	public String getCharsetEncoding() {
 		return charsetEncoding;
+	}
+
+	public String getProfile() {
+		return profile;
+	}
+
+	public void setProfile(String profile) {
+		this.profile = profile;
+	}
+	
+	public String getConfigName() {
+		if (MString.isEmpty(profile)) return "server";
+		return "server_" + MFile.normalize(profile);
 	}
 
 }
