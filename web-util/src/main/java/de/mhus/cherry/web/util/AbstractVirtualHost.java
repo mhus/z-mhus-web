@@ -310,4 +310,8 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		return MFile.normalize(profile) + "_" + name;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 }
