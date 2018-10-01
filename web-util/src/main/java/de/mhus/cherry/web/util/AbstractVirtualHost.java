@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,6 +50,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	private String[] externalAliases;
 	private String firstAlias; // use as name default
 	private String profile;
+	private UUID instanceId = UUID.randomUUID();
 	
 	@Override
 	public void sendError(CallContext context, int sc) {
@@ -222,7 +224,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		// do not synchronize - it's to slow
 		int cnt = 0; // count number of filters executed
 		for (WebFilter filter : filters) {
-			if (!filter.doFilterBegin(call)) {
+			if (!filter.doFilterBegin(instanceId, call)) {
 				call.setAttribute(CALL_FILTER_CNT, cnt);
 				return false;
 			}
@@ -239,7 +241,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		int done = (int) call.getAttribute(CALL_FILTER_CNT);
 		for (WebFilter filter : filtersReverse) {
 			if (cnt <= done) // do only end for filter they had begin called, expect the one returned false
-				filter.doFilterEnd(call);
+				filter.doFilterEnd(instanceId, call);
 			cnt--;
 		}
 	}
@@ -250,7 +252,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		// do not synchronize - it's to slow
 		for (ActiveAreaContainer area : areas)
 			if (path.startsWith(area.alias)) {
-				if (area.area.doRequest(call))
+				if (area.area.doRequest(instanceId, call))
 					return true;
 			}
 		return false;
@@ -314,4 +316,9 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	public String toString() {
 		return name;
 	}
+
+	public UUID getInstanceId() {
+		return instanceId;
+	}
+
 }

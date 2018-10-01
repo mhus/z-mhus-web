@@ -1,5 +1,7 @@
 package de.mhus.cherry.web.util.filter;
 
+import java.util.UUID;
+
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebFilter;
@@ -17,26 +19,27 @@ public class FilterToMApi implements WebFilter {
 	private Class<?> serviceClass;
 	private WebFilter webFilter;
 	private VirtualHost vHost;
+	private UUID instanceId = UUID.randomUUID();
 
 	@Override
-	public void doInitialize(VirtualHost vHost, IConfig config) throws MException {
+	public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
 		this.config = config.getNode("config");
 		serviceName = config.getString("service");
 		this.vHost = vHost;
 	}
 
 	@Override
-	public boolean doFilterBegin(InternalCallContext call) throws MException {
+	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		check();
 		if (webFilter == null) throw new NotFoundException("service not found",serviceName);
-		return webFilter.doFilterBegin(call);
+		return webFilter.doFilterBegin(instanceId, call);
 	}
 
 	@Override
-	public void doFilterEnd(InternalCallContext call) throws MException {
+	public void doFilterEnd(UUID instance, InternalCallContext call) throws MException {
 		check();
 		if (webFilter == null) throw new NotFoundException("service not found",serviceName);
-		webFilter.doFilterEnd(call);
+		webFilter.doFilterEnd(instanceId, call);
 	}
 
 	private synchronized void check() {
@@ -45,7 +48,7 @@ public class FilterToMApi implements WebFilter {
 			try {
 				serviceClass = loader.loadClass(serviceName);
 				webFilter = (WebFilter)MApi.lookup(serviceClass);
-				webFilter.doInitialize(vHost, config);
+				webFilter.doInitialize(instanceId, vHost, config);
 			} catch (Throwable e) {
 				MLogUtil.log().e(serviceName,e);
 			}

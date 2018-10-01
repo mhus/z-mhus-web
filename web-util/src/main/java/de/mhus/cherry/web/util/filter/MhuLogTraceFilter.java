@@ -1,5 +1,7 @@
 package de.mhus.cherry.web.util.filter;
 
+import java.util.UUID;
+
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
@@ -13,11 +15,11 @@ public class MhuLogTraceFilter implements WebFilter {
 	public static final String SESSION_LOG_TRAIL = "__mhus_log_trail";
 
 	@Override
-	public void doInitialize(VirtualHost vHost, IConfig config) throws MException {
+	public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
 	}
 
 	@Override
-	public boolean doFilterBegin(InternalCallContext call) throws MException {
+	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		
 		if (call.isSession()) {
 			String trail = call.getSession().getString(SESSION_LOG_TRAIL, null);
@@ -29,7 +31,7 @@ public class MhuLogTraceFilter implements WebFilter {
 	}
 
 	@Override
-	public void doFilterEnd(InternalCallContext call) throws MException {
+	public void doFilterEnd(UUID instance, InternalCallContext call) throws MException {
 		if (call.isSession()) {
 			String trail = call.getSession().getString(SESSION_LOG_TRAIL, null);
 			if (trail != null) {

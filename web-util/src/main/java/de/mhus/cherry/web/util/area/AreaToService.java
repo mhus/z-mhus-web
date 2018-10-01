@@ -1,5 +1,7 @@
 package de.mhus.cherry.web.util.area;
 
+import java.util.UUID;
+
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebArea;
@@ -15,26 +17,27 @@ public class AreaToService implements WebArea {
 	private String serviceName;
 	private WebArea webArea;
 	private VirtualHost vHost;
+	private UUID instanceId = UUID.randomUUID();
 
 	@Override
-	public void doInitialize(VirtualHost vHost, IConfig config) throws MException {
+	public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
 		this.config = config.getNode("config");
 		serviceName = config.getString("service");
 		this.vHost = vHost;
 	}
 
 	@Override
-	public boolean doRequest(CallContext call) throws MException {
+	public boolean doRequest(UUID instance, CallContext call) throws MException {
 		check();
 		if (webArea == null) throw new NotFoundException("service not found",serviceName);
-		return webArea.doRequest(call);
+		return webArea.doRequest(instanceId, call);
 	}
 
 	private synchronized void check() {
 		if (webArea == null) {
 			try {
 				webArea = MOsgi.getService(WebArea.class,"(name=" + serviceName + ")");
-				webArea .doInitialize(vHost, config);
+				webArea .doInitialize(instanceId, vHost, config);
 			} catch (Throwable e) {
 				MLogUtil.log().e(serviceName,e);
 			}

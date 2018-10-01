@@ -1,6 +1,7 @@
 package de.mhus.cherry.web.util.filter;
 
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,7 +23,7 @@ public class SopSessionFilter extends MLog implements WebFilter {
 	public static final String CONTEXT_PARAMETER_AAA_CONTEXT = "__sop_aaa_context";
 
 	@Override
-	public boolean doFilterBegin(InternalCallContext call) throws MException {
+	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		try {
 			HttpServletRequest req = call.getHttpRequest();
 	
@@ -50,7 +51,7 @@ public class SopSessionFilter extends MLog implements WebFilter {
 	}
 
 	@Override
-	public void doFilterEnd(InternalCallContext call) throws MException {
+	public void doFilterEnd(UUID instance, InternalCallContext call) throws MException {
 		AaaContext userContext = (AaaContext) call.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
 		if (userContext == null) return;
 	
@@ -92,9 +93,7 @@ public class SopSessionFilter extends MLog implements WebFilter {
 	}
 
 	@Override
-	public void doInitialize(VirtualHost vHost, IConfig config) {
-		// TODO Auto-generated method stub
-		
+	public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) {		
 	}
 
 }

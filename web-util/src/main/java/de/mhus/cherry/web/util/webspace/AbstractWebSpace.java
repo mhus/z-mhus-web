@@ -72,7 +72,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 				try {
 					Class<?> clazz = loader.loadClass(filterClazzName);
 					WebFilter filter = (WebFilter) clazz.newInstance();
-					filter.doInitialize(this, filterDef);
+					filter.doInitialize(getInstanceId(), this, filterDef);
 					addFilter(filter);
 				} catch (ClassNotFoundException e) {
 					throw new MException("filter not found",filterClazzName);
@@ -89,7 +89,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 				try {
 					Class<?> clazz = loader.loadClass(areaClazzName);
 					WebArea area = (WebArea) clazz.newInstance();
-					area.doInitialize(this, areaDef);
+					area.doInitialize(getInstanceId(), this, areaDef);
 					addArea(areaPath, area);
 				} catch (ClassNotFoundException e) {
 					throw new MException("area not found",areaClazzName);

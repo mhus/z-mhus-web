@@ -1,6 +1,9 @@
 package de.mhus.cherry.web.util.sample;
 
 import de.mhus.cherry.web.api.WebFilter;
+
+import java.util.UUID;
+
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.MLog;
@@ -13,7 +16,7 @@ public class TraceFilter extends MLog implements WebFilter {
 	private static final String CALL_START = "filter_TraceFilter_start";
 
 	@Override
-	public boolean doFilterBegin(InternalCallContext call) throws MException {
+	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		long start = System.currentTimeMillis();
 		call.setAttribute(CALL_START, start);
 		log().i("access",call.getHttpHost(),call.getHttpMethod(),call.getHttpPath());
@@ -21,7 +24,7 @@ public class TraceFilter extends MLog implements WebFilter {
 	}
 
 	@Override
-	public void doFilterEnd(InternalCallContext call) throws MException {
+	public void doFilterEnd(UUID instance, InternalCallContext call) throws MException {
 		Long start = (Long) call.getAttribute(CALL_START);
 		if (start != null) {
 			long duration = System.currentTimeMillis() - start;
@@ -31,8 +34,7 @@ public class TraceFilter extends MLog implements WebFilter {
 	}
 
 	@Override
-	public void doInitialize(VirtualHost vHost, IConfig config) {
-		// TODO Auto-generated method stub
+	public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) {
 		
 	}
 
