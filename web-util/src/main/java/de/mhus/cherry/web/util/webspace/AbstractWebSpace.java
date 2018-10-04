@@ -60,7 +60,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		// document root
 		documentRoot = findProjectFile(cServer.getString("documentRoot", "html"));
 		// trace options
-		traceErrors = cServer.getBoolean("traceErrors", false);
+		traceErrors = cServer.getBoolean("traceErrors", true);
 		traceAccess = cServer.getBoolean("traceAccess", false);
 		// defaultMimeType
 		defaultMimeType = cServer.getString("defaultMimeType", defaultMimeType);

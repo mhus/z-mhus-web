@@ -24,7 +24,7 @@ public class BaseAuthFilter implements WebFilter {
 	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		Config config = (Config)call.getVirtualHost().getProperties().get(NAME + instance);
 		if (config == null) {
-			call.getVirtualHost().sendError(call, 401);
+			call.getVirtualHost().sendError(call, 401, null);
 			return true;
 		}
 		String path = call.getHttpPath();
@@ -33,11 +33,11 @@ public class BaseAuthFilter implements WebFilter {
 		
 		String auth = call.getHttpRequest().getHeader("Authorization");  
 		if (auth == null) {
-			call.getVirtualHost().sendError(call, 401);
+			call.getVirtualHost().sendError(call, 401, null);
 			return false;
 		}
         if (!auth.toUpperCase().startsWith("BASIC ")) {   
-			call.getVirtualHost().sendError(call, 401);
+			call.getVirtualHost().sendError(call, 401, null);
             return false;  // we only do BASIC  
         }  
         // Get encoded user and password, comes after "BASIC "  
@@ -55,7 +55,7 @@ public class BaseAuthFilter implements WebFilter {
         if (config.user.equals(account) && config.pass.equals(pass))
         		return true;
 		
-		call.getVirtualHost().sendError(call, 401);
+		call.getVirtualHost().sendError(call, 401, null);
 		return false;
 	}
 

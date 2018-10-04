@@ -53,11 +53,19 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	private UUID instanceId = UUID.randomUUID();
 	
 	@Override
-	public void sendError(CallContext context, int sc) {
+	public void sendError(CallContext context, int sc, Throwable t) {
 		if (traceAccess)
 			log().i(name,context.getHttpHost(),"error",context.getHttpRequest().getRemoteAddr(),context.getHttpMethod(),context.getHttpPath(),sc);
-		if (traceErrors)
-			log().i(name,context.getHttpHost(),sc,Thread.currentThread().getStackTrace());
+		if (traceErrors) {
+			if (t == null) {
+				try {
+					throw new Exception();
+				} catch (Exception ex) {
+					t = ex;
+				}
+			}
+			log().i(name,context.getHttpHost(),sc,t);
+		}
 		if (context.getHttpResponse().isCommitted()) {
 			log().w("Can't send error to committed content",name,sc);
 			return;
@@ -123,7 +131,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 				log().w("Unknown http method",name,method);
 			}
 		} catch (Throwable t) {
-			sendError(call, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			sendError(call, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t);
 		} finally {
 			try {
 				if (call != null) {

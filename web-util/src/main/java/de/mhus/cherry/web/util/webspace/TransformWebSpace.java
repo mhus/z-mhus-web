@@ -25,7 +25,7 @@ import de.mhus.osgi.transform.api.TransformUtil;
 public class TransformWebSpace extends AbstractWebSpace implements CanTransform {
 
 	protected IConfig cDir;
-	protected String index = "index.html";
+	protected String index = "index";
 	protected String[] extensionOrder = new String[] { ".twig" };
 	protected String[] removeExtensions = new String[] { ".html", ".htm" };
 	protected String[] htmlExtensions = new String[] { ".html", ".htm" };
@@ -43,7 +43,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		environment = new MProperties();
 		if (cDir != null) {
 			charsetEncoding = cDir.getString("characterEncoding", null);
-			if (cDir.isProperty("indexe"))
+			if (cDir.isProperty("index"))
 				index = cDir.getString("index");
 			if (cDir.isProperty("templateRoot"))
 				templateRoot = findTemplateFile(cDir.getString("templateRoot"));
@@ -112,7 +112,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 			} else
 			if (hasTransformExtension(path)) {
 				// path = MString.beforeLastIndex(path, '.');
-				sendError(context, HttpServletResponse.SC_NOT_FOUND);
+				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
 			} else {
 				prepareHead(context,file, path);
@@ -137,7 +137,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 			}
 		}
 		
-		sendError(context, HttpServletResponse.SC_NOT_FOUND);
+		sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 
 	}
 
@@ -147,14 +147,18 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		path = MFile.normalizePath(path);
 		File file = new File(templateRoot, path);
 
+		if (file.exists() && file.isDirectory()) {
+			path = path + "/" + index;
+			file = new File(templateRoot, path);
+		}
 		if (file.exists()) {
 			if (file.isDirectory()) {
-				path = path + "/" + index;
-				file = new File(templateRoot, path);
+				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
+				return;
 			}
 			if (hasTransformExtension(path)) {
 				// path = MString.beforeLastIndex(path, '.');
-				sendError(context, HttpServletResponse.SC_NOT_FOUND);
+				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
 			} else {
 				prepareHead(context,file, path);
@@ -178,7 +182,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 					
 				} catch (Throwable t) {
 					log().w(file,t);
-					sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null);
 				}
 				return;
 			}
@@ -201,13 +205,13 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 				try {
 					doTransform(context, file);
 				} catch (Throwable t) {
-					sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t);
 				}
 				return;
 			}
 		}
 		
-		sendError(context, HttpServletResponse.SC_NOT_FOUND);
+		sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 	}
 
 	public boolean hasTransformExtension(String path) {
@@ -264,11 +268,19 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	}
 
 	@Override
-	public void sendError(CallContext context, int sc) {
+	public void sendError(CallContext context, int sc, Throwable t) {
 		if (traceAccess)
 			log().i(name,context.getHttpHost(),"error",context.getHttpRequest().getRemoteAddr(),context.getHttpMethod(),context.getHttpPath(),sc);
-		if (traceErrors)
-			log().i(name,context.getHttpHost(),sc,Thread.currentThread().getStackTrace());
+		if (traceErrors) {
+			if (t == null) {
+				try {
+					throw new Exception();
+				} catch (Exception ex) {
+					t = ex;
+				}
+			}
+			log().i(name,context.getHttpHost(),sc,t);
+		}
 		if (context.getHttpResponse().isCommitted()) {
 			log().w("Can't send error to committed content",name,sc);
 			return;

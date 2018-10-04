@@ -10,7 +10,7 @@ import de.mhus.lib.errors.MException;
 
 public interface VirtualHost {
 
-	void sendError(CallContext call, int sc);
+	void sendError(CallContext call, int sc, Throwable t);
 
 	void doRequest(InternalCallContext call);
 

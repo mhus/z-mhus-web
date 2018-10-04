@@ -48,14 +48,14 @@ public class DirectoryWebSpace extends AbstractWebSpace {
 		path = MFile.normalizePath(path);
 		File file = new File(getDocumentRoot(), path);
 		if (!file.exists()) {
-			sendError(context, HttpServletResponse.SC_NOT_FOUND);
+			sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 			return;
 		}
 		if (file.isDirectory()) {
 			file = findIndex(file);
 			if (file == null) {
 				//TODO support directory indexing ?
-				sendError(context, HttpServletResponse.SC_NOT_FOUND);
+				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
 			}
 		}
@@ -69,14 +69,14 @@ public class DirectoryWebSpace extends AbstractWebSpace {
 		path = MFile.normalizePath(path);
 		File file = new File(getDocumentRoot(), path);
 		if (!file.exists()) {
-			sendError(context, HttpServletResponse.SC_NOT_FOUND);
+			sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 			return;
 		}
 		if (file.isDirectory()) {
 			file = findIndex(file);
 			if (file == null) {
 				//TODO support directory indexing ?
-				sendError(context, HttpServletResponse.SC_NOT_FOUND);
+				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
 			}
 		}
@@ -90,7 +90,7 @@ public class DirectoryWebSpace extends AbstractWebSpace {
 			is.close();
 		} catch (Throwable t) {
 			log().w(file,t);
-			sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t);
 		}
 	}
 
