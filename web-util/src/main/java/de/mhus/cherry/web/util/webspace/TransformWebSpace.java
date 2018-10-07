@@ -153,10 +153,12 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		}
 		if (file.exists()) {
 			if (file.isDirectory()) {
+				log().d("deny directory",file);
 				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
 			}
 			if (hasTransformExtension(path)) {
+				log().d("deny TransformExtension",path);
 				// path = MString.beforeLastIndex(path, '.');
 				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
@@ -210,7 +212,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 				return;
 			}
 		}
-		
+		log().d("file not found",path, file);
 		sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 	}
 
