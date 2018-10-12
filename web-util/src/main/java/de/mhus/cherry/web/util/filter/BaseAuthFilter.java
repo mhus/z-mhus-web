@@ -1,16 +1,19 @@
 package de.mhus.cherry.web.util.filter;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebFilter;
+import de.mhus.lib.core.MPassword;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.util.Base64;
 import de.mhus.lib.core.util.MUri;
 import de.mhus.lib.errors.MException;
 
+// https://en.wikipedia.org/wiki/Basic_access_authentication
 public class BaseAuthFilter implements WebFilter {
 
 	public static String NAME = "base_auth_filter";
@@ -24,8 +27,8 @@ public class BaseAuthFilter implements WebFilter {
 	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		Config config = (Config)call.getVirtualHost().getProperties().get(NAME + instance);
 		if (config == null) {
-			call.getVirtualHost().sendError(call, 401, null);
-			return true;
+			send401(call, config);
+			return false;
 		}
 		String path = call.getHttpPath();
 		if (!path.matches(config.included)) return true;
@@ -33,11 +36,11 @@ public class BaseAuthFilter implements WebFilter {
 		
 		String auth = call.getHttpRequest().getHeader("Authorization");  
 		if (auth == null) {
-			call.getVirtualHost().sendError(call, 401, null);
+			send401(call, config);
 			return false;
 		}
         if (!auth.toUpperCase().startsWith("BASIC ")) {   
-			call.getVirtualHost().sendError(call, 401, null);
+			send401(call, config);
             return false;  // we only do BASIC  
         }  
         // Get encoded user and password, comes after "BASIC "  
@@ -52,11 +55,22 @@ public class BaseAuthFilter implements WebFilter {
         if (parts.length > 0) account = MUri.decode(parts[0]);
         if (parts.length > 1) pass = MUri.decode(parts[1]);
         
-        if (config.user.equals(account) && config.pass.equals(pass))
+        if (config.user.equals(account) && MPassword.equals( config.pass, pass) )
         		return true;
 		
-		call.getVirtualHost().sendError(call, 401, null);
+		send401(call, config);
 		return false;
+	}
+
+	private void send401(InternalCallContext call, Config config) throws MException {
+		try {
+			call.getHttpResponse().sendError(400);
+			if (config.realm != null)
+				call.getHttpResponse().setHeader("WWW-Authenticate", "Basic realm=\""+config.realm+"\", charset=\"UTF-8\"");
+			call.getWriter().write(config.message);
+		} catch (IOException e) {
+			throw new MException(e);
+		}
 	}
 
 	@Override
@@ -65,16 +79,20 @@ public class BaseAuthFilter implements WebFilter {
 
 	private static class Config {
 
+		private String realm;
 		private String included;
 		private String excluded;
 		private String user;
 		private String pass;
+		private String message;
 
 		public Config(IConfig config) {
 			included = config.getString("included", ".*");
 			excluded = config.getString("excluded", "");
 			user = config.getString("user", "");
 			pass = config.getString("pass", "");
+			message = config.getString("message","Access denied");
+			realm = config.getString("realm",null);
 		}
 		
 	}
