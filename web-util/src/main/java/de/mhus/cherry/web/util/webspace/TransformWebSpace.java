@@ -42,7 +42,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		templateRoot = getDocumentRoot();
 		environment = new MProperties();
 		if (cDir != null) {
-			charsetEncoding = cDir.getString("characterEncoding", null);
+			charsetEncoding = cDir.getString("characterEncoding", charsetEncoding);
 			if (cDir.isProperty("index"))
 				index = cDir.getString("index");
 			if (cDir.isProperty("templateRoot"))

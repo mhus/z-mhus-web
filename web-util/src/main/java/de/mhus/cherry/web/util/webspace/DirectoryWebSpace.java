@@ -24,7 +24,7 @@ public class DirectoryWebSpace extends AbstractWebSpace {
 		super.start(api);
 		cDir = getConfig().getNode("directory");
 		if (cDir != null) {
-			charsetEncoding = cDir.getString("characterEncoding", null);
+			charsetEncoding = cDir.getString("characterEncoding", charsetEncoding);
 			if (cDir.isProperty("indexes"))
 				indexes = cDir.getString("indexes").split(",");
 		}
