@@ -51,7 +51,7 @@ public class BaseAuthFilter implements WebFilter {
         String userpassDecoded = new String( Base64.decode(userpassEncoded) );
         // Check our user list to see if that user and password are "allowed"
         String[] parts = userpassDecoded.split(":",2);
-        
+        System.out.println(userpassDecoded);
         String account = null;
         String pass = null;
         if (parts.length > 0) account = MUri.decode(parts[0]);
