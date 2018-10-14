@@ -29,7 +29,6 @@ public class BaseAuthFilter implements WebFilter {
 	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		Config config = (Config)call.getVirtualHost().getProperties().get(NAME + instance);
 		if (config == null) {
-        	System.out.println("C");
 			send401(call, config);
 			return false;
 		}
@@ -39,12 +38,10 @@ public class BaseAuthFilter implements WebFilter {
 		
 		String auth = call.getHttpRequest().getHeader("Authorization");  
 		if (auth == null) {
-        	System.out.println("B");
 			send401(call, config);
 			return false;
 		}
         if (!auth.toUpperCase().startsWith("BASIC ")) {   
-        	System.out.println("A");
 			send401(call, config);
             return false;  // we only do BASIC  
         }  
@@ -54,16 +51,17 @@ public class BaseAuthFilter implements WebFilter {
         String userpassDecoded = new String( Base64.decode(userpassEncoded) );
         // Check our user list to see if that user and password are "allowed"
         String[] parts = userpassDecoded.split(":",2);
-        System.out.println(userpassDecoded);
         String account = null;
         String pass = null;
         if (parts.length > 0) account = MUri.decode(parts[0]);
         if (parts.length > 1) pass = MUri.decode(parts[1]);
-        
+System.out.println(config.user);
+System.out.println(account);
+System.out.println(config.pass);
+System.out.println(pass);
         if (config.user.equals(account) && MPassword.equals( config.pass, pass) )
         		return true;
 		
-    	System.out.println("D");
 		send401(call, config);
 		return false;
 	}
