@@ -291,10 +291,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		if (errorTemplate != null) {
 
 			try {
-				if (sc == 401)
-					context.getHttpResponse().sendError(400); // send 400 instead of 401 - 401 will cause the browser to ask for a password
-				else
-					context.getHttpResponse().sendError(sc);
+				context.getHttpResponse().sendError(sc);
 				MProperties param = new MProperties();
 				param.put("session", context.getSession().pub());
 				param.put("sessionId", context.getSessionId());
