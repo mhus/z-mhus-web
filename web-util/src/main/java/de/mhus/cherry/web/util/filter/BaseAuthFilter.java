@@ -65,8 +65,8 @@ public class BaseAuthFilter implements WebFilter {
 	private void send401(InternalCallContext call, Config config) throws MException {
 		try {
 			call.getHttpResponse().sendError(401);
-			if (config.realm != null)
-				call.getHttpResponse().setHeader("WWW-Authenticate", "Basic realm=\""+config.realm+"\", charset=\"UTF-8\"");
+			call.getHttpResponse().setHeader("WWW-Authenticate", "BASIC realm=\""+config.realm+"\", charset=\"UTF-8\"");
+			call.getHttpResponse().setContentType("text/plain");
 			call.getWriter().write(config.message);
 		} catch (IOException e) {
 			throw new MException(e);
@@ -92,7 +92,7 @@ public class BaseAuthFilter implements WebFilter {
 			user = config.getString("user", "");
 			pass = config.getString("pass", "");
 			message = config.getString("message","Access denied");
-			realm = config.getString("realm",null);
+			realm = config.getString("realm","Access");
 		}
 		
 	}
