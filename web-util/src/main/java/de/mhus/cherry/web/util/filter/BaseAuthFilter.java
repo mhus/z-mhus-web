@@ -55,6 +55,10 @@ public class BaseAuthFilter implements WebFilter {
         String pass = null;
         if (parts.length > 0) account = MUri.decode(parts[0]);
         if (parts.length > 1) pass = MUri.decode(parts[1]);
+System.out.println(config.user);
+System.out.println(account);
+System.out.println(config.pass);
+System.out.println(pass);
         if (config.user.equals(account) && MPassword.equals( config.pass, pass) )
         		return true;
 		
