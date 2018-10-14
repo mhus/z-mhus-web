@@ -291,7 +291,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		if (errorTemplate != null) {
 
 			try {
-				context.getHttpResponse().sendError(sc);
+				context.getHttpResponse().setStatus(sc);
 				MProperties param = new MProperties();
 				param.put("session", context.getSession().pub());
 				param.put("sessionId", context.getSessionId());

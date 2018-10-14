@@ -246,7 +246,8 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		if (filters == null || filters.size() == 0) return;
 		// do not synchronize - it's to slow
 		int cnt = filtersReverse.size();
-		int done = (int) call.getAttribute(CALL_FILTER_CNT);
+		Integer done = (Integer) call.getAttribute(CALL_FILTER_CNT);
+		if (done == null) return; // none
 		for (WebFilter filter : filtersReverse) {
 			if (cnt <= done) // do only end for filter they had begin called, expect the one returned false
 				filter.doFilterEnd(instanceId, call);

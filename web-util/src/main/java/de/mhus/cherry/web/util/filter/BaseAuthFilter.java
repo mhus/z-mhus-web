@@ -66,7 +66,7 @@ public class BaseAuthFilter implements WebFilter {
 
 	private void send401(InternalCallContext call, Config config) throws MException {
 		try {
-			call.getHttpResponse().sendError(401);
+			call.getHttpResponse().setStatus(401);
 			call.getHttpResponse().setHeader("WWW-Authenticate", "BASIC realm=\""+config.realm+"\", charset=\"UTF-8\"");
 			call.getHttpResponse().setContentType("text/html");
 			ServletOutputStream os = call.getHttpResponse().getOutputStream();
