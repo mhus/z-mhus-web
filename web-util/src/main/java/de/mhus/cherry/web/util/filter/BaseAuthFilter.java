@@ -29,6 +29,7 @@ public class BaseAuthFilter implements WebFilter {
 	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		Config config = (Config)call.getVirtualHost().getProperties().get(NAME + instance);
 		if (config == null) {
+        	System.out.println("C");
 			send401(call, config);
 			return false;
 		}
@@ -38,10 +39,12 @@ public class BaseAuthFilter implements WebFilter {
 		
 		String auth = call.getHttpRequest().getHeader("Authorization");  
 		if (auth == null) {
+        	System.out.println("B");
 			send401(call, config);
 			return false;
 		}
         if (!auth.toUpperCase().startsWith("BASIC ")) {   
+        	System.out.println("A");
 			send401(call, config);
             return false;  // we only do BASIC  
         }  
@@ -60,6 +63,7 @@ public class BaseAuthFilter implements WebFilter {
         if (config.user.equals(account) && MPassword.equals( config.pass, pass) )
         		return true;
 		
+    	System.out.println("D");
 		send401(call, config);
 		return false;
 	}
