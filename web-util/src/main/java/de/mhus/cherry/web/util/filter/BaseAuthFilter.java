@@ -3,6 +3,8 @@ package de.mhus.cherry.web.util.filter;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.servlet.ServletOutputStream;
+
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebFilter;
@@ -66,8 +68,10 @@ public class BaseAuthFilter implements WebFilter {
 		try {
 			call.getHttpResponse().sendError(401);
 			call.getHttpResponse().setHeader("WWW-Authenticate", "BASIC realm=\""+config.realm+"\", charset=\"UTF-8\"");
-			call.getHttpResponse().setContentType("text/plain");
-			call.getWriter().write(config.message);
+			call.getHttpResponse().setContentType("text/html");
+			ServletOutputStream os = call.getHttpResponse().getOutputStream();
+			os.write(config.message.getBytes()); // utf-8?
+			os.flush();
 		} catch (IOException e) {
 			throw new MException(e);
 		}
