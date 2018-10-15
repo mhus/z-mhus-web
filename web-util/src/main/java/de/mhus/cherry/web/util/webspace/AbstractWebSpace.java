@@ -114,7 +114,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 					log().i("configuration changed: restart",getName());
 					api.restart(AbstractWebSpace.this);
 				}
-			});
+			}).doStart();
 		}
 	}
 	
