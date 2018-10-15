@@ -106,7 +106,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		}
 		
 		if (cServer.getBoolean("watchConfiguration", true)) {
-			configWatch = new FileWatch(new File(configFile + ".json"), new FileWatch.Listener() { // TODO could also be another extension
+			configWatch = new FileWatch(new File(configRoot, configFile + ".json"), new FileWatch.Listener() { // TODO could also be another extension
 				
 				@Override
 				public void onFileWatchError(FileWatch fileWatch, Throwable t) {
