@@ -59,12 +59,15 @@ public class BaseAuthFilter extends MLog implements WebFilter {
         if (parts.length > 1) pass = MUri.decode(parts[1]);
         String accPass = config.accounts.get(account);
         if (accPass != null) {
-        		if (MPassword.equals( accPass, pass) )
+        		if (MPassword.equals( accPass, pass) ) {
+        			if (call.getVirtualHost().isTraceAccess())
+        				log().i("access",call.getVirtualHost().getName(),account,call.getHttpMethod(),call.getHttpPath());
         			return true;
-        		else
-            		log().d("password not accepted",account);
+        		} else {
+            		log().d("password not accepted",account,call.getHttpRequest().getRemoteAddr());
+        		}
         } else
-        		log().d("user not found",account);
+        		log().d("user not found",account,call.getHttpRequest().getRemoteAddr());
 
 		send401(call, config);
 		return false;
