@@ -1,5 +1,6 @@
 package de.mhus.cherry.web.api;
 
+import java.util.Date;
 import java.util.Set;
 
 import org.osgi.framework.Bundle;
@@ -46,5 +47,7 @@ public interface VirtualHost {
 	boolean isTraceAccess();
 
 	boolean isTraceErrors();
+
+	Date getUpdated();
 
 }

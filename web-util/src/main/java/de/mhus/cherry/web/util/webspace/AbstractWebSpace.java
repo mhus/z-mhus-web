@@ -1,6 +1,7 @@
 package de.mhus.cherry.web.util.webspace;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Map.Entry;
 
 import de.mhus.cherry.web.api.WebArea;
@@ -22,6 +23,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 	private File configRoot;
 	private File documentRoot;
 	private FileWatch configWatch;
+	private Date updated;
 	
 	public void setRoot(String rootPath) throws MException {
 		root = new File(rootPath);
@@ -29,6 +31,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 	
 	@Override
 	public void start(CherryApi api) throws MException {
+		updated = new Date();
 		if (!root.exists())
 			throw new MException("root for webspace not exists",root);
 		if (!root.isDirectory())
@@ -151,6 +154,11 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 	@Override
 	public File getDocumentRoot() {
 		return documentRoot;
+	}
+	
+	@Override
+	public Date getUpdated() {
+		return updated;
 	}
 
 }

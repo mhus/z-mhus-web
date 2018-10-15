@@ -31,12 +31,12 @@ public class CmdVHost implements Action {
 		if (cmd.equals("list")) {
 
 			ConsoleTable out = new ConsoleTable();
-			out.setHeaderValues("Alias","Name","Type","Bundle");
+			out.setHeaderValues("Alias","Name","Type","Bundle","Updated");
 
 			for (Entry<String, VirtualHost> entry : CherryApiImpl.instance().getVirtualHosts().entrySet()) {
 				VirtualHost vhost = entry.getValue();
 				Bundle bundle = vhost.getBundle();
-				out.addRowValues(entry.getKey(), vhost.getName(), vhost.getClass().getName(), bundle.getSymbolicName() + "[" + bundle.getBundleId() + "]");
+				out.addRowValues(entry.getKey(), vhost.getName(), vhost.getClass().getName(), bundle.getSymbolicName() + "[" + bundle.getBundleId() + "]", vhost.getUpdated());
 			}
 			out.print(System.out);
 			return null;
