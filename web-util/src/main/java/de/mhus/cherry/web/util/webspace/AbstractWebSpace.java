@@ -31,7 +31,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 	
 	@Override
 	public void start(CherryApi api) throws MException {
-		updated = new Date();
+		setUpdated();
 		if (!root.exists())
 			throw new MException("root for webspace not exists",root);
 		if (!root.isDirectory())
@@ -121,6 +121,10 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		}
 	}
 	
+	protected void setUpdated() {
+		updated = new Date();
+	}
+
 	public File findProjectFile(String path) {
 		if (path.startsWith("/")) {
 			if (MSystem.isWindows())
