@@ -111,6 +111,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 				
 				@Override
 				public void onFileChanged(FileWatch fileWatch) {
+					log().i("configuration changed: restart",getName());
 					api.restart(AbstractWebSpace.this);
 				}
 			});
