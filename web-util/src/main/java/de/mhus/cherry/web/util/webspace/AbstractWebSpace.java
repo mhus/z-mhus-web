@@ -137,7 +137,6 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 
 	@Override
 	public void stop(CherryApi api) {
-		root = null;
 		config = null;
 		cServer = null;
 		if (configWatch != null)
