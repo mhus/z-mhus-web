@@ -1,6 +1,7 @@
 package de.mhus.cherry.web.util.filter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.UUID;
 
 import javax.servlet.ServletOutputStream;
@@ -8,6 +9,7 @@ import javax.servlet.ServletOutputStream;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebFilter;
+import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MPassword;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.config.IConfig;
@@ -16,7 +18,7 @@ import de.mhus.lib.core.util.MUri;
 import de.mhus.lib.errors.MException;
 
 // https://en.wikipedia.org/wiki/Basic_access_authentication
-public class BaseAuthFilter implements WebFilter {
+public class BaseAuthFilter extends MLog implements WebFilter {
 
 	public static String NAME = "base_auth_filter";
 
@@ -55,9 +57,15 @@ public class BaseAuthFilter implements WebFilter {
         String pass = null;
         if (parts.length > 0) account = MUri.decode(parts[0]);
         if (parts.length > 1) pass = MUri.decode(parts[1]);
-        if (config.user.equals(account) && MPassword.equals( config.pass, pass) )
-        		return true;
-		
+        String accPass = config.accounts.get(account);
+        if (accPass != null) {
+        		if (MPassword.equals( accPass, pass) )
+        			return true;
+        		else
+            		log().d("password not accepted",account);
+        } else
+        		log().d("user not found",account);
+
 		send401(call, config);
 		return false;
 	}
@@ -79,22 +87,25 @@ public class BaseAuthFilter implements WebFilter {
 	public void doFilterEnd(UUID instance, InternalCallContext call) throws MException {
 	}
 
-	private static class Config {
+	private class Config {
 
 		private String realm;
 		private String included;
 		private String excluded;
-		private String user;
-		private String pass;
 		private String message;
+		private HashMap<String, String> accounts = new HashMap<>();
 
 		public Config(IConfig config) {
 			included = config.getString("included", ".*");
 			excluded = config.getString("excluded", "");
-			user = config.getString("user", "");
-			pass = config.getString("pass", "");
 			message = config.getString("message","Access denied");
 			realm = config.getString("realm","Access");
+			for (IConfig node : config.getNode("accounts").getNodes())
+				try {
+					accounts.put(node.getString("user"), node.getString("pass"));
+				} catch (MException e) {
+					log().e(e);
+				}
 		}
 		
 	}

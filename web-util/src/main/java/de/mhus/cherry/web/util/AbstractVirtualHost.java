@@ -330,4 +330,14 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 		return instanceId;
 	}
 
+	@Override
+	public boolean isTraceAccess() {
+		return traceAccess;
+	}
+	
+	@Override
+	public boolean isTraceErrors() {
+		return traceErrors;
+	}
+	
 }

@@ -1,0 +1,3 @@
+
+watchConfiguration : boolean (true)
+  The config file is watched, if the file was changed the virtual host will be restarted

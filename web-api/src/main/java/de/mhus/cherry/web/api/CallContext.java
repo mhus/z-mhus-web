@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface CallContext {
 
 	String REQUEST_ATTRIBUTE_NAME = "__cherry_call_context";
+	String REQUEST_REMOTE_IP = "__remote_ip";
 
 	HttpServletRequest getHttpRequest();
 	HttpServletResponse getHttpResponse();

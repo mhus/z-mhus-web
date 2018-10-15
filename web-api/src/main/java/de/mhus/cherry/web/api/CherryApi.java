@@ -1,5 +1,7 @@
 package de.mhus.cherry.web.api;
 
+import java.util.Map;
+
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,4 +16,10 @@ public interface CherryApi {
 
 	CallContext createCallContext(Servlet servlet, HttpServletRequest request, HttpServletResponse response) throws MException;
 
+	void restart(VirtualHost host);
+
+	VirtualHost findVirtualHost(String host);
+
+	Map<String, VirtualHost> getVirtualHosts();
+	
 }

@@ -43,4 +43,8 @@ public interface VirtualHost {
 
 	String getCharsetEncoding();
 
+	boolean isTraceAccess();
+
+	boolean isTraceErrors();
+
 }

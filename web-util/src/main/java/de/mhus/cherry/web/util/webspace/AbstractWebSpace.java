@@ -11,6 +11,7 @@ import de.mhus.cherry.web.util.AbstractVirtualHost;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;
+import de.mhus.lib.core.io.FileWatch;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.services.util.OsgiBundleClassLoader;
 
@@ -20,6 +21,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 	private IConfig cServer;
 	private File configRoot;
 	private File documentRoot;
+	private FileWatch configWatch;
 	
 	public void setRoot(String rootPath) throws MException {
 		root = new File(rootPath);
@@ -36,7 +38,8 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		if (!configRoot.exists() || !configRoot.isDirectory())
 			configRoot = root; // fall back to root directory
 		
-		config = MConfig.find(configRoot, prepareConfigName("server"), true);
+		String configFile = prepareConfigName("server");
+		config = MConfig.find(configRoot, configFile, true);
 		if (config == null)
 			throw new MException("config for webspace not found",root);
 		// get server config
@@ -98,6 +101,20 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 				}			
 			}
 		}
+		
+		if (cServer.getBoolean("watchConfiguration", true)) {
+			configWatch = new FileWatch(new File(configFile), new FileWatch.Listener() {
+				
+				@Override
+				public void onFileWatchError(FileWatch fileWatch, Throwable t) {
+				}
+				
+				@Override
+				public void onFileChanged(FileWatch fileWatch) {
+					api.restart(AbstractWebSpace.this);
+				}
+			});
+		}
 	}
 	
 	public File findProjectFile(String path) {
@@ -115,6 +132,9 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		root = null;
 		config = null;
 		cServer = null;
+		if (configWatch != null)
+			configWatch.cancel();
+		configWatch = null;
 	}
 
 	@Override

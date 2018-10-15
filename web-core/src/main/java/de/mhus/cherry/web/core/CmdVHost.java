@@ -16,7 +16,7 @@ import de.mhus.lib.core.console.ConsoleTable;
 @Service
 public class CmdVHost implements Action {
 
-	@Argument(index=0, name="cmd", required=true, description="Command: list,config, use, release, current", multiValued=false)
+	@Argument(index=0, name="cmd", required=true, description="Command: list, config, use, release, current, restart", multiValued=false)
 	String cmd;
 	
 	@Argument(index=1, name="vhost", required=false, description="Virtual host name", multiValued=false)
@@ -63,8 +63,7 @@ public class CmdVHost implements Action {
 			printCurrentVHost();
 		} else
 		if (cmd.equals("restart")) {
-			vhost.stop(CherryApiImpl.instance());
-			vhost.start(CherryApiImpl.instance());
+			CherryApiImpl.instance().restart(vhost);
 			System.out.println("OK");
 		} else {
 			System.out.println("Command not found");

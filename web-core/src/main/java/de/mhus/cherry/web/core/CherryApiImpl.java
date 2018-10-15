@@ -111,6 +111,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		return calls.get();
 	}
 
+	@Override
 	public VirtualHost findVirtualHost(String host) {
 		synchronized (vHosts) {
 			// get from cache
@@ -118,7 +119,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			vHost = vHostsCache.get(host);
 			if (vHost != null) return vHost;
 			
-			// loopup
+			// lookup
 			vHost = vHosts.get(host);
 			if (vHost == null) {
 				// remove port
@@ -193,8 +194,15 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		return call;
 	}
 
+	@Override
 	public Map<String, VirtualHost> getVirtualHosts() {
 		return Collections.unmodifiableMap(vHosts);
+	}
+
+	@Override
+	public void restart(VirtualHost host) {
+		removeVirtualHost(host);
+		addVirtualHost(host);
 	}
 
 }
