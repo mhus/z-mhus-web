@@ -26,6 +26,8 @@ public interface CallContext {
 	boolean isSession();
 	String getHttpHost();
 	
+	String getRemoteIp();
+	
 	/**
 	 * Use this to get the output stream from http response to get the filter chain stream.
 	 * 

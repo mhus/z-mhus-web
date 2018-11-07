@@ -10,4 +10,5 @@ public interface InternalCallContext extends CallContext {
 	 */
 	void setOutputStream(OutputStream os);
 
+	void setRemoteIp(String remoteIp);
 }

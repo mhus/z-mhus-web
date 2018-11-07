@@ -27,6 +27,7 @@ public class CherryCallContext implements InternalCallContext {
 	private String host;
 	private OutputStream outputStream = null;
 	private OutputStreamWriter writer;
+	private String remoteIp;
 
 	public CherryCallContext(Servlet servlet, HttpServletRequest req, HttpServletResponse res, VirtualHost vHost) {
 		httpRequest = req;
@@ -41,7 +42,7 @@ public class CherryCallContext implements InternalCallContext {
 		
 		httpServlet = servlet;
 		virtualHost = vHost;
-
+		remoteIp = req.getRemoteAddr();
 	}
 
 	@Override
@@ -132,6 +133,16 @@ public class CherryCallContext implements InternalCallContext {
 			}
 		}
 		return writer;
+	}
+
+	@Override
+	public String getRemoteIp() {
+		return remoteIp;
+	}
+
+	@Override
+	public void setRemoteIp(String remoteIp) {
+		this.remoteIp = remoteIp;
 	}
 
 }

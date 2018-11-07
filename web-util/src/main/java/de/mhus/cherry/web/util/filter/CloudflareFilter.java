@@ -46,7 +46,7 @@ public class CloudflareFilter extends MLog implements WebFilter {
 		}
 		if (isCloudflare(call, config)) {
 			String remoteIP = call.getHttpRequest().getHeader("CF-Connecting-IP");
-			call.setAttribute(CallContext.REQUEST_REMOTE_IP, remoteIP);
+			call.setRemoteIp(remoteIP);
 			trace(call,config,remoteIP);
 			return true;
 		} else {
