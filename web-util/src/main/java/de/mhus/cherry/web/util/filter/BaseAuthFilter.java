@@ -3,12 +3,14 @@ package de.mhus.cherry.web.util.filter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
 
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebFilter;
+import de.mhus.cherry.web.util.CherryWebUtil;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MPassword;
 import de.mhus.lib.core.MString;
@@ -24,7 +26,7 @@ public class BaseAuthFilter extends MLog implements WebFilter {
 
 	@Override
 	public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
-		vHost.getProperties().put(NAME + instance, new Config(config));
+		vHost.getProperties().put(NAME + instance, new Config(vHost, config));
 	}
 
 	@Override
@@ -35,8 +37,8 @@ public class BaseAuthFilter extends MLog implements WebFilter {
 			return false;
 		}
 		String path = call.getHttpPath();
-		if (!path.matches(config.included)) return true;
-		if (MString.isSet(config.excluded) && path.matches(config.excluded)) return true;
+		if (config.included != null && !config.included.matcher(path).matches()) return true;
+		if (config.excluded != null && config.excluded.matcher(path).matches()) return true;
 		
 		String auth = call.getHttpRequest().getHeader("Authorization");  
 		if (auth == null) {
@@ -93,14 +95,18 @@ public class BaseAuthFilter extends MLog implements WebFilter {
 	private class Config {
 
 		private String realm;
-		private String included;
-		private String excluded;
+		private Pattern included;
+		private Pattern excluded;
 		private String message;
 		private HashMap<String, String> accounts = new HashMap<>();
 
-		public Config(IConfig config) {
-			included = config.getString("included", ".*");
-			excluded = config.getString("excluded", "");
+		public Config(VirtualHost vHost, IConfig config) {
+			String includedStr = config.getString("included", null);
+			if (includedStr != null)
+				included = Pattern.compile(includedStr);
+			String excludedStr = config.getString("excluded", null);
+			if (excludedStr != null)
+				excluded = Pattern.compile(excludedStr);
 			message = config.getString("message","Access denied");
 			realm = config.getString("realm","Access");
 			for (IConfig node : config.getNode("accounts").getNodes())
@@ -109,6 +115,9 @@ public class BaseAuthFilter extends MLog implements WebFilter {
 				} catch (MException e) {
 					log().e(e);
 				}
+			String accountsFile = config.getString("accountsFile", null);
+			if (MString.isSet(accountsFile)) 
+				CherryWebUtil.loadAccounts(vHost.findFile(accountsFile), accounts);
 		}
 		
 	}

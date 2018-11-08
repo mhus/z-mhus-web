@@ -1,5 +1,6 @@
 package de.mhus.cherry.web.api;
 
+import java.io.File;
 import java.util.Date;
 import java.util.Set;
 
@@ -49,5 +50,7 @@ public interface VirtualHost {
 	boolean isTraceErrors();
 
 	Date getUpdated();
+
+	File findFile(String path);
 
 }

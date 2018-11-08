@@ -268,11 +268,13 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	}
 
 	public void addFilter(WebFilter filter) {
+		log().i("add filter",filter.getClass().getCanonicalName());
 		filters.add(filter);
 		filtersReverse.add(0,filter);
 	}
 	
 	public void addArea(String alias, WebArea area) {
+		log().i("add area",alias,area.getClass().getCanonicalName());
 		areas.add(new ActiveAreaContainer(alias, area));
 	}
 	

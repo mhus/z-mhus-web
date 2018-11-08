@@ -16,9 +16,11 @@ import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebFilter;
+import de.mhus.cherry.web.util.CherryWebUtil;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MPassword;
+import de.mhus.lib.core.MString;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.core.io.http.MHttpClientBuilder;
@@ -34,7 +36,7 @@ public class CloudflareFilter extends MLog implements WebFilter {
 
 	@Override
 	public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
-		vHost.getProperties().put(NAME + instance, new Config(config));
+		vHost.getProperties().put(NAME + instance, new Config(vHost, config));
 	}
 
 	@Override
@@ -126,7 +128,7 @@ public class CloudflareFilter extends MLog implements WebFilter {
 		private HashMap<String, String> accounts = new HashMap<>();
 		private Subnet[] networks;
 
-		public Config(IConfig config) {
+		public Config(VirtualHost vHost, IConfig config) {
 			message = config.getString("message","Access denied");
 			realm = config.getString("realm","Access");
 			for (IConfig node : config.getNode("accounts").getNodes())
@@ -135,6 +137,10 @@ public class CloudflareFilter extends MLog implements WebFilter {
 				} catch (MException e) {
 					log().e(e);
 				}
+			String accountsFile = config.getString("accountsFile", null);
+			if (MString.isSet(accountsFile)) 
+				CherryWebUtil.loadAccounts(vHost.findFile(accountsFile), accounts);
+
 			String url = config.getString("url","none"); // "https://www.cloudflare.com/ips-v4"
 			IConfig ipNode = config.getNode("ips");
 			String[] ips = null;

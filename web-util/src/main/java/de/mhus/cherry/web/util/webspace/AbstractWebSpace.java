@@ -42,6 +42,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 			configRoot = root; // fall back to root directory
 		
 		String configFile = prepareConfigName("server");
+		log().i("start web space",configFile,getClass().getCanonicalName());
 		config = MConfig.find(configRoot, configFile, true);
 		if (config == null)
 			throw new MException("config for webspace not found",root);
@@ -164,4 +165,12 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		return updated;
 	}
 
+	@Override
+	public File findFile(String path) {
+		path = path.replace("${profile}", getProfile());
+		if (path.startsWith("/"))
+			return new File(path);
+		return new File(configRoot, path);
+	}
+	
 }

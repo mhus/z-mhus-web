@@ -10,13 +10,14 @@ import org.osgi.framework.Bundle;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.VirtualHost;
+import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.console.ConsoleTable;
 
 @Command(scope = "cherry", name = "vhost", description = "Virtual Host Management")
 @Service
 public class CmdVHost implements Action {
 
-	@Argument(index=0, name="cmd", required=true, description="Command: list, config, use, release, current, restart", multiValued=false)
+	@Argument(index=0, name="cmd", required=true, description="Command: list, info, config, use, release, current, restart", multiValued=false)
 	String cmd;
 	
 	@Argument(index=1, name="vhost", required=false, description="Virtual host name", multiValued=false)
@@ -28,6 +29,26 @@ public class CmdVHost implements Action {
 	@Override
 	public Object execute() throws Exception {
 		
+		if (cmd.equals("info")) {
+			VirtualHost h = CherryApiImpl.instance().getVirtualHosts().get(host);
+			if (h == null) {
+				System.out.println("Virtual host not found");
+				return null;
+			}
+			System.out.println("Name: " + h.getName());
+			System.out.println("Bundle: " + h.getBundle() );
+			System.out.println("Charset: " + h.getCharsetEncoding());
+			System.out.println("Class: "+h.getClass().getCanonicalName());
+			System.out.println("Updated: "+ h.getUpdated());
+			IProperties p = h.getProperties();
+			if (p != null) {
+				for (Entry<String, Object> entry : p.entrySet())
+					System.out.println("Property: " + entry.getKey() + "=" + entry.getValue());
+			} else
+				System.out.println("No Properties");
+			System.out.println("Config:");
+			System.out.println(h.getConfig().dump());
+		} else
 		if (cmd.equals("list")) {
 
 			ConsoleTable out = new ConsoleTable();
