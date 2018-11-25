@@ -1,5 +1,6 @@
 package de.mhus.cherry.web.util.filter;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -50,42 +51,51 @@ public class CloudflareFilter extends MLog implements WebFilter {
 			String remoteIP = call.getHttpRequest().getHeader("CF-Connecting-IP");
 			call.setRemoteIp(remoteIP);
 			trace(call,config,remoteIP);
+			
+			if (!config.public_) 
+				return doAuth(call, config);
+			
 			return true;
 		} else {
 			String remoteIP = call.getHttpRequest().getRemoteAddr();
 			call.setAttribute(CallContext.REQUEST_REMOTE_IP, remoteIP);
 			trace(call,config,remoteIP);
-			String auth = call.getHttpRequest().getHeader("Authorization");  
-			if (auth == null) {
-				send401(call, config);
-				return false;
-			}
-	        if (!auth.toUpperCase().startsWith("BASIC ")) {   
-				send401(call, config);
-	            return false;  // we only do BASIC  
-	        }  
-	        // Get encoded user and password, comes after "BASIC "  
-	        String userpassEncoded = auth.substring(6);  
-	        // Decode it, using any base 64 decoder  
-	        String userpassDecoded = new String( Base64.decode(userpassEncoded) );
-	        // Check our user list to see if that user and password are "allowed"
-	        String[] parts = userpassDecoded.split(":",2);
-	        String account = null;
-	        String pass = null;
-	        if (parts.length > 0) account = MUri.decode(parts[0]);
-	        if (parts.length > 1) pass = MUri.decode(parts[1]);
-	        String accPass = config.accounts.get(account);
-	        if (accPass != null) {
-	        		if (MPassword.equals( accPass, pass) )
-	        			return true;
-	        		else
-	            		log().d("password not accepted",account);
-	        } else
-	        		log().d("user not found",account);
-	
+			
+			return doAuth(call, config);
+		}
+	}
+
+	private boolean doAuth(InternalCallContext call, Config config) throws MException {
+		String auth = call.getHttpRequest().getHeader("Authorization");  
+		if (auth == null) {
 			send401(call, config);
 			return false;
 		}
+        if (!auth.toUpperCase().startsWith("BASIC ")) {   
+			send401(call, config);
+            return false;  // we only do BASIC  
+        }  
+        // Get encoded user and password, comes after "BASIC "  
+        String userpassEncoded = auth.substring(6);  
+        // Decode it, using any base 64 decoder  
+        String userpassDecoded = new String( Base64.decode(userpassEncoded) );
+        // Check our user list to see if that user and password are "allowed"
+        String[] parts = userpassDecoded.split(":",2);
+        String account = null;
+        String pass = null;
+        if (parts.length > 0) account = MUri.decode(parts[0]);
+        if (parts.length > 1) pass = MUri.decode(parts[1]);
+        String accPass = config.accounts.get(account);
+        if (accPass != null) {
+        		if (MPassword.equals( accPass, pass) )
+        			return true;
+        		else
+            		log().d("password not accepted",account);
+        } else
+        		log().d("user not found",account);
+
+		send401(call, config);
+		return false;
 	}
 
 	private void trace(InternalCallContext call, Config config, String remoteIP) {
@@ -127,6 +137,7 @@ public class CloudflareFilter extends MLog implements WebFilter {
 		private String message;
 		private HashMap<String, String> accounts = new HashMap<>();
 		private Subnet[] networks;
+		private boolean public_;
 
 		public Config(VirtualHost vHost, IConfig config) {
 			message = config.getString("message","Access denied");
@@ -140,13 +151,22 @@ public class CloudflareFilter extends MLog implements WebFilter {
 			String accountsFile = config.getString("accountsFile", null);
 			if (MString.isSet(accountsFile)) 
 				CherryWebUtil.loadAccounts(vHost.findFile(accountsFile), accounts);
-
+			public_ = config.getBoolean("public", true);
+			
 			String url = config.getString("url","none"); // "https://www.cloudflare.com/ips-v4"
 			IConfig ipNode = config.getNode("ips");
 			String[] ips = null;
 			if (ipNode != null) {
 				ips = MConfig.toStringArray(ipNode.getNodes(), "value");
 			} else 
+			if (url.startsWith("file:")) {
+				File f = new File(url.substring(5));
+				try {
+					ips = MFile.readLines(f, true).toArray(new String[0]);
+				} catch (Exception e) {
+					log().e(e);
+				}
+			} else
 			if (!"none".equals(url))
 			{
 				try {
