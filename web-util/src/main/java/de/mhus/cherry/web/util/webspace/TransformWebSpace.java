@@ -19,6 +19,7 @@ import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;
+import de.mhus.lib.core.io.http.MHttp;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.transform.api.TransformUtil;
 
@@ -298,7 +299,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 				param.put("request", context.getHttpRequest().getParameterMap());
 				param.put("path", context.getHttpPath());
 				param.put("error", sc);
-				param.put("errorMsg", MSystem.HTTP_STATUS_CODES.getOrDefault(sc, ""));
+				param.put("errorMsg", MHttp.HTTP_STATUS_CODES.getOrDefault(sc, ""));
 				
 				ServletOutputStream os = context.getHttpResponse().getOutputStream();
 				TransformUtil.transform(errorTemplate, os, getDocumentRoot(), null, null, param, null);
