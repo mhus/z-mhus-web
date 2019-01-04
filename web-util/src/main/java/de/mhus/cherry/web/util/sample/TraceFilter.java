@@ -7,7 +7,7 @@ import java.util.UUID;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.MLog;
-import de.mhus.lib.core.MTimeInterval;
+import de.mhus.lib.core.MPeriod;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.errors.MException;
 
@@ -28,7 +28,7 @@ public class TraceFilter extends MLog implements WebFilter {
 		Long start = (Long) call.getAttribute(CALL_START);
 		if (start != null) {
 			long duration = System.currentTimeMillis() - start;
-			String durationStr = MTimeInterval.getIntervalAsString(duration);
+			String durationStr = MPeriod.getIntervalAsString(duration);
 			log().i("duration",durationStr,duration,call.getHttpHost(),call.getHttpMethod(),call.getHttpPath());
 		}
 	}
