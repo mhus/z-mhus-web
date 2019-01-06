@@ -15,7 +15,9 @@
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-    --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -55,14 +57,14 @@
     	<transform.version>1.5.0-SNAPSHOT</transform.version>
     	
         <scr.packages>*</scr.packages>
-        <felix.scr.version>1.6.0</felix.scr.version>
-        <karaf.version>4.0.10</karaf.version>
-        <karaf.tool.version>4.0.10</karaf.tool.version>
-        <bndlib.version>1.50.0</bndlib.version>
-        <felix.metatype.version>1.0.10</felix.metatype.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<compileSource>1.8</compileSource>
-        <bundle.plugin.version>2.5.3</bundle.plugin.version>
+        <felix.scr.version>2.1.14</felix.scr.version>
+        <karaf.version>4.2.1</karaf.version>
+        <karaf.tool.version>4.2.1</karaf.tool.version>
+        <bndlib.version>2.4.0</bndlib.version>
+        <felix.metatype.version>1.2.2</felix.metatype.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <compileSource>1.8</compileSource>
+        <bundle.plugin.version>4.1.0</bundle.plugin.version>
         <osgi.version>5.0.0</osgi.version>
         <cxf.version>3.1.5</cxf.version>
 		<osgi.version>5.0.0</osgi.version>	
@@ -110,7 +112,7 @@
 	    </plugin>		
 
             <plugin>
-                <groupId>de.mhus.ports.karaf.tooling</groupId>
+                <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-services-maven-plugin</artifactId>
                 <configuration>
                 	<artifactInclude>.*mhu.*</artifactInclude>
@@ -122,7 +124,7 @@
     	<pluginManagement>
 			<plugins>
                 <plugin>
-                    <groupId>de.mhus.ports.karaf.tooling</groupId>
+                    <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-services-maven-plugin</artifactId>
                     <version>${karaf.tool.version}</version>
                     <executions>
@@ -168,7 +170,7 @@
 			<artifactId>mhu-osgi-services</artifactId>
 			<version>${osgitools.version}</version>
 			<scope>provided</scope>
-		</dependency>
+       	</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
@@ -181,6 +183,12 @@
 			<version>${servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>biz.aQute.bnd</groupId>
+            <artifactId>bndlib</artifactId>
+            <version>${bndlib.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
 	</dependencies>
 

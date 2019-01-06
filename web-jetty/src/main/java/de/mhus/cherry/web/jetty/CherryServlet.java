@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import aQute.bnd.annotation.component.Component;
+import org.osgi.service.component.annotations.Component;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.core.CherryApiImpl;
 import de.mhus.lib.core.logging.MLogUtil;
 
-@Component(provide = Servlet.class, properties="alias=/*", name="CherryServlet",servicefactory=true)
+@Component(service = Servlet.class, properties="alias=/*", name="CherryServlet",servicefactory=true)
 public class CherryServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
