@@ -13,7 +13,7 @@ import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.core.CherryApiImpl;
 import de.mhus.lib.core.logging.MLogUtil;
 
-@Component(service = Servlet.class, properties="alias=/*", name="CherryServlet",servicefactory=true)
+@Component(service = Servlet.class, property="alias=/*", name="CherryServlet",servicefactory=true)
 public class CherryServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
