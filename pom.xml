@@ -77,6 +77,8 @@
 		<dependency.jetty.version>8.1.14.v20131031</dependency.jetty.version>
 		<pax.version>3.1.0</pax.version>
 		<servlet.version>3.1.0</servlet.version>
+        <activemq.version>5.15.8</activemq.version>
+        
       </properties>
 
    <build>
@@ -170,6 +172,16 @@
 			<artifactId>mhu-osgi-services</artifactId>
 			<version>${osgitools.version}</version>
 			<scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>activemq-core</artifactId>
+                    <groupId>org.apache.activemq</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>activemq-osgi</artifactId>
+                </exclusion>
+            </exclusions>
        	</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
