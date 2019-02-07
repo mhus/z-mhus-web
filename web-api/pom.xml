@@ -54,6 +54,25 @@
 	</build>
 
 	<dependencies>
+	<dependency>
+		<groupId>de.mhus.osgi</groupId>
+		<artifactId>mhu-osgi-services</artifactId>
+		<version>${osgitools.version}</version>
+		<exclusions>
+			<exclusion>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-core</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-osgi</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-client</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
 	</dependencies>
 
 
