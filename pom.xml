@@ -58,8 +58,8 @@
     	
         <scr.packages>*</scr.packages>
         <felix.scr.version>2.1.14</felix.scr.version>
-        <karaf.version>4.2.2</karaf.version>
-        <karaf.tool.version>4.2.2</karaf.tool.version>
+        <karaf.version>4.2.3</karaf.version>
+        <karaf.tool.version>4.2.3</karaf.tool.version>
         <bndlib.version>2.4.0</bndlib.version>
         <felix.metatype.version>1.2.2</felix.metatype.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
