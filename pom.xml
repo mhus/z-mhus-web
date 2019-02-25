@@ -50,11 +50,11 @@
     </developer>
   </developers>
     <properties>
-    	<mhulib.version>3.5.0-SNAPSHOT</mhulib.version>
-  		<osgitools.version>1.5.0-SNAPSHOT</osgitools.version>
-  		<sop.version>1.5.0-SNAPSHOT</sop.version>
-  		<ports.version>1.3.6</ports.version>
-    	<transform.version>1.5.0-SNAPSHOT</transform.version>
+    	<mhulib.version>3.5.1-SNAPSHOT</mhulib.version>
+  		<osgitools.version>1.5.1-SNAPSHOT</osgitools.version>
+  		<sop.version>1.5.1-SNAPSHOT</sop.version>
+  		<ports.version>1.3.7</ports.version>
+    	<transform.version>1.5.1-SNAPSHOT</transform.version>
     	
         <scr.packages>*</scr.packages>
         <felix.scr.version>2.1.14</felix.scr.version>
