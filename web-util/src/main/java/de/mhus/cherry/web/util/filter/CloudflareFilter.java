@@ -24,7 +24,7 @@ import de.mhus.lib.core.MPassword;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;
-import de.mhus.lib.core.io.http.MHttpClientBuilder;
+import de.mhus.lib.core.io.http.MHttp;
 import de.mhus.lib.core.net.Subnet;
 import de.mhus.lib.core.util.Base64;
 import de.mhus.lib.core.util.MUri;
@@ -171,7 +171,7 @@ public class CloudflareFilter extends MLog implements WebFilter {
 			{
 				try {
 					HttpGet get = new HttpGet(url);
-					HttpResponse res = new MHttpClientBuilder().setUseSystemProperties(true).execute(get);
+					HttpResponse res = MHttp.getSharedClient().execute(get);
 					if (res.getStatusLine().getStatusCode() != 200) {
 						log().e("Failed to get IPs from cloudflare",res.getStatusLine().getReasonPhrase(),url);
 					} else {
