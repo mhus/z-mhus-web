@@ -23,8 +23,8 @@ public class CherryServlet extends HttpServlet {
 			throws ServletException, IOException {
 	
 		InternalCallContext call = null;
+		CherryApiImpl.instance().beginRequest(this, request, response);
 		try {
-			
 			call = CherryApiImpl.instance().createCallContext(this, request, response);
 			if (call == null) {
 				sendNotFoundError(response);
@@ -36,6 +36,8 @@ public class CherryServlet extends HttpServlet {
 		} catch (Throwable t) {
 			MLogUtil.log().w(t);
 			sendInternalError(response,t);
+		} finally {
+			CherryApiImpl.instance().endRequest(this, request, response);
 		}
 		
 	}

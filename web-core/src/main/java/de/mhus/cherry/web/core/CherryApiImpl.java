@@ -25,6 +25,7 @@ import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.cfg.CfgInt;
+import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.servlet.security.SecurityApi;
 import de.mhus.osgi.services.util.MServiceTracker;
@@ -205,4 +206,22 @@ public class CherryApiImpl extends MLog implements CherryApi {
 		addVirtualHost(host);
 	}
 
+	public void beginRequest(Servlet servlet, HttpServletRequest request,
+	        HttpServletResponse response) {
+		if (request != null) {
+			String trace = request.getParameter("_trace");
+			if (trace != null) {
+				request.setAttribute("_trace", "on");
+				MLogUtil.setTrailConfig(MLogUtil.TRAIL_SOURCE_REST, trace);
+			}
+		}
+	}
+
+	public void endRequest(Servlet servlet, HttpServletRequest request,
+	        HttpServletResponse response) {
+		if (request.getAttribute("_trace") != null) {
+			MLogUtil.releaseTrailConfig();
+		}
+	}
+	
 }
