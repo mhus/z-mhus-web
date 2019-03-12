@@ -126,7 +126,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
                     }
                 }
                 types.put(type.getName(), type);
-                log().i("Found Type",type.getName(),type.getReferences(),type.getMimeType(),type.getHeaders());
+                log().i("add Type",type.getName(),type.getReferences(),type.getMimeType(),type.getHeaders());
             }
         }
         
@@ -199,7 +199,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 
     protected void prepareHead(CallContext context, String fileSuffix, String path) {
         fileSuffix = fileSuffix.trim().toLowerCase();
-        log().i("prepareHead",fileSuffix,path);
+        //log().i("prepareHead",fileSuffix,path);
         TypeDefinition type = types.get("." + fileSuffix);
         if (type == null)
             type = types.get("*");
