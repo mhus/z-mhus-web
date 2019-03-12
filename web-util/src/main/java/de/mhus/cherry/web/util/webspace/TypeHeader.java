@@ -59,4 +59,8 @@ public class TypeHeader {
             value = (new MPeriod(definition.substring(4)).getAllMilliseconds() + System.currentTimeMillis());
     }
 
+    @Override
+    public String toString() {
+        return key + "=" + value + "," + definition;
+    }
 }

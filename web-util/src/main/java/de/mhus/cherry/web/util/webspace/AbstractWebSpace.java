@@ -124,8 +124,8 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
                         type.addHeader(headerDef.getName(), headerDef.getString("value"));
                     }
                 }
-                
-                types.put(name, type);
+                types.put(type.getName(), type);
+                log().i("Found Type",type.getName(),type.getReferences(),type.getMimeType(),type.getHeaders());
             }
         }
         
