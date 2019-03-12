@@ -115,7 +115,8 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
             for (IConfig typeDef : cServer.getNode("types").getNodes()) {
                 TypeDefinition type = new TypeDefinition();
                 type.setName(typeDef.getString("name"));
-                type.setReferences(MConfig.toStringArray(typeDef.getNode("references").getNodes(), "value"));
+                if (typeDef.getNode("references") != null)
+                    type.setReferences(MConfig.toStringArray(typeDef.getNode("references").getNodes(), "value"));
                 type.setMimeType(typeDef.getString("mimetype", null));
 
                 if (typeDef.getNode("headers") != null) {
