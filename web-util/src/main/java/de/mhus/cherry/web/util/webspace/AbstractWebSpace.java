@@ -197,6 +197,19 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		return new File(configRoot, path);
 	}
 
+	@Override
+    public boolean prepareHead(CallContext context, String t) {
+        t = t.trim().toLowerCase();
+        TypeDefinition type = types.get(t);
+        if (type == null) return false;
+        HttpServletResponse resp = context.getHttpResponse();
+        addHeaders(type, resp, 0);
+        if (type.getMimeType() != null) {
+            resp.setContentType(type.getMimeType());
+        }
+        return true;
+	}
+	
     protected void prepareHead(CallContext context, String fileSuffix, String path) {
         fileSuffix = fileSuffix.trim().toLowerCase();
         //log().i("prepareHead",fileSuffix,path);
