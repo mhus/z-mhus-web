@@ -120,8 +120,9 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
                 type.setMimeType(typeDef.getString("mimetype", null));
 
                 if (typeDef.getNode("headers") != null) {
-                    for (IConfig headerDef : typeDef.getNode("headers").getNodes()) {
-                        type.addHeader(headerDef.getName(), headerDef.getString("value"));
+                    IConfig headersDef = typeDef.getNode("headers");
+                    for (String key : headersDef.getPropertyKeys()) {
+                        type.addHeader(key, headersDef.getString(key));
                     }
                 }
                 types.put(type.getName(), type);
