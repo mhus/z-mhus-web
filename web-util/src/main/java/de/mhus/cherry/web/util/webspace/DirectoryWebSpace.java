@@ -107,13 +107,11 @@ public class DirectoryWebSpace extends AbstractWebSpace {
 	}
 
 	protected void prepareHead(CallContext context, File file) {
-		String mimeType = getMimeType(file.getName());
 		HttpServletResponse resp = context.getHttpResponse();
-		if (mimeType != null)
-			resp.setContentType(mimeType);
 		resp.setContentLengthLong(file.length());
 		resp.setCharacterEncoding(charsetEncoding);
 		resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(file.lastModified()));
+		super.prepareHead(context, MFile.getFileSuffix(file), file.getAbsolutePath());
 	}
 
 }

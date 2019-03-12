@@ -252,12 +252,10 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	}
 
 	protected void prepareHead(CallContext context, File from, String path) {
-		String mimeType = getMimeType(path);
 		HttpServletResponse resp = context.getHttpResponse();
-		if (mimeType != null)
-			resp.setContentType(mimeType);
 		resp.setCharacterEncoding(charsetEncoding);
 		resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(from.lastModified()));
+		super.prepareHead(context, MFile.getFileSuffix(from), path);
 	}
 
 	public File findTemplateFile(String path) {

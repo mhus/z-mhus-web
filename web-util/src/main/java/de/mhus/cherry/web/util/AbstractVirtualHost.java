@@ -288,9 +288,8 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	}
 
 	@Override
-	public String getMimeType(String file) {
-		String extension = MFile.getFileSuffix(file);
-		return MFile.getMimeType(extension, defaultMimeType);
+	public String getMimeType(String suffix) {
+		return MFile.getMimeType(suffix, defaultMimeType);
 	}
 
 	@Override

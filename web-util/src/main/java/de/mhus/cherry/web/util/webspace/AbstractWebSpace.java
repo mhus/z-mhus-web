@@ -2,9 +2,13 @@ package de.mhus.cherry.web.util.webspace;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletResponse;
+
 import de.mhus.cherry.web.api.WebArea;
+import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.api.VirtualWebSpace;
@@ -24,6 +28,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 	private File documentRoot;
 	private FileWatch configWatch;
 	private Date updated;
+	protected HashMap<String, TypeDefinition> types = new HashMap<>();
 	
 	public void setRoot(String rootPath) throws MException {
 		root = new File(rootPath);
@@ -106,6 +111,23 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 			}
 		}
 		
+        if (cServer.getNode("types") != null) {
+            for (IConfig typeDef : cServer.getNode("types").getNodes()) {
+                TypeDefinition type = new TypeDefinition();
+                type.setName(typeDef.getString("name"));
+                type.setReferences(MConfig.toStringArray(typeDef.getNode("references").getNodes(), "value"));
+                type.setMimeType(typeDef.getString("mimetype", null));
+
+                if (typeDef.getNode("headers") != null) {
+                    for (IConfig headerDef : typeDef.getNode("headers").getNodes()) {
+                        type.addHeader(headerDef.getName(), headerDef.getString("value"));
+                    }
+                }
+                
+                types.put(name, type);
+            }
+        }
+        
 		if (cServer.getBoolean("watchConfiguration", true)) {
 			configWatch = new FileWatch(new File(configRoot, configFile + ".json"), new FileWatch.Listener() { // TODO could also be another extension
 				
@@ -172,5 +194,36 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 			return new File(path);
 		return new File(configRoot, path);
 	}
+
+    protected void prepareHead(CallContext context, String fileSuffix, String path) {
+        fileSuffix = fileSuffix.trim().toLowerCase();
+        TypeDefinition type = types.get("." + fileSuffix);
+        if (type == null)
+            type = types.get("*");
+        if (type == null)
+            return;
+        HttpServletResponse resp = context.getHttpResponse();
+        addHeaders(type, resp, 0);
+        if (type.getMimeType() != null) {
+            resp.setContentType(type.getMimeType());
+        } else {
+            String mimeType = getMimeType(fileSuffix);
+            if (mimeType != null)
+                resp.setContentType(mimeType);
+        }
+    }
+
+    protected void addHeaders(TypeDefinition type, HttpServletResponse resp, int level) {
+        if (level > 20) return;
+        for (TypeHeader header : type.getHeaders())
+            header.appendTo(resp);
+        String[] refs = type.getReferences();
+        if (refs != null)
+            for (String ref : refs) {
+                TypeDefinition type2 = types.get(ref);
+                if (type2 != null)
+                    addHeaders(type2, resp, level+1);
+            }
+    }
 	
 }
