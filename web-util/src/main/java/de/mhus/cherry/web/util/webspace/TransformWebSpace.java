@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
+import de.mhus.cherry.web.util.CherryWebUtil;
 import de.mhus.cherry.web.util.webspace.AbstractWebSpace;
 import de.mhus.cherry.web.api.CanTransform;
 import de.mhus.lib.core.MCollection;
@@ -35,6 +36,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	protected File htmlFooter = null;
 	protected File errorTemplate = null;
 	protected MProperties environment = null;
+    private boolean csrfEnabled;
 	
 	@Override
 	public void start(CherryApi api) throws MException {
@@ -81,6 +83,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 					log().w("ignore error template",errorTemplate.getAbsolutePath());
 				}
 			}
+			csrfEnabled = cDir.getBoolean("csrfEnabled", true);
 			IConfig cEnv = cDir.getNode("environment");
 			if (cEnv != null) {
 				for (String key : cEnv.getPropertyKeys()) {
@@ -245,6 +248,8 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		param.put("sessionId", context.getSessionId());
 		param.put("request", context.getHttpRequest().getParameterMap());
 		param.put("path", context.getHttpPath());
+		if (csrfEnabled)
+		    param.put("csrfToken", CherryWebUtil.createCsrfToken(context));
 		
 		OutputStream os = context.getOutputStream();
 		TransformUtil.transform(from, os, getDocumentRoot(), null, null, param, null);

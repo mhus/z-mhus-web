@@ -10,7 +10,7 @@ public class TypeHeader {
     private Object value;
     private String definition;
     private long lastUpdate;
-    private long timeout = MPeriod.MINUTE_IN_MILLISECOUNDS;
+    private long timeout = MPeriod.MINUTE_IN_MILLISECOUNDS * 15;
 
     public TypeHeader(String key, String value) {
         this.key = key;
