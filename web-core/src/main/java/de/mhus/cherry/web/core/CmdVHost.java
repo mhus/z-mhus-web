@@ -9,6 +9,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.osgi.framework.Bundle;
 
 import de.mhus.cherry.web.api.CallContext;
+import de.mhus.cherry.web.api.TypeHeaderFactory;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.console.ConsoleTable;
@@ -17,7 +18,7 @@ import de.mhus.lib.core.console.ConsoleTable;
 @Service
 public class CmdVHost implements Action {
 
-	@Argument(index=0, name="cmd", required=true, description="Command: list, info, config, use, release, current, restart", multiValued=false)
+	@Argument(index=0, name="cmd", required=true, description="Command: list, info, config, use, release, current, restart, headerfactories", multiValued=false)
 	String cmd;
 	
 	@Argument(index=1, name="vhost", required=false, description="Virtual host name", multiValued=false)
@@ -71,6 +72,13 @@ public class CmdVHost implements Action {
 			printCurrentVHost();
 			return null;
 		}
+		
+        if (cmd.equals("headerfactories")) {
+            for (TypeHeaderFactory factory : CherryApiImpl.instance().getTypeHeaderFactories()) {
+                System.out.println("> " + factory.getClass().getCanonicalName() + ": " + factory);
+            }
+        }
+
 
 		VirtualHost vhost = CherryApiImpl.instance().findVirtualHost(host);
 		if (vhost == null) {

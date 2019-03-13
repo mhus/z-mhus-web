@@ -1,10 +1,12 @@
-package de.mhus.cherry.web.util.webspace;
+package de.mhus.cherry.web.api;
 
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.lib.core.MPeriod;
+import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.errors.MException;
 
-public class TypeHeader {
+public class TypeHeaderDynamic implements TypeHeader {
 
     private String key;
     private Object value;
@@ -12,22 +14,22 @@ public class TypeHeader {
     private long lastUpdate;
     private long timeout = MPeriod.MINUTE_IN_MILLISECOUNDS * 15;
 
-    public TypeHeader(String key, String value) {
+    public TypeHeaderDynamic(String key, String value) {
         this.key = key;
-        if (value.startsWith("$"))
-            this.definition = value;
-        else
-            this.value = value;
+        this.definition = value;
     }
 
+    @Override
     public String getKey() {
         return key;
     }
 
+    @Override
     public Object getValue() {
         return value;
     }
 
+    @Override
     public void setValue(String value) {
         this.value = value;
     }
@@ -36,6 +38,7 @@ public class TypeHeader {
         return definition;
     }
 
+    @Override
     public void appendTo(HttpServletResponse resp) {
         updateValue();
         if (value == null) return;
@@ -62,5 +65,17 @@ public class TypeHeader {
     @Override
     public String toString() {
         return key + "=" + value + "," + definition;
+    }
+    
+    public static class Factory implements TypeHeaderFactory {
+
+        @Override
+        public TypeHeader create(IConfig header) throws MException {
+            String key = header.getString("key", null);
+            String value = header.getString("definition",null);
+            if (key == null || value == null) return null;
+            return new TypeHeaderDynamic(key, value);
+        }
+
     }
 }

@@ -2,6 +2,7 @@ package de.mhus.cherry.web.core;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -16,15 +17,24 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.api.InternalCallContext;
+import de.mhus.cherry.web.api.TypeHeader;
+import de.mhus.cherry.web.api.TypeHeaderDynamic;
+import de.mhus.cherry.web.api.TypeHeaderFactory;
+import de.mhus.cherry.web.api.TypeHeaderSimple;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebSession;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.cfg.CfgInt;
+import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.servlet.security.SecurityApi;
@@ -41,6 +51,10 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	private WeakHashMap<String, WebSession> globalSession = new WeakHashMap<>();
 	private HashMap<String,VirtualHost> vHosts = new HashMap<>();
 	private HashMap<String,VirtualHost> vHostsCache = new HashMap<>();
+	private LinkedList<TypeHeaderFactory> typeHeaderFactories = new LinkedList<>();
+	{
+	    typeHeaderFactories.add(new TypeHeaderDynamic.Factory());
+	}
 	
 	MServiceTracker<VirtualHost> vHostTracker = new MServiceTracker<VirtualHost>(VirtualHost.class) {
 		
@@ -223,5 +237,41 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			MLogUtil.releaseTrailConfig();
 		}
 	}
+
+    @Override
+    public TypeHeader createTypeHeader(IConfig header) throws MException {
+        synchronized (typeHeaderFactories) {
+            for (TypeHeaderFactory factory : typeHeaderFactories) {
+                TypeHeader obj = factory.create(header);
+                if (obj != null)
+                    return obj;
+            }
+        }
+        // fallback
+        String key = header.getString("key");
+        String value = header.getString("value","");
+        return new TypeHeaderSimple(key, value);
+    }
+
+    @Reference(
+            service=TypeHeaderFactory.class,
+            cardinality=ReferenceCardinality.MULTIPLE,
+            policy=ReferencePolicy.DYNAMIC,
+            unbind="removeTypeHeaderFactory")
+    public void addTypeHeaderFactory(TypeHeaderFactory factory) {
+        synchronized (typeHeaderFactories) {
+            typeHeaderFactories.addFirst(factory);
+        }
+    }
 	
+    public void removeTypeHeaderFactory(TypeHeaderFactory factory) {
+        synchronized (typeHeaderFactories) {
+            typeHeaderFactories.remove(factory);
+        }
+    }
+    
+    public LinkedList<TypeHeaderFactory> getTypeHeaderFactories() {
+        return typeHeaderFactories;
+    }
+    
 }

@@ -53,6 +53,6 @@ public interface VirtualHost {
 
 	File findFile(String path);
 
-    boolean prepareHead(CallContext context, String type);
+	TypeDefinition prepareHead(CallContext context, String type);
 
 }

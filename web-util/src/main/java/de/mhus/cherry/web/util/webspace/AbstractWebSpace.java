@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import de.mhus.cherry.web.api.WebArea;
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
+import de.mhus.cherry.web.api.TypeDefinition;
+import de.mhus.cherry.web.api.TypeHeader;
 import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.api.VirtualWebSpace;
 import de.mhus.cherry.web.util.AbstractVirtualHost;
@@ -115,18 +117,18 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
             for (IConfig typeDef : cServer.getNode("types").getNodes()) {
                 TypeDefinition type = new TypeDefinition();
                 type.setName(typeDef.getString("name"));
-                if (typeDef.getNode("references") != null)
-                    type.setReferences(MConfig.toStringArray(typeDef.getNode("references").getNodes(), "value"));
+                if (typeDef.getNode("extends") != null)
+                    type.setExtends(MConfig.toStringArray(typeDef.getNode("extends").getNodes(), "value"));
                 type.setMimeType(typeDef.getString("mimetype", null));
 
                 if (typeDef.getNode("headers") != null) {
                     IConfig headersDef = typeDef.getNode("headers");
-                    for (String key : headersDef.getPropertyKeys()) {
-                        type.addHeader(key, headersDef.getString(key));
+                    for (IConfig header : headersDef.getNodes()) {
+                        type.addHeader(api.createTypeHeader( header ) );
                     }
                 }
                 types.put(type.getName(), type);
-                log().i("add Type",type.getName(),type.getReferences(),type.getMimeType(),type.getHeaders());
+                log().i("add Type",type.getName(),type.getExtends(),type.getMimeType(),type.getHeaders());
             }
         }
         
@@ -198,42 +200,35 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 	}
 
 	@Override
-    public boolean prepareHead(CallContext context, String t) {
+    public TypeDefinition prepareHead(CallContext context, String t) {
         t = t.trim().toLowerCase();
         TypeDefinition type = types.get(t);
-        if (type == null) return false;
+        if (type == null)
+            type = types.get("*");
+        if (type == null) return null;
         HttpServletResponse resp = context.getHttpResponse();
         addHeaders(type, resp, 0);
         if (type.getMimeType() != null) {
             resp.setContentType(type.getMimeType());
         }
-        return true;
+        return type;
 	}
 	
     protected void prepareHead(CallContext context, String fileSuffix, String path) {
-        fileSuffix = fileSuffix.trim().toLowerCase();
-        //log().i("prepareHead",fileSuffix,path);
-        TypeDefinition type = types.get("." + fileSuffix);
-        if (type == null)
-            type = types.get("*");
-        if (type == null)
-            return;
-        HttpServletResponse resp = context.getHttpResponse();
-        addHeaders(type, resp, 0);
-        if (type.getMimeType() != null) {
-            resp.setContentType(type.getMimeType());
-        } else {
+        TypeDefinition type = prepareHead(context, "." + fileSuffix);
+        if (type.getMimeType() == null) {
+            HttpServletResponse resp = context.getHttpResponse();
             String mimeType = getMimeType(fileSuffix);
             if (mimeType != null)
                 resp.setContentType(mimeType);
         }
     }
 
-    protected void addHeaders(TypeDefinition type, HttpServletResponse resp, int level) {
+    private void addHeaders(TypeDefinition type, HttpServletResponse resp, int level) {
         if (level > 20) return;
         for (TypeHeader header : type.getHeaders())
             header.appendTo(resp);
-        String[] refs = type.getReferences();
+        String[] refs = type.getExtends();
         if (refs != null)
             for (String ref : refs) {
                 TypeDefinition type2 = types.get(ref);

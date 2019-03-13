@@ -1,4 +1,4 @@
-package de.mhus.cherry.web.util.webspace;
+package de.mhus.cherry.web.api;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,11 +17,11 @@ public class TypeDefinition {
         this.refs = refs.split(",");
     }
 
-    public void setReferences(String[] refs) {
+    public void setExtends(String[] refs) {
         this.refs = refs;
     }
 
-    public String[] getReferences() {
+    public String[] getExtends() {
         return refs;
     }
 
@@ -35,8 +35,8 @@ public class TypeDefinition {
         this.name = name;
     }
 
-    public void addHeader(String key, String value) {
-        headers.add(new TypeHeader(key, value));
+    public void addHeader(TypeHeader header) {
+        headers.add(header);
     }
 
     public String getMimeType() {
