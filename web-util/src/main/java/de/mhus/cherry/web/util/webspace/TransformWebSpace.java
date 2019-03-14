@@ -284,7 +284,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	@Override
 	public void sendError(CallContext context, int sc, Throwable t) {
 		if (traceAccess)
-			log().i(name,context.getHttpHost(),"error",context.getHttpRequest().getRemoteAddr(),context.getHttpMethod(),context.getHttpPath(),sc);
+			log().d(name,context.getHttpHost(),"error",context.getHttpRequest().getRemoteAddr(),context.getHttpMethod(),context.getHttpPath(),sc);
 		if (traceErrors) {
 			if (t == null) {
 				try {
@@ -293,7 +293,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 					t = ex;
 				}
 			}
-			log().i(name,context.getHttpHost(),sc,t);
+			log().d(name,context.getHttpHost(),sc,t);
 		}
 		if (context.getHttpResponse().isCommitted()) {
 			log().w("Can't send error to committed content",name,sc);

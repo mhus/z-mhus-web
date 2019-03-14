@@ -117,6 +117,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	
 	@Deactivate
 	public void doDeactivate(ComponentContext ctx) {
+        log().i("Stop Cherry");
 		vHostTracker.stop();
 		instance = null;
 	}
