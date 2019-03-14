@@ -315,6 +315,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	                || 
 	                out.getLong("_cfg_size", 0) != cfgFile.length()
 	            ) {
+	            log().d("Load file config",cfgFile);
 	            out = MProperties.load(cfgFile);
 	            out.setLong("_modified", cfgFile.lastModified());
 	            out.setLong("_size", cfgFile.length());
