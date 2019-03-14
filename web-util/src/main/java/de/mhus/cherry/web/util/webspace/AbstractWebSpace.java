@@ -216,7 +216,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 	
     protected void prepareHead(CallContext context, String fileSuffix, String path) {
         TypeDefinition type = prepareHead(context, "." + fileSuffix);
-        if (type.getMimeType() == null) {
+        if (type != null && type.getMimeType() == null) {
             HttpServletResponse resp = context.getHttpResponse();
             String mimeType = getMimeType(fileSuffix);
             if (mimeType != null)
