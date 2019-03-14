@@ -4,15 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.UUID;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.lib.core.M;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MPeriod;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.cfg.CfgLong;
+import de.mhus.lib.core.crypt.MRandom;
 import de.mhus.lib.core.logging.MLogUtil;
 
 public class CherryWebUtil {
@@ -42,16 +43,21 @@ public class CherryWebUtil {
                 tokens = new LinkedList<String>();
                 context.getSession().put("_csrftokens", tokens);
             }
-            String token = UUID.randomUUID().toString() + "-" + System.currentTimeMillis();
-            tokens.add(token);
+            StringBuilder token = new StringBuilder();
+            MRandom rnd = MApi.lookup(MRandom.class);
+            for (int i = 0; i < 40; i++)
+                token.append(rnd.getChar());
+            token.append('-').append(System.currentTimeMillis());
+            String tokenStr = token.toString();
+            tokens.add(tokenStr);
             while (tokens.size() > 10)
                 tokens.removeFirst();
-            return token;
+            return tokenStr;
         }
     }
     
     public static boolean isCsrfToken(CallContext context, String token) {
-        if (token == null || token.length() == 0 || token.length() > 50) return false;
+        if (token == null || token.length() == 0 || token.length() > 60) return false;
         String timeStr = MString.afterLastIndex(token, '-');
         if (timeStr == null) return false;
         int time = M.c(timeStr, 0);
