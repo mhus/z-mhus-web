@@ -2,10 +2,8 @@ package de.mhus.cherry.web.util;
 
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -43,7 +41,6 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 	protected LinkedList<WebFilter> filters = new LinkedList<>();
 	protected LinkedList<WebFilter> filtersReverse = new LinkedList<>();
 	protected LinkedList<ActiveAreaContainer> areas = new LinkedList<>();
-	protected HashMap<String, String> headers = new HashMap<>();
 	protected String defaultMimeType = MFile.DEFAULT_MIME;
 	protected String charsetEncoding = MString.CHARSET_UTF_8;
 
@@ -98,9 +95,6 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 			String method = call.getHttpMethod();
 			if (traceAccess)
 				log().d("access",name,call.getHttpRequest().getRemoteAddr(),method,call.getHttpPath());
-			
-			for (Entry<String, String> entry : headers.entrySet())
-				call.getHttpResponse().setHeader(entry.getKey(), entry.getValue());
 			
 			switch (method) {
 			case "get":
@@ -162,7 +156,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
 
 	protected void doOptionsRequest(CallContext context) throws Exception {
 		HttpServletResponse res = context.getHttpResponse();
-		res.setHeader("cherry-name", context.getVirtualHost().getName());
+		res.setHeader("Name", context.getVirtualHost().getName());
 		res.setHeader("Allow", config.getString("allow", "GET,HEAD,POST,PUT,DELETE,OPTIONS,TRACE"));
 	}
 

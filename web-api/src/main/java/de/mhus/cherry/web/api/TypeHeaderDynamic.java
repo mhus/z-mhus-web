@@ -13,10 +13,12 @@ public class TypeHeaderDynamic implements TypeHeader {
     private String definition;
     private long lastUpdate;
     private long timeout = MPeriod.MINUTE_IN_MILLISECOUNDS * 15;
+    private boolean add;
 
-    public TypeHeaderDynamic(String key, String value) {
+    public TypeHeaderDynamic(String key, String value, boolean add) {
         this.key = key;
         this.definition = value;
+        this.add = add;
     }
 
     @Override
@@ -42,13 +44,23 @@ public class TypeHeaderDynamic implements TypeHeader {
     public void appendTo(HttpServletResponse resp) {
         updateValue();
         if (value == null) return;
-        if (value instanceof Long)
-            resp.addDateHeader(key, (Long)value);
-        else
-        if (value instanceof Integer)
-            resp.setIntHeader(key, (Integer)value);
-        else
-            resp.setHeader(key, value.toString());
+        if (value instanceof Long) {
+            if (add)
+                resp.addDateHeader(key, (Long)value);
+            else
+                resp.setDateHeader(key, (Long)value);
+        } else
+        if (value instanceof Integer) {
+            if (add)
+                resp.addIntHeader(key, (Integer)value);
+            else
+                resp.setIntHeader(key, (Integer)value);
+        } else {
+            if (add)
+                resp.addHeader(key, value.toString());
+            else
+                resp.setHeader(key, value.toString());
+        }
     }
 
     private void updateValue() {
@@ -73,9 +85,15 @@ public class TypeHeaderDynamic implements TypeHeader {
         public TypeHeader create(IConfig header) throws MException {
             String key = header.getString("key", null);
             String value = header.getString("definition",null);
+            boolean add = header.getBoolean("add", false);
             if (key == null || value == null) return null;
-            return new TypeHeaderDynamic(key, value);
+            return new TypeHeaderDynamic(key, value, add);
         }
 
+    }
+
+    @Override
+    public boolean addHeaderLine() {
+        return add;
     }
 }

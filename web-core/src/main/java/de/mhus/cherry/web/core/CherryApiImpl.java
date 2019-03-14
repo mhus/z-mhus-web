@@ -249,9 +249,11 @@ public class CherryApiImpl extends MLog implements CherryApi {
             }
         }
         // fallback
-        String key = header.getString("key");
+        String key = header.getString("key",null);
+        if (key == null) return null;
         String value = header.getString("value","");
-        return new TypeHeaderSimple(key, value);
+        boolean add = header.getBoolean("add", false);
+        return new TypeHeaderSimple(key, value, add);
     }
 
     @Reference(

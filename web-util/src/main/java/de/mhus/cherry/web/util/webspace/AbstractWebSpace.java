@@ -3,17 +3,16 @@ package de.mhus.cherry.web.util.webspace;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
-import de.mhus.cherry.web.api.WebArea;
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.api.TypeDefinition;
 import de.mhus.cherry.web.api.TypeHeader;
-import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.api.VirtualWebSpace;
+import de.mhus.cherry.web.api.WebArea;
+import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.util.AbstractVirtualHost;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
@@ -65,12 +64,6 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 		// get config root
 		if (cServer.isProperty("configurationRoot"))
 			configRoot = findProjectFile(cServer.getString("configurationRoot"));
-		// get default header entries
-		IConfig cHeaders = cServer.getNode("headers");
-		if (cHeaders != null) {
-			for (Entry<String, Object> entry : cHeaders.entrySet())
-				headers.put(entry.getKey(), String.valueOf(entry.getValue()));
-		}
 		// document root
 		documentRoot = findProjectFile(cServer.getString("documentRoot", "html"));
 		// trace options
@@ -124,7 +117,9 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
                 if (typeDef.getNode("headers") != null) {
                     IConfig headersDef = typeDef.getNode("headers");
                     for (IConfig header : headersDef.getNodes()) {
-                        type.addHeader(api.createTypeHeader( header ) );
+                        TypeHeader obj = api.createTypeHeader( header );
+                        if (obj != null)
+                            type.addHeader(obj);
                     }
                 }
                 types.put(type.getName(), type);

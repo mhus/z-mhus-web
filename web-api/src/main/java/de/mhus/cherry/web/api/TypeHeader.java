@@ -11,5 +11,7 @@ public interface TypeHeader {
     public void setValue(String value);
 
     public void appendTo(HttpServletResponse resp);
+    
+    public boolean addHeaderLine();
 
 }
