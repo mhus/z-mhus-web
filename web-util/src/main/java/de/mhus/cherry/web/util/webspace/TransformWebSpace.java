@@ -9,20 +9,22 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.cherry.web.api.CallContext;
+import de.mhus.cherry.web.api.CanTransform;
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.util.CherryWebUtil;
-import de.mhus.cherry.web.util.webspace.AbstractWebSpace;
-import de.mhus.cherry.web.api.CanTransform;
+import de.mhus.lib.core.IReadProperties;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MCollection;
 import de.mhus.lib.core.MDate;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
+import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.core.crypt.MRandom;
 import de.mhus.lib.core.io.http.MHttp;
+import de.mhus.lib.core.util.SoftHashMap;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.transform.api.TransformUtil;
 
@@ -33,13 +35,17 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	protected String[] extensionOrder = new String[] { ".twig" };
 	protected String[] removeExtensions = new String[] { ".html", ".htm" };
 	protected String[] htmlExtensions = new String[] { ".html", ".htm" };
+    protected String[] denyExtensions = new String[] { ".cfg" };
+    protected String cfgExtension = ".cfg";
 	protected File templateRoot;
-	protected File htmlHeader = null;
-	protected File htmlFooter = null;
 	protected File errorTemplate = null;
 	protected MProperties environment = null;
     private boolean csrfEnabled;
     private int stamp = 0;
+    private SoftHashMap<File, MProperties> cfgCache = new SoftHashMap<>();
+    private MProperties cfgDefault = new MProperties();
+    private String htmlHeader;
+    private String htmlFooter;
 	
 	@Override
 	public void start(CherryApi api) throws MException {
@@ -59,29 +65,35 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 				templateRoot = findTemplateFile(cDir.getString("templateRoot"));
 			if (cDir.isProperty("extensionOrder")) {
 				extensionOrder = MConfig.toStringArray(cDir.getNode("extensionOrder").getNodes(), "value");
-				MCollection.updateEach(extensionOrder, e -> "." + e );
+				MCollection.updateEach(extensionOrder, e -> "." + e.toLowerCase() );
 			}
+            if (cDir.isProperty("denyExtensions")) {
+                denyExtensions = MConfig.toStringArray(cDir.getNode("denyExtensions").getNodes(), "value");
+                MCollection.updateEach(denyExtensions, e -> "." + e.toLowerCase() );
+            }
 			if (cDir.isProperty("removeExtensions")) {
 				removeExtensions = MConfig.toStringArray(cDir.getNode("removeExtensions").getNodes(), "value");
-				MCollection.updateEach(removeExtensions, e -> "." + e );
+				MCollection.updateEach(removeExtensions, e -> "." + e.toLowerCase() );
 			}
 			if (cDir.isProperty("htmlExtensions")) {
 				htmlExtensions = MConfig.toStringArray(cDir.getNode("htmlExtensions").getNodes(), "value");
-				MCollection.updateEach(htmlExtensions, e -> "." + e );
+				MCollection.updateEach(htmlExtensions, e -> "." + e.toLowerCase() );
 			}
 			if (cDir.isProperty("header")) {
 				String header = cDir.getString("header");
-				htmlHeader = new File(getDocumentRoot(), header);
-				if (!htmlHeader.exists()) {
-					log().w("ignore html header",htmlHeader.getAbsolutePath());
-				}
+				File htmlHeaderF = new File(getDocumentRoot(), header);
+				if (!htmlHeaderF.exists()) {
+					log().w("ignore html header",htmlHeaderF.getAbsolutePath());
+				} else
+				    htmlHeader = htmlHeaderF.getAbsolutePath();
 			}
 			if (cDir.isProperty("footer")) {
 				String footer = cDir.getString("footer");
-				htmlFooter = new File(getDocumentRoot(), footer);
-				if (!htmlFooter.exists()) {
-					log().w("ignore html footer",htmlFooter.getAbsolutePath());
-				}
+				File htmlFooterF = new File(getDocumentRoot(), footer);
+				if (!htmlFooterF.exists()) {
+					log().w("ignore html footer",htmlFooterF.getAbsolutePath());
+				} else
+				    htmlFooter = htmlFooterF.getAbsolutePath();
 			}
 			if (cDir.isProperty("error")) {
 				String error = cDir.getString("error");
@@ -90,6 +102,9 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 					log().w("ignore error template",errorTemplate.getAbsolutePath());
 				}
 			}
+			if (cDir.containsKey("cfgExtension"))
+			    cfgExtension = "." + cDir.getString("cfgExtension").toLowerCase();
+			
 			csrfEnabled = cDir.getBoolean("csrfEnabled", true);
 			IConfig cEnv = cDir.getNode("environment");
 			if (cEnv != null) {
@@ -117,11 +132,13 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		String path = context.getHttpPath();
 		path = MFile.normalizePath(path);
 		File file = new File(templateRoot, path);
+		String orgPath = path;
+		String lowerPath = path.toLowerCase();
 		if (file.exists()) {
 			if (file.isDirectory()) {
 				path = path + "/" + index;
 			} else
-			if (hasTransformExtension(path)) {
+			if (hasTransformExtension(lowerPath)) {
 				// path = MString.beforeLastIndex(path, '.');
 				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
@@ -130,11 +147,16 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 				return;
 			}
 		}
-		
-		String orgPath = path;
+		// deny ?
+        for (String extension : denyExtensions) {
+            if (lowerPath.endsWith(extension)) {
+                sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
+                return;
+            }
+        }		
 		// find template
 		for (String extension : removeExtensions) {
-			if (path.endsWith(extension)) {
+			if (lowerPath.endsWith(extension)) {
 				path = path.substring(0, path.length()-extension.length());
 				break;
 			}
@@ -162,13 +184,25 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 			path = path + "/" + index;
 			file = new File(templateRoot, path);
 		}
+		String lowerPath = path.toLowerCase();
+        // deny ?
+        for (String extension : denyExtensions) {
+            if (lowerPath.endsWith(extension)) {
+                sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
+                return;
+            }
+        }
+
 		if (file.exists()) {
+		    
+		    IReadProperties fileConfig = findConfig(file);
+		    
 			if (file.isDirectory()) {
 				log().d("deny directory",file);
 				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
 			}
-			if (hasTransformExtension(path)) {
+			if (hasTransformExtension(lowerPath)) {
 				log().d("deny TransformExtension",path);
 				// path = MString.beforeLastIndex(path, '.');
 				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
@@ -179,16 +213,23 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 					boolean isHtml = hasHtmlExtension(path);
 					OutputStream os = context.getOutputStream();
 					
-					if (isHtml && htmlHeader != null) {
-						doTransform(context, htmlHeader);
+					String htmlHeaderLocal = fileConfig.getString("htmlHeader", htmlHeader);
+					if (isHtml && MString.isSet(htmlHeaderLocal)) {
+						doTransform(context, new File(htmlHeaderLocal), null);
 					}
 					
-					FileInputStream is = new FileInputStream(file);
-					MFile.copyFile(is, os);
-					is.close();
-
-					if (isHtml && htmlFooter != null) {
-						doTransform(context, htmlFooter);
+					String transformType = fileConfig.getString("transform", null);
+					if (MString.isSet(transformType)) {
+                        doTransform(context, file, null);
+					} else {
+    					FileInputStream is = new FileInputStream(file);
+    					MFile.copyFile(is, os);
+    					is.close();
+					}
+					
+					String htmlFooterLocal = fileConfig.getString("htmlFooter", htmlFooter);
+					if (isHtml && MString.isSet(htmlFooterLocal)) {
+						doTransform(context, new File(htmlFooterLocal), null);
 					}
 
 					os.flush();
@@ -216,7 +257,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 			if (file.exists() && file.isFile()) {
 				prepareHead(context,file, orgPath);
 				try {
-					doTransform(context, file);
+					doTransform(context, file, null);
 				} catch (Throwable t) {
 					sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t);
 				}
@@ -227,7 +268,27 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 	}
 
-	public boolean hasTransformExtension(String path) {
+	public IReadProperties findConfig(File file) {
+	    File cfgFile = new File(file, cfgExtension);
+	    if (cfgFile.exists()) {
+	        MProperties out = cfgCache.get(cfgFile);
+	        if (    out == null 
+	                || 
+	                out.getLong("_cfg_modified", 0) != cfgFile.lastModified() 
+	                || 
+	                out.getLong("_cfg_size", 0) != cfgFile.length()
+	            ) {
+	            out = MProperties.load(cfgFile);
+	            out.setLong("_modified", cfgFile.lastModified());
+	            out.setLong("_size", cfgFile.length());
+	            cfgCache.put(cfgFile,out);
+	        }
+	        return out;
+	    }
+        return cfgDefault;
+    }
+
+    public boolean hasTransformExtension(String path) {
 		for (String extension : extensionOrder) {
 			if (path.endsWith(extension)) return true;
 		}
@@ -248,7 +309,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	 * @param from
 	 * @throws Exception 
 	 */
-	protected void doTransform(CallContext context, File from) throws Exception {
+	protected void doTransform(CallContext context, File from, String type) throws Exception {
 		
 		MProperties param = new MProperties(environment);
         param.put("stamp", stamp);
@@ -260,7 +321,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		    param.put("csrfToken", CherryWebUtil.createCsrfToken(context));
 		
 		OutputStream os = context.getOutputStream();
-		TransformUtil.transform(from, os, getDocumentRoot(), null, null, param, null);
+		TransformUtil.transform(from, os, getDocumentRoot(), null, null, param, type);
 		os.flush();
 	}
 
@@ -344,7 +405,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	public void doTransform(CallContext context, String template) throws Exception {
 		template = MFile.normalizePath(template);
 		File from = new File(templateRoot, template);
-		doTransform(context, from);
+		doTransform(context, from, null);
 	}
 
 }
