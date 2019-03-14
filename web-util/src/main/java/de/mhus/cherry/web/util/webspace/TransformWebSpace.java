@@ -306,7 +306,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	}
 	
 	private IReadProperties findConfig(File file) {
-	    File cfgFile = new File(file, cfgExtension);
+	    File cfgFile = new File(file + cfgExtension);
 	    if (cfgFile.exists()) {
 	        MProperties out = cfgCache.get(cfgFile);
 	        if (    out == null 
