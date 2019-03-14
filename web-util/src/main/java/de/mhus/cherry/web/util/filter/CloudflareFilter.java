@@ -53,6 +53,7 @@ public class CloudflareFilter extends MLog implements WebFilter {
 	@Override
 	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		Config config = (Config)call.getVirtualHost().getProperties().get(NAME + instance);
+		String account = "";
 		if (config == null) {
 			send401(call, config);
 			return false;
@@ -60,18 +61,29 @@ public class CloudflareFilter extends MLog implements WebFilter {
 		if (isCloudflare(call.getHttpRequest().getRemoteAddr())) {
 			String remoteIP = getRemoteIp(call.getHttpRequest());
 			call.setRemoteIp(remoteIP);
-			trace(call,config,remoteIP);
 			
-			if (!config.public_) 
-				return doAuth(call, config);
+			if (!config.public_) {
+				account = doAuth(call, config);
+				if (account == null) {
+		            trace(call,account,config,remoteIP);
+		            send401(call, config);
+		            return false;
+				}
+			}
+			trace(call,account,config,remoteIP);
 			
 			return true;
 		} else {
 			String remoteIP = call.getHttpRequest().getRemoteAddr();
 			call.setAttribute(CallContext.REQUEST_REMOTE_IP, remoteIP);
-			trace(call,config,remoteIP);
 			
-			return doAuth(call, config);
+			account = doAuth(call, config);
+			trace(call,account,config,remoteIP);
+            if (account == null) {
+                send401(call, config);
+                return false;
+            }
+            return true;
 		}
 	}
 
@@ -79,15 +91,13 @@ public class CloudflareFilter extends MLog implements WebFilter {
         return request.getHeader("CF-Connecting-IP");
     }
 
-    private boolean doAuth(InternalCallContext call, Config config) throws MException {
+    private String doAuth(InternalCallContext call, Config config) throws MException {
 		String auth = call.getHttpRequest().getHeader("Authorization");  
 		if (auth == null) {
-			send401(call, config);
-			return false;
+			return null;
 		}
         if (!auth.toUpperCase().startsWith("BASIC ")) {   
-			send401(call, config);
-            return false;  // we only do BASIC  
+            return null;  // we only do BASIC  
         }  
         // Get encoded user and password, comes after "BASIC "  
         String userpassEncoded = auth.substring(6);  
@@ -102,19 +112,18 @@ public class CloudflareFilter extends MLog implements WebFilter {
         String accPass = config.accounts.get(account);
         if (accPass != null) {
         		if (MPassword.equals( accPass, pass) )
-        			return true;
+        			return account;
         		else
             		log().d("password not accepted",account);
         } else
         		log().d("user not found",account);
 
-		send401(call, config);
-		return false;
+		return null;
 	}
 
-	private void trace(InternalCallContext call, Config config, String remoteIP) {
+	private void trace(InternalCallContext call, String account, Config config, String remoteIP) {
 		if (call.getVirtualHost().isTraceAccess())
-			log().d("access",call.getVirtualHost().getName(),remoteIP,call.getHttpMethod(),call.getHttpPath());
+			log().d("access",call.getVirtualHost().getName(),account,remoteIP,call.getHttpMethod(),call.getHttpPath());
 	}
 
 	public static boolean isCloudflare(String ip) {
