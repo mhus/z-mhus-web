@@ -57,16 +57,20 @@ public class CherryWebUtil {
     }
     
     public static boolean isCsrfToken(CallContext context, String token) {
+        System.out.println("Token: " + token);
         if (token == null || token.length() == 0 || token.length() > 60) return false;
         String timeStr = MString.afterLastIndex(token, '-');
+        System.out.println("TimeStr: " + timeStr);
         if (timeStr == null) return false;
         int time = M.c(timeStr, 0);
+        System.out.println("Time: " + time);
         if (time <= 0) return false;
         if (MPeriod.isTimeOut(time, CFG_CSRF_TIMEOUT.value())) return false;
 
         synchronized (context) {
             @SuppressWarnings("unchecked")
             LinkedList<String> tokens = (LinkedList<String>) context.getSession().get("_csrftokens");
+            System.out.println("Tokens: " + tokens);
             if (tokens == null)
                 return false;
             return tokens.contains(token);
