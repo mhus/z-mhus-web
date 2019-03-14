@@ -268,7 +268,44 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 	}
 
-	public IReadProperties findConfig(File file) {
+	public  IReadProperties findConfig(CallContext context) {
+        String path = context.getHttpPath();
+        path = MFile.normalizePath(path);
+        File file = new File(templateRoot, path);
+        String lowerPath = path.toLowerCase();
+        // deny ?
+        for (String extension : denyExtensions) {
+            if (lowerPath.endsWith(extension)) {
+                return null;
+            }
+        }
+        if (file.exists() && file.isDirectory()) {
+            path = path + "/" + index;
+            file = new File(templateRoot, path);
+        }
+        if (file.exists()) {
+            if (hasTransformExtension(lowerPath))
+                return null;
+            return findConfig(file);
+        }
+        for (String extension : removeExtensions) {
+            if (path.endsWith(extension)) {
+                path = path.substring(0, path.length()-extension.length());
+                break;
+            }
+        }
+        for (String extension : extensionOrder) {
+            String p = path + extension;
+            file = new File(templateRoot, p);
+            if (file.exists() && file.isFile()) {
+                return findConfig(file);
+            }
+        }
+
+        return null;
+	}
+	
+	private IReadProperties findConfig(File file) {
 	    File cfgFile = new File(file, cfgExtension);
 	    if (cfgFile.exists()) {
 	        MProperties out = cfgCache.get(cfgFile);
