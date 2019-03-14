@@ -1,30 +1,25 @@
 package de.mhus.cherry.web.util.filter;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.UUID;
 
 import javax.servlet.ServletOutputStream;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import javax.servlet.http.HttpServletRequest;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.util.CherryWebUtil;
-import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MPassword;
 import de.mhus.lib.core.MString;
+import de.mhus.lib.core.cfg.CfgString;
 import de.mhus.lib.core.config.IConfig;
-import de.mhus.lib.core.config.MConfig;
-import de.mhus.lib.core.io.http.MHttp;
+import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.net.Subnet;
 import de.mhus.lib.core.util.Base64;
 import de.mhus.lib.core.util.MUri;
@@ -34,6 +29,21 @@ import de.mhus.lib.errors.MException;
 public class CloudflareFilter extends MLog implements WebFilter {
 
 	public static String NAME = "base_auth_filter";
+    private static Subnet[] cloudflareNetworks;
+    // https://www.cloudflare.com/ips-v4
+    private static CfgString CFG_IPS = new CfgString(CloudflareFilter.class,"ips",
+            "103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,104.16.0.0/12,"
+            + "108.162.192.0/18,131.0.72.0/22,141.101.64.0/18,162.158.0.0/15,"
+            + "172.64.0.0/13,173.245.48.0/20,188.114.96.0/20,190.93.240.0/20,"
+            + "197.234.240.0/22,198.41.128.0/17,"
+            + "2400:cb00::/32,2405:b500::/32,2606:4700::/32,2803:f800::/32,2c0f:f248::/32,2a06:98c0::/29") {
+
+        @Override
+        protected void onPreUpdate(String newValue) {
+            cloudflareNetworks = null;
+        }
+
+    };
 
 	@Override
 	public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
@@ -47,8 +57,8 @@ public class CloudflareFilter extends MLog implements WebFilter {
 			send401(call, config);
 			return false;
 		}
-		if (isCloudflare(call, config)) {
-			String remoteIP = call.getHttpRequest().getHeader("CF-Connecting-IP");
+		if (isCloudflare(call.getHttpRequest().getRemoteAddr())) {
+			String remoteIP = getRemoteIp(call.getHttpRequest());
 			call.setRemoteIp(remoteIP);
 			trace(call,config,remoteIP);
 			
@@ -65,7 +75,11 @@ public class CloudflareFilter extends MLog implements WebFilter {
 		}
 	}
 
-	private boolean doAuth(InternalCallContext call, Config config) throws MException {
+	public static String getRemoteIp(HttpServletRequest request) {
+        return request.getHeader("CF-Connecting-IP");
+    }
+
+    private boolean doAuth(InternalCallContext call, Config config) throws MException {
 		String auth = call.getHttpRequest().getHeader("Authorization");  
 		if (auth == null) {
 			send401(call, config);
@@ -103,18 +117,65 @@ public class CloudflareFilter extends MLog implements WebFilter {
 			log().i("access",call.getVirtualHost().getName(),remoteIP,call.getHttpMethod(),call.getHttpPath());
 	}
 
-	private boolean isCloudflare(InternalCallContext call, Config config) {
+	public static boolean isCloudflare(String ip) {
 		try {
-			InetAddress remoteIP = InetAddress.getByName(call.getHttpRequest().getRemoteAddr());
-			for (Subnet net : config.networks)
+			InetAddress remoteIP = InetAddress.getByName(ip);
+			for (Subnet net : getCloudflareNetworks())
 				if (net != null && net.isInNet(remoteIP)) return true;
 		} catch (UnknownHostException e) {
-			log().w(e);
+			MLogUtil.log().w(e);
 		}
 		return false;
 	}
 
-	private void send401(InternalCallContext call, Config config) throws MException {
+	private static Subnet[] getCloudflareNetworks() {
+	    if (cloudflareNetworks == null) {
+	        
+	        String[] ips = null;
+	        // TODO loading from web is disabled ...
+//	           String url = config.getString("url","none"); // "https://www.cloudflare.com/ips-v4"
+//	            IConfig ipNode = config.getNode("ips");
+//	            if (ipNode != null) {
+//	                ips = MConfig.toStringArray(ipNode.getNodes(), "value");
+//	            } else 
+//	            if (url.startsWith("file:")) {
+//	                File f = new File(url.substring(5));
+//	                try {
+//	                    ips = MFile.readLines(f, true).toArray(new String[0]);
+//	                } catch (Exception e) {
+//	                    log().e(e);
+//	                }
+//	            } else
+//	            if (!"none".equals(url))
+//	            {
+//	                try {
+//	                    HttpGet get = new HttpGet(url);
+//	                    HttpResponse res = MHttp.getSharedClient().execute(get);
+//	                    if (res.getStatusLine().getStatusCode() != 200) {
+//	                        log().e("Failed to get IPs from cloudflare",res.getStatusLine().getReasonPhrase(),url);
+//	                    } else {
+//	                        InputStream is = res.getEntity().getContent();
+//	                        ips = MFile.readLines(is, true).toArray(new String[0]);
+//	                    }
+//	                } catch (Exception e) {
+//	                    log().e(e);
+//	                }
+//	            }
+
+	        ips = CFG_IPS.value().split(",");
+	        
+	        cloudflareNetworks = new Subnet[ips.length];
+            for (int i = 0; i < ips.length; i++)
+                try {
+                    cloudflareNetworks[i] = Subnet.createInstance(ips[i]);
+                } catch (UnknownHostException e) {
+                    MLogUtil.log().e(ips[i],e);
+                }
+	    }
+        return cloudflareNetworks;
+    }
+
+    private void send401(InternalCallContext call, Config config) throws MException {
 		try {
 			call.getHttpResponse().setStatus(401);
 			call.getHttpResponse().setHeader("WWW-Authenticate", "BASIC realm=\""+config.realm+"\", charset=\"UTF-8\"");
@@ -136,7 +197,6 @@ public class CloudflareFilter extends MLog implements WebFilter {
 		private String realm;
 		private String message;
 		private HashMap<String, String> accounts = new HashMap<>();
-		private Subnet[] networks;
 		private boolean public_;
 
 		public Config(VirtualHost vHost, IConfig config) {
@@ -152,68 +212,6 @@ public class CloudflareFilter extends MLog implements WebFilter {
 			if (MString.isSet(accountsFile)) 
 				CherryWebUtil.loadAccounts(vHost.findFile(accountsFile), accounts);
 			public_ = config.getBoolean("public", true);
-			
-			String url = config.getString("url","none"); // "https://www.cloudflare.com/ips-v4"
-			IConfig ipNode = config.getNode("ips");
-			String[] ips = null;
-			if (ipNode != null) {
-				ips = MConfig.toStringArray(ipNode.getNodes(), "value");
-			} else 
-			if (url.startsWith("file:")) {
-				File f = new File(url.substring(5));
-				try {
-					ips = MFile.readLines(f, true).toArray(new String[0]);
-				} catch (Exception e) {
-					log().e(e);
-				}
-			} else
-			if (!"none".equals(url))
-			{
-				try {
-					HttpGet get = new HttpGet(url);
-					HttpResponse res = MHttp.getSharedClient().execute(get);
-					if (res.getStatusLine().getStatusCode() != 200) {
-						log().e("Failed to get IPs from cloudflare",res.getStatusLine().getReasonPhrase(),url);
-					} else {
-						InputStream is = res.getEntity().getContent();
-						ips = MFile.readLines(is, true).toArray(new String[0]);
-					}
-				} catch (Exception e) {
-					log().e(e);
-				}
-				if (ips == null || ips.length == 0) {
-					log().i("IPs fallback");
-					ips = new String[] {
-							"103.21.244.0/22",
-							"103.22.200.0/22",
-							"103.31.4.0/22",
-							"104.16.0.0/12",
-							"108.162.192.0/18",
-							"131.0.72.0/22",
-							"141.101.64.0/18",
-							"162.158.0.0/15",
-							"172.64.0.0/13",
-							"173.245.48.0/20",
-							"188.114.96.0/20",
-							"190.93.240.0/20",
-							"197.234.240.0/22",
-							"198.41.128.0/17",
-							"2400:cb00::/32",
-							"2405:b500::/32",
-							"2606:4700::/32",
-							"2803:f800::/32",
-							"2c0f:f248::/32",
-							"2a06:98c0::/29"
-					};
-				}
-				networks = new Subnet[ips.length];
-				for (int i = 0; i < ips.length; i++)
-					try {
-						networks[i] = Subnet.createInstance(ips[i]);
-					} catch (UnknownHostException e) {
-						log().e(ips[i],e);
-					}
-			}
 		}
 	}
 	
