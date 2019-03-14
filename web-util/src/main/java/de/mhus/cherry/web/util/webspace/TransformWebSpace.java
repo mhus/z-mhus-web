@@ -143,7 +143,8 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
 			} else {
-				prepareHead(context,file, path);
+	            IReadProperties fileConfig = findConfig(file);
+				prepareHead(context,file, path, fileConfig);
 				return;
 			}
 		}
@@ -166,7 +167,8 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 			String p = path + extension;
 			file = new File(templateRoot, p);
 			if (file.exists() && file.isFile()) {
-				prepareHead(context, file, orgPath);
+	            IReadProperties fileConfig = findConfig(file);
+				prepareHead(context, file, orgPath, fileConfig);
 			}
 		}
 		
@@ -196,7 +198,6 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		if (file.exists()) {
 		    
 		    IReadProperties fileConfig = findConfig(file);
-		    
 			if (file.isDirectory()) {
 				log().d("deny directory",file);
 				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
@@ -208,7 +209,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 				sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 				return;
 			} else {
-				prepareHead(context,file, path);
+				prepareHead(context,file, path, fileConfig);
 				try {
 					boolean isHtml = hasHtmlExtension(path);
 					OutputStream os = context.getOutputStream();
@@ -255,7 +256,8 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 			String p = path + extension;
 			file = new File(templateRoot, p);
 			if (file.exists() && file.isFile()) {
-				prepareHead(context,file, orgPath);
+	            IReadProperties fileConfig = findConfig(file);
+				prepareHead(context,file, orgPath, fileConfig);
 				try {
 					doTransform(context, file, null);
 				} catch (Throwable t) {
@@ -363,11 +365,24 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		os.flush();
 	}
 
-	protected void prepareHead(CallContext context, File from, String path) {
+	protected void prepareHead(CallContext context, File from, String path, IReadProperties fileConfig) {
 		HttpServletResponse resp = context.getHttpResponse();
 		resp.setCharacterEncoding(charsetEncoding);
 		resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(from.lastModified()));
 		super.prepareHead(context, MFile.getFileSuffix(from), path);
+		if (fileConfig != null) {
+		    int cnt = 0;
+		    while (true) {
+		        String key = "httpHeader" + cnt;
+		        String value = fileConfig.getString(key, null);
+		        if (value == null) break;
+		        int pos = value.indexOf(':');
+		        if (pos > 0) {
+		            resp.addHeader(value.substring(0, pos).trim(),value.substring(pos+1).trim());
+		        }
+		        cnt++;
+		    }
+		}
 	}
 
 	public File findTemplateFile(String path) {
