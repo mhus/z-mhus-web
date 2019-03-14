@@ -221,7 +221,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 					
 					String transformType = fileConfig.getString("transform", null);
 					if (MString.isSet(transformType)) {
-                        doTransform(context, file, null);
+                        doTransform(context, file, transformType);
 					} else {
     					FileInputStream is = new FileInputStream(file);
     					MFile.copyFile(is, os);
@@ -378,7 +378,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		        if (value == null) break;
 		        int pos = value.indexOf(':');
 		        if (pos > 0) {
-		            resp.addHeader(value.substring(0, pos).trim(),value.substring(pos+1).trim());
+		            resp.setHeader(value.substring(0, pos).trim(),value.substring(pos+1).trim());
 		        }
 		        cnt++;
 		    }
