@@ -63,7 +63,7 @@ public class BaseAuthFilter extends MLog implements WebFilter {
         if (accPass != null) {
         		if (MPassword.equals( accPass, pass) ) {
         			if (call.getVirtualHost().isTraceAccess())
-        				log().i("access",call.getVirtualHost().getName(),account,call.getHttpMethod(),call.getHttpPath());
+        				log().d("access",call.getVirtualHost().getName(),account,call.getHttpMethod(),call.getHttpPath());
         			return true;
         		} else {
             		log().d("password not accepted",account,call.getHttpRequest().getRemoteAddr());

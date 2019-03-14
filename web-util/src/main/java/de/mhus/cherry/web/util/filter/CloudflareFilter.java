@@ -114,7 +114,7 @@ public class CloudflareFilter extends MLog implements WebFilter {
 
 	private void trace(InternalCallContext call, Config config, String remoteIP) {
 		if (call.getVirtualHost().isTraceAccess())
-			log().i("access",call.getVirtualHost().getName(),remoteIP,call.getHttpMethod(),call.getHttpPath());
+			log().d("access",call.getVirtualHost().getName(),remoteIP,call.getHttpMethod(),call.getHttpPath());
 	}
 
 	public static boolean isCloudflare(String ip) {
