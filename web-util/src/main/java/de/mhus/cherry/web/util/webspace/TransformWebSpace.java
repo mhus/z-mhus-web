@@ -13,6 +13,7 @@ import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.util.CherryWebUtil;
 import de.mhus.cherry.web.util.webspace.AbstractWebSpace;
 import de.mhus.cherry.web.api.CanTransform;
+import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MCollection;
 import de.mhus.lib.core.MDate;
 import de.mhus.lib.core.MFile;
@@ -20,6 +21,7 @@ import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;
+import de.mhus.lib.core.crypt.MRandom;
 import de.mhus.lib.core.io.http.MHttp;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.transform.api.TransformUtil;
@@ -37,9 +39,14 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	protected File errorTemplate = null;
 	protected MProperties environment = null;
     private boolean csrfEnabled;
+    private int stamp = 0;
 	
 	@Override
 	public void start(CherryApi api) throws MException {
+	    
+	    MRandom rnd = MApi.lookup(MRandom.class);
+	    stamp = rnd.getInt();
+	    
 		super.start(api);
 		cDir = getConfig().getNode("transform");
 		templateRoot = getDocumentRoot();
@@ -244,6 +251,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	protected void doTransform(CallContext context, File from) throws Exception {
 		
 		MProperties param = new MProperties(environment);
+        param.put("stamp", stamp);
 		param.put("session", context.getSession().pub());
 		param.put("sessionId", context.getSessionId());
 		param.put("request", context.getHttpRequest().getParameterMap());
@@ -297,10 +305,13 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 			try {
 				context.getHttpResponse().setStatus(sc);
 				MProperties param = new MProperties();
+				param.put("stamp", stamp);
 				param.put("session", context.getSession().pub());
 				param.put("sessionId", context.getSessionId());
 				param.put("request", context.getHttpRequest().getParameterMap());
 				param.put("path", context.getHttpPath());
+				if (csrfEnabled)
+				    param.put("csrfToken", CherryWebUtil.createCsrfToken(context));
 				param.put("error", sc);
 				param.put("errorMsg", MHttp.HTTP_STATUS_CODES.getOrDefault(sc, ""));
 				
