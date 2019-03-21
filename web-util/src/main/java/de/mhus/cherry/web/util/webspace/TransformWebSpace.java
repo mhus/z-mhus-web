@@ -28,7 +28,7 @@ import de.mhus.lib.core.util.SoftHashMap;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.transform.api.TransformUtil;
 
-public class TransformWebSpace extends AbstractWebSpace implements CanTransform {
+public class TransformWebSpace extends AbstractWebSpace implements CanTransform, CallConfigProvider {
 
 	protected IConfig cDir;
 	protected String index = "index";
@@ -216,12 +216,12 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 					
 					String htmlHeaderLocal = fileConfig.getString("htmlHeader", htmlHeader);
 					if (isHtml && MString.isSet(htmlHeaderLocal)) {
-						doTransform(context, new File(htmlHeaderLocal), null);
+						doTransform(context, new File(htmlHeaderLocal), fileConfig, null);
 					}
 					
 					String transformType = fileConfig.getString("transform", null);
 					if (MString.isSet(transformType)) {
-                        doTransform(context, file, transformType);
+                        doTransform(context, file, fileConfig, transformType);
 					} else {
     					FileInputStream is = new FileInputStream(file);
     					MFile.copyFile(is, os);
@@ -230,7 +230,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 					
 					String htmlFooterLocal = fileConfig.getString("htmlFooter", htmlFooter);
 					if (isHtml && MString.isSet(htmlFooterLocal)) {
-						doTransform(context, new File(htmlFooterLocal), null);
+						doTransform(context, new File(htmlFooterLocal), fileConfig, null);
 					}
 
 					os.flush();
@@ -259,7 +259,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	            IReadProperties fileConfig = findConfig(file);
 				prepareHead(context,file, orgPath, fileConfig);
 				try {
-					doTransform(context, file, null);
+					doTransform(context, file, fileConfig, null);
 				} catch (Throwable t) {
 					sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t);
 				}
@@ -270,7 +270,8 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		sendError(context, HttpServletResponse.SC_NOT_FOUND, null);
 	}
 
-	public  IReadProperties findConfig(CallContext context) {
+	@Override
+    public  IReadProperties findConfig(CallContext context) {
         String path = context.getHttpPath();
         path = MFile.normalizePath(path);
         File file = new File(templateRoot, path);
@@ -349,7 +350,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	 * @param from
 	 * @throws Exception 
 	 */
-	protected void doTransform(CallContext context, File from, String type) throws Exception {
+	protected void doTransform(CallContext context, File from, IReadProperties cfg, String type) throws Exception {
 		
 		MProperties param = new MProperties(environment);
         param.put("stamp", stamp);
@@ -360,12 +361,25 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 		if (csrfEnabled)
 		    param.put("csrfToken", CherryWebUtil.createCsrfToken(context));
 		
+		doFillParamsForTransform(context, from, type, param);
+		
 		OutputStream os = context.getOutputStream();
 		TransformUtil.transform(from, os, getDocumentRoot(), null, null, param, type);
 		os.flush();
 	}
 
-	protected void prepareHead(CallContext context, File from, String path, IReadProperties fileConfig) {
+	/**
+	 * Overwrite the method to set additional parameters before transformation.
+	 * 
+	 * @param context
+	 * @param from
+	 * @param type
+	 * @param param
+	 */
+	protected void doFillParamsForTransform(CallContext context, File from, String type, MProperties param) {
+    }
+
+    protected void prepareHead(CallContext context, File from, String path, IReadProperties fileConfig) {
 		HttpServletResponse resp = context.getHttpResponse();
 		resp.setCharacterEncoding(charsetEncoding);
 		resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(from.lastModified()));
@@ -458,7 +472,8 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform 
 	public void doTransform(CallContext context, String template) throws Exception {
 		template = MFile.normalizePath(template);
 		File from = new File(templateRoot, template);
-		doTransform(context, from, null);
+		IReadProperties cfg = findConfig(from);
+		doTransform(context, from, cfg, null);
 	}
 
 }

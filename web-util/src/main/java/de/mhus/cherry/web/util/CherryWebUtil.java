@@ -7,6 +7,10 @@ import java.util.LinkedList;
 
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.CherryApi;
+import de.mhus.cherry.web.api.InternalCallContext;
+import de.mhus.cherry.web.api.VirtualHost;
+import de.mhus.cherry.web.util.webspace.CallConfigProvider;
+import de.mhus.lib.core.IReadProperties;
 import de.mhus.lib.core.MApi;
 import de.mhus.lib.core.MCast;
 import de.mhus.lib.core.MFile;
@@ -71,6 +75,13 @@ public class CherryWebUtil {
                 return false;
             return tokens.contains(token);
         }
+    }
+
+    public static IReadProperties findConfig(InternalCallContext call) {
+        VirtualHost vHost = call.getVirtualHost();
+        if (vHost == null) return null;
+        if (!(vHost instanceof CallConfigProvider)) return null;
+        return ((CallConfigProvider)vHost).findConfig(call);
     }
 
 }
