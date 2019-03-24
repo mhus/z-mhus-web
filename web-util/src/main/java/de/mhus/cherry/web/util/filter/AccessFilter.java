@@ -3,8 +3,6 @@ package de.mhus.cherry.web.util.filter;
 import java.util.Set;
 import java.util.UUID;
 
-import org.osgi.service.component.annotations.Component;
-
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
@@ -18,7 +16,6 @@ import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.errors.MException;
 
-@Component(service=WebFilter.class,property="name=crypta_access_filter",immediate=true)
 public class AccessFilter extends MLog implements WebFilter {
 	
     private static final String CALL_START = "filter_AccessFilter_start";
@@ -118,10 +115,12 @@ public class AccessFilter extends MLog implements WebFilter {
 	@Override
 	public void doInitialize(UUID instance, VirtualHost vhost, IConfig config) throws MException {
 	    
-        if (config.isProperty("static")) {
-            staticContent = MConfig.toStringArray(config.getNode("static").getNodes(), "value");
-        }
-        defaultPublicAccess = config.getBoolean("defaultPublicAccess", defaultPublicAccess);
+	    if (config != null) {
+            if (config.isProperty("static")) {
+                staticContent = MConfig.toStringArray(config.getNode("static").getNodes(), "value");
+            }
+            defaultPublicAccess = config.getBoolean("defaultPublicAccess", defaultPublicAccess);
+	    }
 	}
 
 	public static UserInformation getUserInformation(CallContext call) {
