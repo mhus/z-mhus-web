@@ -31,7 +31,7 @@ public class SopSessionFilter extends MLog implements WebFilter {
 			if (authHeader != null) {
 				String encodedValue = authHeader.split(" ")[1];
 				String decodedValue = Base64.decodeToString(encodedValue);
-				log().i(decodedValue);
+				//log().d(decodedValue);
 			}
 			
 			AccessApi aaa = MApi.lookup(AccessApi.class);

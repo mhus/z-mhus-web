@@ -19,7 +19,7 @@ public class TraceFilter extends MLog implements WebFilter {
 	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		long start = System.currentTimeMillis();
 		call.setAttribute(CALL_START, start);
-		log().i("access",call.getHttpHost(),call.getHttpMethod(),call.getHttpPath());
+		log().d("access",call.getHttpHost(),call.getHttpMethod(),call.getHttpPath());
 		return true;
 	}
 
@@ -29,7 +29,7 @@ public class TraceFilter extends MLog implements WebFilter {
 		if (start != null) {
 			long duration = System.currentTimeMillis() - start;
 			String durationStr = MPeriod.getIntervalAsString(duration);
-			log().i("duration",durationStr,duration,call.getHttpHost(),call.getHttpMethod(),call.getHttpPath());
+			log().d("duration",durationStr,duration,call.getHttpHost(),call.getHttpMethod(),call.getHttpPath());
 		}
 	}
 

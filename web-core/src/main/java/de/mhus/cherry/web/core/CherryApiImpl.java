@@ -86,7 +86,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			}
 			Set<String> aliases = service.getVirtualHostAliases();
 			for (String alias : aliases) {
-				log().i("add",alias);
+				log().i("add virtual host",alias);
 				VirtualHost old = vHosts.put(alias, service);
 				if (old != null)
 					old.stop(this);
@@ -99,7 +99,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 			vHostsCache.clear();
 			vHosts.entrySet().removeIf(e -> { 
 				if (service == e.getValue()) {
-					log().i("remove",e.getKey());
+					log().i("remove virtual host",e.getKey());
 					return true;
 				}
 				return false;
