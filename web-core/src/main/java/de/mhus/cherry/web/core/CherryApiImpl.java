@@ -45,7 +45,7 @@ import de.mhus.cherry.web.api.TypeHeaderFactory;
 import de.mhus.cherry.web.api.TypeHeaderSimple;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebSession;
-import de.mhus.lib.core.MApi;
+import de.mhus.lib.core.M;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.cfg.CfgInt;
@@ -207,7 +207,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 	        HttpServletResponse response) throws MException {
 		
 		// check general security
-		SecurityApi sec = MApi.lookup(SecurityApi.class);
+		SecurityApi sec = M.l(SecurityApi.class);
 		if (sec != null) {
 			if (!sec.checkHttpRequest(request, response))
 				return null;

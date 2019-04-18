@@ -20,7 +20,7 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import de.mhus.lib.core.MApi;
+import de.mhus.lib.core.M;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.PropertiesConfig;

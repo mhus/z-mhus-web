@@ -24,7 +24,7 @@ import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
-import de.mhus.lib.core.MApi;
+import de.mhus.lib.core.M;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.util.Base64;
@@ -37,7 +37,8 @@ public class SopSessionFilter extends MLog implements WebFilter {
 	public static final String SESSION_PARAMETER_NAME = "__sop_user_ticket";
 	public static final String CONTEXT_PARAMETER_AAA_CONTEXT = "__sop_aaa_context";
 
-	@Override
+	@SuppressWarnings("unused")
+    @Override
 	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
 		try {
 			HttpServletRequest req = call.getHttpRequest();
@@ -47,9 +48,10 @@ public class SopSessionFilter extends MLog implements WebFilter {
 				String encodedValue = authHeader.split(" ")[1];
 				String decodedValue = Base64.decodeToString(encodedValue);
 				//log().d(decodedValue);
+				//TODO not finished yet !!!!
 			}
 			
-			AccessApi aaa = MApi.lookup(AccessApi.class);
+			AccessApi aaa = M.l(AccessApi.class);
 			
 			if (call.isSession()) {
 				String userTicket = call.getSession().getString(SESSION_PARAMETER_NAME,null);
@@ -70,7 +72,7 @@ public class SopSessionFilter extends MLog implements WebFilter {
 		AaaContext userContext = (AaaContext) call.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
 		if (userContext == null) return;
 	
-		AccessApi aaa = MApi.lookup(AccessApi.class);
+		AccessApi aaa = M.l(AccessApi.class);
 		aaa.release(userContext);
 	}
 
@@ -84,7 +86,7 @@ public class SopSessionFilter extends MLog implements WebFilter {
 		AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
 		if (userContext != null) throw new MException("already logged in",userContext.getAccountId());
 
-		AccessApi aaa = MApi.lookup(AccessApi.class);
+		AccessApi aaa = M.l(AccessApi.class);
 		
 		String userTicket = aaa.createUserTicket(user, pass);
 		context.getSession().setString(SESSION_PARAMETER_NAME, userTicket);
@@ -99,7 +101,7 @@ public class SopSessionFilter extends MLog implements WebFilter {
 		AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
 		if (userContext == null) return;
 	
-		AccessApi aaa = MApi.lookup(AccessApi.class);
+		AccessApi aaa = M.l(AccessApi.class);
 		aaa.release(userContext);
 
 		context.getSession().remove(SESSION_PARAMETER_NAME);

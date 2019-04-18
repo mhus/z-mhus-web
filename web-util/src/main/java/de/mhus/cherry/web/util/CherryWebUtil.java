@@ -26,7 +26,7 @@ import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.util.webspace.CallConfigProvider;
 import de.mhus.lib.core.IReadProperties;
-import de.mhus.lib.core.MApi;
+import de.mhus.lib.core.M;
 import de.mhus.lib.core.MCast;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MPeriod;
@@ -63,7 +63,7 @@ public class CherryWebUtil {
                 context.getSession().put("_csrftokens", tokens);
             }
             StringBuilder token = new StringBuilder();
-            MRandom rnd = MApi.lookup(MRandom.class);
+            MRandom rnd = M.l(MRandom.class);
             for (int i = 0; i < 40; i++)
                 token.append(rnd.getChar());
             token.append('-').append(System.currentTimeMillis());

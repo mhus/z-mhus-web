@@ -20,7 +20,7 @@ import java.util.UUID;
 import de.mhus.cherry.web.api.CallContext;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.cherry.web.api.WebArea;
-import de.mhus.lib.core.MApi;
+import de.mhus.lib.core.M;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
@@ -55,7 +55,7 @@ public class AreaToMApi implements WebArea {
 			OsgiBundleClassLoader loader = new OsgiBundleClassLoader();
 			try {
 				serviceClass = loader.loadClass(serviceName);
-				webArea = (WebArea)MApi.lookup(serviceClass);
+				webArea = (WebArea)M.l(serviceClass);
 				webArea .doInitialize(instanceId, vHost, config);
 			} catch (Throwable e) {
 				MLogUtil.log().e(serviceName,e);

@@ -28,7 +28,7 @@ import de.mhus.cherry.web.api.CanTransform;
 import de.mhus.cherry.web.api.CherryApi;
 import de.mhus.cherry.web.util.CherryWebUtil;
 import de.mhus.lib.core.IReadProperties;
-import de.mhus.lib.core.MApi;
+import de.mhus.lib.core.M;
 import de.mhus.lib.core.MCollection;
 import de.mhus.lib.core.MDate;
 import de.mhus.lib.core.MFile;
@@ -65,7 +65,7 @@ public class TransformWebSpace extends AbstractWebSpace implements CanTransform,
 	@Override
 	public void start(CherryApi api) throws MException {
 	    
-	    MRandom rnd = MApi.lookup(MRandom.class);
+	    MRandom rnd = M.l(MRandom.class);
 	    stamp = rnd.getInt();
 	    
 		super.start(api);

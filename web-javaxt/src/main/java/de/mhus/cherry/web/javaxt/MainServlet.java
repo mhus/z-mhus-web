@@ -22,7 +22,7 @@ import javax.servlet.ServletResponse;
 
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.core.CherryApiImpl;
-import de.mhus.lib.core.MApi;
+import de.mhus.lib.core.M;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;
 import javaxt.http.servlet.HttpServlet;
