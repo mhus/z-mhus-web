@@ -53,7 +53,7 @@ import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.servlet.security.SecurityApi;
-import de.mhus.osgi.services.util.MServiceTracker;
+import de.mhus.osgi.api.util.MServiceTracker;
 
 @Component(immediate=true)
 public class CherryApiImpl extends MLog implements CherryApi {

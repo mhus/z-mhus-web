@@ -57,5 +57,10 @@
 			<groupId>de.mhus.cherry</groupId>
 			<artifactId>web-api</artifactId>
 		</dependency>
+		<dependency>
+            <groupId>de.mhus.osgi</groupId>
+            <artifactId>mhu-osgi-api</artifactId>
+        </dependency>
+		
 	</dependencies>
 </project>

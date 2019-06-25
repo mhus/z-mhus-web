@@ -17,7 +17,6 @@ package de.mhus.cherry.web.core;
 
 import java.util.Map.Entry;
 
-import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
@@ -28,10 +27,11 @@ import de.mhus.cherry.web.api.TypeHeaderFactory;
 import de.mhus.cherry.web.api.VirtualHost;
 import de.mhus.lib.core.IProperties;
 import de.mhus.lib.core.console.ConsoleTable;
+import de.mhus.osgi.api.karaf.AbstractCmd;
 
 @Command(scope = "cherry", name = "vhost", description = "Virtual Host Management")
 @Service
-public class CmdVHost implements Action {
+public class CmdVHost extends AbstractCmd {
 
 	@Argument(index=0, name="cmd", required=true, description="Command: list, info, config, use, release, current, restart, headerfactories", multiValued=false)
 	String cmd;
@@ -43,7 +43,7 @@ public class CmdVHost implements Action {
     String[] parameters;
 	
 	@Override
-	public Object execute() throws Exception {
+	public Object execute2() throws Exception {
 		
 		if (cmd.equals("info")) {
 			VirtualHost h = CherryApiImpl.instance().getVirtualHosts().get(host);
