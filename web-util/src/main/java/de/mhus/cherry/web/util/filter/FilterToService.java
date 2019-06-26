@@ -24,7 +24,7 @@ import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.errors.NotFoundException;
-import de.mhus.osgi.services.MOsgi;
+import de.mhus.osgi.api.services.MOsgi;
 
 public class FilterToService implements WebFilter {
 

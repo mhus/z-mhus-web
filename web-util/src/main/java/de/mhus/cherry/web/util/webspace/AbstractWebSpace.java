@@ -34,7 +34,7 @@ import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.core.io.FileWatch;
 import de.mhus.lib.errors.MException;
-import de.mhus.osgi.services.util.OsgiBundleClassLoader;
+import de.mhus.osgi.api.util.OsgiBundleClassLoader;
 
 public abstract class AbstractWebSpace extends AbstractVirtualHost implements VirtualWebSpace {
 
