@@ -11,10 +11,13 @@ import de.mhus.lib.core.IReadProperties;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.crypt.MBouncy;
 import de.mhus.lib.core.crypt.MCrypt;
+import de.mhus.lib.core.crypt.pem.PemUtil;
+import de.mhus.lib.core.parser.ParseException;
 
 public class SecureTransforWebSpace extends TransformWebSpace {
 
-    HashMap<String,Info> cache = new HashMap<>();
+    protected HashMap<String,Info> cache = new HashMap<>();
+    protected PublicKey publicKey;
     
     public SecureTransforWebSpace() {
         denyExtensions = new String[] { ".cfg", ".sig" };
@@ -59,10 +62,17 @@ public class SecureTransforWebSpace extends TransformWebSpace {
     }
 
     private PublicKey getPublicKey() {
-        // TODO Auto-generated method stub
-        return null;
+        return publicKey;
+    }
+    
+    public void setPublicKey(String pem) throws ParseException {
+        publicKey = PemUtil.toPublicKey(PemUtil.parse(pem));
     }
 
+    public void setPublicKeyFile(String file) throws ParseException {
+        setPublicKey(MFile.readFile(new File(file)));
+    }
+    
     private class Info {
 
         public long length;
