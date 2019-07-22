@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.osgi.framework.Bundle;
 
@@ -42,6 +43,9 @@ public class CmdVHost extends AbstractCmd {
 	@Argument(index=2, name="parameters", required=false, description="Parameters", multiValued=true)
     String[] parameters;
 	
+    @Option(name = "-ct", aliases = { "--console-table" }, description = "Console table options", required = false, multiValued = false)
+    String consoleTable;
+
 	@Override
 	public Object execute2() throws Exception {
 		
@@ -67,7 +71,7 @@ public class CmdVHost extends AbstractCmd {
 		} else
 		if (cmd.equals("list")) {
 
-			ConsoleTable out = new ConsoleTable();
+			ConsoleTable out = new ConsoleTable(consoleTable);
 			out.setHeaderValues("Alias","Name","Type","Bundle","Updated");
 
 			for (Entry<String, VirtualHost> entry : CherryApiImpl.instance().getVirtualHosts().entrySet()) {
