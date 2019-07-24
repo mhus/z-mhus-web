@@ -67,7 +67,7 @@ public class CmdVHost extends AbstractCmd {
 		} else
 		if (cmd.equals("list")) {
 
-		    ConsoleTable out = new ConsoleTable(tableAll, tblOpt);
+		    ConsoleTable out = new ConsoleTable(tblOpt);
 			out.setHeaderValues("Alias","Name","Type","Bundle","Updated");
 
 			for (Entry<String, VirtualHost> entry : CherryApiImpl.instance().getVirtualHosts().entrySet()) {
