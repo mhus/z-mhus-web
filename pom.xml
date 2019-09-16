@@ -22,12 +22,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.mhus.lib</groupId>
-        <version>3.6.3</version>
+        <version>3.6.4-SNAPSHOT</version>
         <artifactId>mhus-karaf</artifactId>
     </parent>
     <groupId>de.mhus.cherry</groupId>
     <artifactId>cherry-web</artifactId>
-    <version>1.6.2</version>
+    <version>1.6.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     
   <name>Cherry Web Portal</name>
