@@ -22,18 +22,20 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.mhus.lib</groupId>
-        <version>6.4.0</version>
+        <version>6.4.1-SNAPSHOT</version>
         <artifactId>mhus-karaf</artifactId>
     </parent>
     <groupId>de.mhus.cherry</groupId>
     <artifactId>cherry-web</artifactId>
-    <version>6.3.0</version>
+    <version>6.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     
   <name>Cherry Web Portal</name>
   <description>A virtual host enabling web portal, based on OSGi / apache karaf</description>
   <url>http://www.mhus.de</url>
-
+    <properties>
+        <cherry-web.version>${project.version}</cherry-web.version>
+    </properties>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
