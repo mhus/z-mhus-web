@@ -1,16 +1,14 @@
 /**
  * Copyright 2018 Mike Hummel
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package de.mhus.cherry.web.core;
@@ -26,208 +24,207 @@ import javax.servlet.http.HttpServletResponse;
 
 public class CherryResponseWrapper implements HttpServletResponse {
 
-	private HttpServletResponse instance;
-	private CherryServletOutputStream stream;
-	private CherryServletPrintWriter writer;
-	
-	public CherryResponseWrapper(HttpServletResponse res) {
-		instance = res;
-	}
+    private HttpServletResponse instance;
+    private CherryServletOutputStream stream;
+    private CherryServletPrintWriter writer;
 
-	@Override
-	public String getCharacterEncoding() {
-		return instance.getCharacterEncoding();
-	}
+    public CherryResponseWrapper(HttpServletResponse res) {
+        instance = res;
+    }
 
-	@Override
-	public String getContentType() {
-		return instance.getContentType();
-	}
+    @Override
+    public String getCharacterEncoding() {
+        return instance.getCharacterEncoding();
+    }
 
-	@Override
-	public ServletOutputStream getOutputStream() throws IOException {
-		if (stream == null) {
-			stream = new CherryServletOutputStream(instance.getOutputStream());
-		}
-		return stream;
-	}
+    @Override
+    public String getContentType() {
+        return instance.getContentType();
+    }
 
-	@Override
-	public PrintWriter getWriter() throws IOException {
-		if (writer == null) {
-			writer = new CherryServletPrintWriter(instance.getOutputStream());
-		}
-		return writer;
-	}
+    @Override
+    public ServletOutputStream getOutputStream() throws IOException {
+        if (stream == null) {
+            stream = new CherryServletOutputStream(instance.getOutputStream());
+        }
+        return stream;
+    }
 
-	@Override
-	public void setCharacterEncoding(String charset) {
-		instance.setCharacterEncoding(charset);
-	}
+    @Override
+    public PrintWriter getWriter() throws IOException {
+        if (writer == null) {
+            writer = new CherryServletPrintWriter(instance.getOutputStream());
+        }
+        return writer;
+    }
 
-	@Override
-	public void setContentLength(int len) {
-		instance.setContentLength(len);
-	}
+    @Override
+    public void setCharacterEncoding(String charset) {
+        instance.setCharacterEncoding(charset);
+    }
 
-	@Override
-	public void setContentType(String type) {
-		instance.setContentType(type);
-	}
+    @Override
+    public void setContentLength(int len) {
+        instance.setContentLength(len);
+    }
 
-	@Override
-	public void setBufferSize(int size) {
-		instance.setBufferSize(size);
-	}
+    @Override
+    public void setContentType(String type) {
+        instance.setContentType(type);
+    }
 
-	@Override
-	public int getBufferSize() {
-		return instance.getBufferSize();
-	}
+    @Override
+    public void setBufferSize(int size) {
+        instance.setBufferSize(size);
+    }
 
-	@Override
-	public void flushBuffer() throws IOException {
-		if (writer != null) writer.flush();
-		if (stream != null) stream.flush();
-		instance.flushBuffer();
-	}
+    @Override
+    public int getBufferSize() {
+        return instance.getBufferSize();
+    }
 
-	@Override
-	public void resetBuffer() {
-		instance.resetBuffer();
-	}
+    @Override
+    public void flushBuffer() throws IOException {
+        if (writer != null) writer.flush();
+        if (stream != null) stream.flush();
+        instance.flushBuffer();
+    }
 
-	@Override
-	public boolean isCommitted() {
-		return instance.isCommitted();
-	}
+    @Override
+    public void resetBuffer() {
+        instance.resetBuffer();
+    }
 
-	@Override
-	public void reset() {
-		instance.reset();
-	}
+    @Override
+    public boolean isCommitted() {
+        return instance.isCommitted();
+    }
 
-	@Override
-	public void setLocale(Locale loc) {
-		instance.setLocale(loc);
-	}
+    @Override
+    public void reset() {
+        instance.reset();
+    }
 
-	@Override
-	public Locale getLocale() {
-		return instance.getLocale();
-	}
+    @Override
+    public void setLocale(Locale loc) {
+        instance.setLocale(loc);
+    }
 
-	@Override
-	public void addCookie(Cookie cookie) {
-		instance.addCookie(cookie);
-	}
+    @Override
+    public Locale getLocale() {
+        return instance.getLocale();
+    }
 
-	@Override
-	public boolean containsHeader(String name) {
-		return instance.containsHeader(name);
-	}
+    @Override
+    public void addCookie(Cookie cookie) {
+        instance.addCookie(cookie);
+    }
 
-	@Override
-	public String encodeURL(String url) {
-		return instance.encodeURL(url);
-	}
+    @Override
+    public boolean containsHeader(String name) {
+        return instance.containsHeader(name);
+    }
 
-	@Override
-	public String encodeRedirectURL(String url) {
-		return instance.encodeRedirectURL(url);
-	}
+    @Override
+    public String encodeURL(String url) {
+        return instance.encodeURL(url);
+    }
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public String encodeUrl(String url) {
-		return instance.encodeUrl(url);
-	}
+    @Override
+    public String encodeRedirectURL(String url) {
+        return instance.encodeRedirectURL(url);
+    }
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public String encodeRedirectUrl(String url) {
-		return instance.encodeRedirectUrl(url);
-	}
+    @SuppressWarnings("deprecation")
+    @Override
+    public String encodeUrl(String url) {
+        return instance.encodeUrl(url);
+    }
 
-	@Override
-	public void sendError(int sc, String msg) throws IOException {
-		instance.sendError(sc,msg);
-	}
+    @SuppressWarnings("deprecation")
+    @Override
+    public String encodeRedirectUrl(String url) {
+        return instance.encodeRedirectUrl(url);
+    }
 
-	@Override
-	public void sendError(int sc) throws IOException {
-		instance.sendError(sc);
-	}
+    @Override
+    public void sendError(int sc, String msg) throws IOException {
+        instance.sendError(sc, msg);
+    }
 
-	@Override
-	public void sendRedirect(String location) throws IOException {
-		instance.sendRedirect(location);
-	}
+    @Override
+    public void sendError(int sc) throws IOException {
+        instance.sendError(sc);
+    }
 
-	@Override
-	public void setDateHeader(String name, long date) {
-		instance.setDateHeader(name, date);
-	}
+    @Override
+    public void sendRedirect(String location) throws IOException {
+        instance.sendRedirect(location);
+    }
 
-	@Override
-	public void addDateHeader(String name, long date) {
-		instance.addDateHeader(name, date);
-	}
+    @Override
+    public void setDateHeader(String name, long date) {
+        instance.setDateHeader(name, date);
+    }
 
-	@Override
-	public void setHeader(String name, String value) {
-		instance.setHeader(name, value);
-	}
+    @Override
+    public void addDateHeader(String name, long date) {
+        instance.addDateHeader(name, date);
+    }
 
-	@Override
-	public void addHeader(String name, String value) {
-		instance.addHeader(name, value);
-	}
+    @Override
+    public void setHeader(String name, String value) {
+        instance.setHeader(name, value);
+    }
 
-	@Override
-	public void setIntHeader(String name, int value) {
-		instance.setIntHeader(name, value);
-	}
+    @Override
+    public void addHeader(String name, String value) {
+        instance.addHeader(name, value);
+    }
 
-	@Override
-	public void addIntHeader(String name, int value) {
-		instance.addIntHeader(name, value);
-	}
+    @Override
+    public void setIntHeader(String name, int value) {
+        instance.setIntHeader(name, value);
+    }
 
-	@Override
-	public void setStatus(int sc) {
-		instance.setStatus(sc);
-	}
+    @Override
+    public void addIntHeader(String name, int value) {
+        instance.addIntHeader(name, value);
+    }
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public void setStatus(int sc, String sm) {
-		instance.setStatus(sc, sm);
-	}
+    @Override
+    public void setStatus(int sc) {
+        instance.setStatus(sc);
+    }
 
-	@Override
-	public void setContentLengthLong(long len) {
-		instance.setContentLengthLong(len);
-	}
+    @SuppressWarnings("deprecation")
+    @Override
+    public void setStatus(int sc, String sm) {
+        instance.setStatus(sc, sm);
+    }
 
-	@Override
-	public int getStatus() {
-		return instance.getStatus();
-	}
+    @Override
+    public void setContentLengthLong(long len) {
+        instance.setContentLengthLong(len);
+    }
 
-	@Override
-	public String getHeader(String name) {
-		return instance.getHeader(name);
-	}
+    @Override
+    public int getStatus() {
+        return instance.getStatus();
+    }
 
-	@Override
-	public Collection<String> getHeaders(String name) {
-		return instance.getHeaders(name);
-	}
+    @Override
+    public String getHeader(String name) {
+        return instance.getHeader(name);
+    }
 
-	@Override
-	public Collection<String> getHeaderNames() {
-		return instance.getHeaderNames();
-	}
+    @Override
+    public Collection<String> getHeaders(String name) {
+        return instance.getHeaders(name);
+    }
 
+    @Override
+    public Collection<String> getHeaderNames() {
+        return instance.getHeaderNames();
+    }
 }

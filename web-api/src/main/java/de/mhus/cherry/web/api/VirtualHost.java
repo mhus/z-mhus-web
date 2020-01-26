@@ -1,16 +1,14 @@
 /**
  * Copyright 2018 Mike Hummel
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package de.mhus.cherry.web.api;
@@ -27,49 +25,49 @@ import de.mhus.lib.errors.MException;
 
 public interface VirtualHost {
 
-	void sendError(CallContext call, int sc, Throwable t);
+    void sendError(CallContext call, int sc, Throwable t);
 
-	void doRequest(InternalCallContext call);
+    void doRequest(InternalCallContext call);
 
-	/**
-	 * Get WebSpace configuration'
-	 * 
-	 * @return Config object
-	 */
-	IConfig getConfig();
-	
-	/**
-	 * Web Space specific properties.
-	 * @return Properties container
-	 */
-	IProperties getProperties();
+    /**
+     * Get WebSpace configuration'
+     *
+     * @return Config object
+     */
+    IConfig getConfig();
 
-	Set<String> getVirtualHostAliases();
+    /**
+     * Web Space specific properties.
+     *
+     * @return Properties container
+     */
+    IProperties getProperties();
 
-	void start(CherryApi api) throws MException;
+    Set<String> getVirtualHostAliases();
 
-	void stop(CherryApi api);
+    void start(CherryApi api) throws MException;
 
-	void setBundle(Bundle bundle);
-	
-	Bundle getBundle();
+    void stop(CherryApi api);
 
-	String getMimeType(String file);
+    void setBundle(Bundle bundle);
 
-	String getName();
+    Bundle getBundle();
 
-	String getCharsetEncoding();
+    String getMimeType(String file);
 
-	boolean isTraceAccess();
+    String getName();
 
-	boolean isTraceErrors();
+    String getCharsetEncoding();
 
-	Date getUpdated();
+    boolean isTraceAccess();
 
-	File findFile(String path);
+    boolean isTraceErrors();
 
-	TypeDefinition prepareHead(CallContext context, String type, boolean fallback);
+    Date getUpdated();
+
+    File findFile(String path);
+
+    TypeDefinition prepareHead(CallContext context, String type, boolean fallback);
 
     TypeDefinition getType(CallContext context, String type);
-    
 }

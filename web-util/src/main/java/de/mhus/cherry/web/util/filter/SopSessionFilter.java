@@ -1,16 +1,14 @@
 /**
  * Copyright 2018 Mike Hummel
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package de.mhus.cherry.web.util.filter;
@@ -34,83 +32,81 @@ import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 public class SopSessionFilter extends MLog implements WebFilter {
 
-	public static final String SESSION_PARAMETER_NAME = "__sop_user_ticket";
-	public static final String CONTEXT_PARAMETER_AAA_CONTEXT = "__sop_aaa_context";
+    public static final String SESSION_PARAMETER_NAME = "__sop_user_ticket";
+    public static final String CONTEXT_PARAMETER_AAA_CONTEXT = "__sop_aaa_context";
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     @Override
-	public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
-		try {
-			HttpServletRequest req = call.getHttpRequest();
-	
-			String authHeader = req.getHeader("authorization");
-			if (authHeader != null) {
-				String encodedValue = authHeader.split(" ")[1];
-				String decodedValue = Base64.decodeToString(encodedValue);
-				//log().d(decodedValue);
-				//TODO not finished yet !!!!
-			}
-			
-			AccessApi aaa = M.l(AccessApi.class);
-			
-			if (call.isSession()) {
-				String userTicket = call.getSession().getString(SESSION_PARAMETER_NAME,null);
-				if (userTicket == null) return true; // guest?
-				
-				Locale locale = req.getLocale();
-				AaaContext userContext = aaa.process(userTicket, locale);
-				call.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
-			}
-		} catch (Throwable t) {
-			throw new MException(t);
-		}
-		return true;
-	}
+    public boolean doFilterBegin(UUID instance, InternalCallContext call) throws MException {
+        try {
+            HttpServletRequest req = call.getHttpRequest();
 
-	@Override
-	public void doFilterEnd(UUID instance, InternalCallContext call) throws MException {
-		AaaContext userContext = (AaaContext) call.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
-		if (userContext == null) return;
-	
-		AccessApi aaa = M.l(AccessApi.class);
-		aaa.release(userContext);
-	}
+            String authHeader = req.getHeader("authorization");
+            if (authHeader != null) {
+                String encodedValue = authHeader.split(" ")[1];
+                String decodedValue = Base64.decodeToString(encodedValue);
+                // log().d(decodedValue);
+                // TODO not finished yet !!!!
+            }
 
-	public static boolean isLoggedIn(CallContext context) {
-		AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
-		return userContext != null;
-	}
-	
-	public static void login(CallContext context, String user, String pass) throws MException {
-		
-		AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
-		if (userContext != null) throw new MException("already logged in",userContext.getAccountId());
+            AccessApi aaa = M.l(AccessApi.class);
 
-		AccessApi aaa = M.l(AccessApi.class);
-		
-		String userTicket = aaa.createUserTicket(user, pass);
-		context.getSession().setString(SESSION_PARAMETER_NAME, userTicket);
+            if (call.isSession()) {
+                String userTicket = call.getSession().getString(SESSION_PARAMETER_NAME, null);
+                if (userTicket == null) return true; // guest?
 
-		Locale locale = context.getHttpRequest().getLocale();
-		userContext = aaa.process(userTicket, locale);
-		context.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
-	}
+                Locale locale = req.getLocale();
+                AaaContext userContext = aaa.process(userTicket, locale);
+                call.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
+            }
+        } catch (Throwable t) {
+            throw new MException(t);
+        }
+        return true;
+    }
 
-	public static void logout(CallContext context, String user, String pass) {
-		
-		AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
-		if (userContext == null) return;
-	
-		AccessApi aaa = M.l(AccessApi.class);
-		aaa.release(userContext);
+    @Override
+    public void doFilterEnd(UUID instance, InternalCallContext call) throws MException {
+        AaaContext userContext = (AaaContext) call.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
+        if (userContext == null) return;
 
-		context.getSession().remove(SESSION_PARAMETER_NAME);
-		context.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, null);
-		
-	}
+        AccessApi aaa = M.l(AccessApi.class);
+        aaa.release(userContext);
+    }
 
-	@Override
-	public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) {		
-	}
+    public static boolean isLoggedIn(CallContext context) {
+        AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
+        return userContext != null;
+    }
 
+    public static void login(CallContext context, String user, String pass) throws MException {
+
+        AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
+        if (userContext != null)
+            throw new MException("already logged in", userContext.getAccountId());
+
+        AccessApi aaa = M.l(AccessApi.class);
+
+        String userTicket = aaa.createUserTicket(user, pass);
+        context.getSession().setString(SESSION_PARAMETER_NAME, userTicket);
+
+        Locale locale = context.getHttpRequest().getLocale();
+        userContext = aaa.process(userTicket, locale);
+        context.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
+    }
+
+    public static void logout(CallContext context, String user, String pass) {
+
+        AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
+        if (userContext == null) return;
+
+        AccessApi aaa = M.l(AccessApi.class);
+        aaa.release(userContext);
+
+        context.getSession().remove(SESSION_PARAMETER_NAME);
+        context.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, null);
+    }
+
+    @Override
+    public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) {}
 }
