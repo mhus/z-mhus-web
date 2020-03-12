@@ -19,16 +19,16 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import de.mhus.cherry.web.api.CallContext;
-import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.api.InternalCallContext;
 import de.mhus.cherry.web.api.VirtualHost;
+import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.lib.core.M;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.security.AaaContext;
+import de.mhus.lib.core.security.AccessApi;
 import de.mhus.lib.core.util.Base64;
 import de.mhus.lib.errors.MException;
-import de.mhus.osgi.sop.api.aaa.AaaContext;
-import de.mhus.osgi.sop.api.aaa.AccessApi;
 
 public class SopSessionFilter extends MLog implements WebFilter {
 
