@@ -1,5 +1,5 @@
 
-feature:repo-add mvn:de.mhus.osgi/mhu-karaf-feature/1.4.3-SNAPSHOT/xml/features
+feature:repo-add mvn:de.mhus.osgi/mhus-features/7.0.0-SNAPSHOT/xml/features
 feature:install mhu-osgi-base
 feature:install http
 
