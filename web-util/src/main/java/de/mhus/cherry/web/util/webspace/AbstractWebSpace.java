@@ -27,8 +27,10 @@ import de.mhus.cherry.web.api.VirtualWebSpace;
 import de.mhus.cherry.web.api.WebArea;
 import de.mhus.cherry.web.api.WebFilter;
 import de.mhus.cherry.web.util.AbstractVirtualHost;
+import de.mhus.lib.core.M;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.config.IConfigFactory;
 import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.core.io.FileWatch;
 import de.mhus.lib.errors.MException;
@@ -60,13 +62,13 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 
         String configFile = prepareConfigName("server");
         log().i("start web space", configFile, getClass().getCanonicalName());
-        config = MConfig.find(configRoot, configFile, true);
+        config = M.l(IConfigFactory.class).find(configRoot, configFile);
         if (config == null) throw new MException("config for webspace not found", root);
         // get server config
-        cServer = config.getNode("server");
+        cServer = config.getObject("server");
         if (cServer == null) throw new MException("server in config not found", root);
         // get alias
-        setConfigAliases(MConfig.toStringArray(cServer.getNode("aliases").getNodes(), "value"));
+        setConfigAliases(MConfig.toStringArray(cServer.getObjectList("aliases"), "value"));
         // set name
         name = getFirstAlias(); // default
         name = cServer.getString("name", name);
@@ -82,63 +84,57 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
         defaultMimeType = cServer.getString("defaultMimeType", defaultMimeType);
         // load filters
         OsgiBundleClassLoader loader = new OsgiBundleClassLoader();
-        if (cServer.getNode("filters") != null) {
-            for (IConfig filterDef : cServer.getNode("filters").getNodes()) {
-                String filterClazzName = filterDef.getString("class");
-                try {
-                    Class<?> clazz = loader.loadClass(filterClazzName);
-                    WebFilter filter = (WebFilter) clazz.getDeclaredConstructor().newInstance();
-                    filter.doInitialize(getInstanceId(), this, filterDef);
-                    addFilter(filter);
-                } catch (ClassNotFoundException e) {
-                    throw new MException("filter not found", filterClazzName);
-                } catch (Throwable e) {
-                    throw new MException("can't instanciate filter", filterClazzName, e);
-                }
+        for (IConfig filterDef : cServer.getObjectList("filters")) {
+            String filterClazzName = filterDef.getString("class");
+            try {
+                Class<?> clazz = loader.loadClass(filterClazzName);
+                WebFilter filter = (WebFilter) clazz.getDeclaredConstructor().newInstance();
+                filter.doInitialize(getInstanceId(), this, filterDef);
+                addFilter(filter);
+            } catch (ClassNotFoundException e) {
+                throw new MException("filter not found", filterClazzName);
+            } catch (Throwable e) {
+                throw new MException("can't instanciate filter", filterClazzName, e);
             }
         }
         // load active areas
-        if (cServer.getNode("areas") != null) {
-            for (IConfig areaDef : cServer.getNode("areas").getNodes()) {
-                String areaPath = areaDef.getString("path");
-                String areaClazzName = areaDef.getString("class");
-                try {
-                    Class<?> clazz = loader.loadClass(areaClazzName);
-                    WebArea area = (WebArea) clazz.getDeclaredConstructor().newInstance();
-                    area.doInitialize(getInstanceId(), this, areaDef);
-                    addArea(areaPath, area);
-                } catch (ClassNotFoundException e) {
-                    throw new MException("area not found", areaClazzName);
-                } catch (Throwable e) {
-                    throw new MException("can't instanciate area", areaClazzName, e);
-                }
+        for (IConfig areaDef : cServer.getObjectList("areas")) {
+            String areaPath = areaDef.getString("path");
+            String areaClazzName = areaDef.getString("class");
+            try {
+                Class<?> clazz = loader.loadClass(areaClazzName);
+                WebArea area = (WebArea) clazz.getDeclaredConstructor().newInstance();
+                area.doInitialize(getInstanceId(), this, areaDef);
+                addArea(areaPath, area);
+            } catch (ClassNotFoundException e) {
+                throw new MException("area not found", areaClazzName);
+            } catch (Throwable e) {
+                throw new MException("can't instanciate area", areaClazzName, e);
             }
         }
 
-        if (cServer.getNode("types") != null) {
-            for (IConfig typeDef : cServer.getNode("types").getNodes()) {
-                TypeDefinition type = new TypeDefinition();
-                type.setName(typeDef.getString("name"));
-                if (typeDef.getNode("extends") != null)
-                    type.setExtends(
-                            MConfig.toStringArray(typeDef.getNode("extends").getNodes(), "value"));
-                type.setMimeType(typeDef.getString("mimetype", null));
+        for (IConfig typeDef : cServer.getObjectList("types")) {
+            TypeDefinition type = new TypeDefinition();
+            type.setName(typeDef.getString("name"));
+            if (typeDef.isObject("extends"))
+                type.setExtends(
+                        MConfig.toStringArray(typeDef.getObject("extends").getObjects(), "value"));
+            type.setMimeType(typeDef.getString("mimetype", null));
 
-                if (typeDef.getNode("headers") != null) {
-                    IConfig headersDef = typeDef.getNode("headers");
-                    for (IConfig header : headersDef.getNodes()) {
-                        TypeHeader obj = api.createTypeHeader(header);
-                        if (obj != null) type.addHeader(obj);
-                    }
+            if (typeDef.isObject("headers")) {
+                IConfig headersDef = typeDef.getObject("headers");
+                for (IConfig header : headersDef.getObjects()) {
+                    TypeHeader obj = api.createTypeHeader(header);
+                    if (obj != null) type.addHeader(obj);
                 }
-                types.put(type.getName(), type);
-                log().i(
-                                "add Type",
-                                type.getName(),
-                                type.getExtends(),
-                                type.getMimeType(),
-                                type.getHeaders());
             }
+            types.put(type.getName(), type);
+            log().i(
+                            "add Type",
+                            type.getName(),
+                            type.getExtends(),
+                            type.getMimeType(),
+                            type.getHeaders());
         }
 
         if (cServer.getBoolean("watchConfiguration", true)) {

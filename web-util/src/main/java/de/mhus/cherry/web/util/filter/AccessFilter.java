@@ -145,7 +145,7 @@ public class AccessFilter extends MLog implements WebFilter {
 
         if (config != null) {
             if (config.isProperty("static")) {
-                staticContent = MConfig.toStringArray(config.getNode("static").getNodes(), "value");
+                staticContent = MConfig.toStringArray(config.getObjectList("static"), "value");
             }
             defaultPublicAccess = config.getBoolean("defaultPublicAccess", defaultPublicAccess);
         }

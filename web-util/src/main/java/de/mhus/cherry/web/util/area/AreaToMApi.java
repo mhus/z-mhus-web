@@ -36,7 +36,7 @@ public class AreaToMApi implements WebArea {
 
     @Override
     public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
-        this.config = config.getNode("config");
+        this.config = config.getObject("config");
         serviceName = config.getString("service");
         this.vHost = vHost;
     }

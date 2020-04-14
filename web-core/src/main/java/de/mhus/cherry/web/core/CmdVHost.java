@@ -76,7 +76,7 @@ public class CmdVHost extends AbstractCmd {
                     System.out.println("Property: " + entry.getKey() + "=" + entry.getValue());
             } else System.out.println("No Properties");
             System.out.println("Config:");
-            System.out.println(h.getConfig().dump());
+            System.out.println(h.getConfig());
         } else if (cmd.equals("list")) {
 
             ConsoleTable out = new ConsoleTable(tblOpt);

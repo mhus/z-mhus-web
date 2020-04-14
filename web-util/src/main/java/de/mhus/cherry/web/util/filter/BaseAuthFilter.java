@@ -126,7 +126,7 @@ public class BaseAuthFilter extends MLog implements WebFilter {
             if (excludedStr != null) excluded = Pattern.compile(excludedStr);
             message = config.getString("message", "Access denied");
             realm = config.getString("realm", "Access");
-            for (IConfig node : config.getNode("accounts").getNodes())
+            for (IConfig node : config.getObjectList("accounts"))
                 try {
                     accounts.put(node.getString("user"), node.getString("pass"));
                 } catch (MException e) {

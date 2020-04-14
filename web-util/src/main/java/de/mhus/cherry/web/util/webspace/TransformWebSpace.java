@@ -68,7 +68,7 @@ public class TransformWebSpace extends AbstractWebSpace
         stamp = rnd.getInt();
 
         super.start(api);
-        cDir = getConfig().getNode("transform");
+        cDir = getConfig().getObject("transform");
         templateRoot = getDocumentRoot();
         environment = new MProperties();
         if (cDir != null) {
@@ -78,22 +78,22 @@ public class TransformWebSpace extends AbstractWebSpace
                 templateRoot = findTemplateFile(cDir.getString("templateRoot"));
             if (cDir.isProperty("extensionOrder")) {
                 extensionOrder =
-                        MConfig.toStringArray(cDir.getNode("extensionOrder").getNodes(), "value");
+                        MConfig.toStringArray(cDir.getObject("extensionOrder").getObjects(), "value");
                 MCollection.updateEach(extensionOrder, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("denyExtensions")) {
                 denyExtensions =
-                        MConfig.toStringArray(cDir.getNode("denyExtensions").getNodes(), "value");
+                        MConfig.toStringArray(cDir.getObject("denyExtensions").getObjects(), "value");
                 MCollection.updateEach(denyExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("removeExtensions")) {
                 removeExtensions =
-                        MConfig.toStringArray(cDir.getNode("removeExtensions").getNodes(), "value");
+                        MConfig.toStringArray(cDir.getObject("removeExtensions").getObjects(), "value");
                 MCollection.updateEach(removeExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("htmlExtensions")) {
                 htmlExtensions =
-                        MConfig.toStringArray(cDir.getNode("htmlExtensions").getNodes(), "value");
+                        MConfig.toStringArray(cDir.getObject("htmlExtensions").getObjects(), "value");
                 MCollection.updateEach(htmlExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("header")) {
@@ -121,7 +121,7 @@ public class TransformWebSpace extends AbstractWebSpace
                 cfgExtension = "." + cDir.getString("cfgExtension").toLowerCase();
 
             csrfEnabled = cDir.getBoolean("csrfEnabled", true);
-            IConfig cEnv = cDir.getNode("environment");
+            IConfig cEnv = cDir.getObject("environment");
             if (cEnv != null) {
                 for (String key : cEnv.getPropertyKeys()) {
                     environment.put(key, cEnv.get(key));
@@ -390,7 +390,7 @@ public class TransformWebSpace extends AbstractWebSpace
         HttpServletResponse resp = context.getHttpResponse();
         resp.setCharacterEncoding(charsetEncoding);
         resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(from.lastModified()));
-        super.prepareHead(context, MFile.getFileSuffix(from), path);
+        super.prepareHead(context, MFile.getFileExtension(from), path);
         if (fileConfig != null) {
             int cnt = 0;
             while (true) {

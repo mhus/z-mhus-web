@@ -34,7 +34,7 @@ public class DirectoryWebSpace extends AbstractWebSpace {
     @Override
     public void start(CherryApi api) throws MException {
         super.start(api);
-        cDir = getConfig().getNode("directory");
+        cDir = getConfig().getObject("directory");
         if (cDir != null) {
             charsetEncoding = cDir.getString("characterEncoding", charsetEncoding);
             if (cDir.isProperty("indexes")) indexes = cDir.getString("indexes").split(",");
@@ -116,6 +116,6 @@ public class DirectoryWebSpace extends AbstractWebSpace {
         resp.setContentLengthLong(file.length());
         resp.setCharacterEncoding(charsetEncoding);
         resp.setHeader("Last-Modified", MDate.toHttpHeaderDate(file.lastModified()));
-        super.prepareHead(context, MFile.getFileSuffix(file), file.getAbsolutePath());
+        super.prepareHead(context, MFile.getFileExtension(file), file.getAbsolutePath());
     }
 }

@@ -176,7 +176,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
     @Override
     public String getMimeType(String file) {
-        String extension = MFile.getFileSuffix(file);
+        String extension = MFile.getFileExtension(file);
         return MFile.getMimeType(extension);
     }
 
