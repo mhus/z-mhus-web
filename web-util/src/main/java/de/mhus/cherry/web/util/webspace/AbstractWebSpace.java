@@ -31,7 +31,6 @@ import de.mhus.lib.core.M;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.config.IConfigFactory;
-import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.core.io.FileWatch;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.api.util.OsgiBundleClassLoader;
@@ -68,7 +67,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
         cServer = config.getObject("server");
         if (cServer == null) throw new MException("server in config not found", root);
         // get alias
-        setConfigAliases(MConfig.toStringArray(cServer.getObjectList("aliases"), "value"));
+        setConfigAliases(IConfig.toStringArray(cServer.getObjectList("aliases"), "value"));
         // set name
         name = getFirstAlias(); // default
         name = cServer.getString("name", name);
@@ -118,7 +117,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
             type.setName(typeDef.getString("name"));
             if (typeDef.isObject("extends"))
                 type.setExtends(
-                        MConfig.toStringArray(typeDef.getObject("extends").getObjects(), "value"));
+                        IConfig.toStringArray(typeDef.getObject("extends").getObjects(), "value"));
             type.setMimeType(typeDef.getString("mimetype", null));
 
             if (typeDef.isObject("headers")) {

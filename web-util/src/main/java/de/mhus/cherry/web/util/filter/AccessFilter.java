@@ -26,7 +26,6 @@ import de.mhus.lib.core.IReadProperties;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MPeriod;
 import de.mhus.lib.core.config.IConfig;
-import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.errors.MException;
 
 public class AccessFilter extends MLog implements WebFilter {
@@ -145,7 +144,7 @@ public class AccessFilter extends MLog implements WebFilter {
 
         if (config != null) {
             if (config.isProperty("static")) {
-                staticContent = MConfig.toStringArray(config.getObjectList("static"), "value");
+                staticContent = IConfig.toStringArray(config.getObjectList("static"), "value");
             }
             defaultPublicAccess = config.getBoolean("defaultPublicAccess", defaultPublicAccess);
         }

@@ -34,7 +34,6 @@ import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.config.IConfig;
-import de.mhus.lib.core.config.MConfig;
 import de.mhus.lib.core.crypt.MRandom;
 import de.mhus.lib.core.io.http.MHttp;
 import de.mhus.lib.core.util.SoftHashMap;
@@ -78,22 +77,22 @@ public class TransformWebSpace extends AbstractWebSpace
                 templateRoot = findTemplateFile(cDir.getString("templateRoot"));
             if (cDir.isProperty("extensionOrder")) {
                 extensionOrder =
-                        MConfig.toStringArray(cDir.getObject("extensionOrder").getObjects(), "value");
+                        IConfig.toStringArray(cDir.getObject("extensionOrder").getObjects(), "value");
                 MCollection.updateEach(extensionOrder, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("denyExtensions")) {
                 denyExtensions =
-                        MConfig.toStringArray(cDir.getObject("denyExtensions").getObjects(), "value");
+                        IConfig.toStringArray(cDir.getObject("denyExtensions").getObjects(), "value");
                 MCollection.updateEach(denyExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("removeExtensions")) {
                 removeExtensions =
-                        MConfig.toStringArray(cDir.getObject("removeExtensions").getObjects(), "value");
+                        IConfig.toStringArray(cDir.getObject("removeExtensions").getObjects(), "value");
                 MCollection.updateEach(removeExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("htmlExtensions")) {
                 htmlExtensions =
-                        MConfig.toStringArray(cDir.getObject("htmlExtensions").getObjects(), "value");
+                        IConfig.toStringArray(cDir.getObject("htmlExtensions").getObjects(), "value");
                 MCollection.updateEach(htmlExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("header")) {
