@@ -17,8 +17,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class UserInformation {
 
