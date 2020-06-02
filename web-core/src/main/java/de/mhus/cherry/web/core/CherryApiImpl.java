@@ -14,19 +14,23 @@
 package de.mhus.cherry.web.core;
 
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.shiro.subject.Subject;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
-
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -48,10 +52,16 @@ import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.cfg.CfgInt;
 import de.mhus.lib.core.config.IConfig;
-import de.mhus.lib.core.logging.MLogUtil;
+import de.mhus.lib.core.logging.ITracer;
+import de.mhus.lib.core.shiro.AccessUtil;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.servlet.security.SecurityApi;
 import de.mhus.osgi.api.util.MServiceTracker;
+import io.opentracing.Scope;
+import io.opentracing.SpanContext;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMap;
+import io.opentracing.tag.Tags;
 
 @Component(immediate = true)
 public class CherryApiImpl extends MLog implements CherryApi {
@@ -241,19 +251,88 @@ public class CherryApiImpl extends MLog implements CherryApi {
     public void beginRequest(
             Servlet servlet, HttpServletRequest request, HttpServletResponse response) {
         if (request != null) {
-            String trace = request.getParameter("_trace");
-            if (trace != null) {
-                request.setAttribute("_trace", "on");
-                MLogUtil.setTrailConfig(MLogUtil.TRAIL_SOURCE_REST, trace);
+        	
+            // set user
+            HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute("_access_session_id") != null) {
+            	Subject subject = AccessUtil.createSubjectFromSessionId((String)session.getAttribute("_access_session_id"));
+            	request.setAttribute("_access_subject", subject);
+            	AccessUtil.subjectCleanup();
+            	AccessUtil.useSubject(subject);
             }
+
+            // tracing
+        	Scope scope = null;
+        	SpanContext parentSpanCtx = ITracer.get().tracer().extract(Format.Builtin.HTTP_HEADERS, new TextMap() {
+
+				@Override
+				public Iterator<Entry<String, String>> iterator() {
+						final Enumeration<String> enu = request.getHeaderNames();
+						return new Iterator<Entry<String,String>>() {
+							@Override
+							public boolean hasNext() {
+								return enu.hasMoreElements();
+							}
+
+							@Override
+							public Entry<String, String> next() {
+								final String key = enu.nextElement();
+								return new Entry<String, String>() {
+
+									@Override
+									public String getKey() {
+										return key;
+									}
+
+									@Override
+									public String getValue() {
+										return request.getHeader(key);
+									}
+
+									@Override
+									public String setValue(String value) {
+										return null;
+									}
+									
+								};
+							}
+						};
+				}
+
+				@Override
+				public void put(String key, String value) {
+					
+				}
+            });
+        	
+            String trace = request.getParameter("_trace");
+            if (parentSpanCtx == null) {
+            	scope = ITracer.get().start("rest", trace);
+            } else
+            if (parentSpanCtx != null) {
+            	scope = ITracer.get().tracer().buildSpan("rest").asChildOf(parentSpanCtx).startActive(true);
+            	ITracer.get().activate(trace);
+            }
+            
+            if (scope != null) {
+                Tags.SPAN_KIND.set(scope.span(), Tags.SPAN_KIND_SERVER);
+                Tags.HTTP_METHOD.set(scope.span(), request.getMethod());
+                Tags.HTTP_URL.set(scope.span(), request.getRequestURL().toString());
+            }
+            
+            request.setAttribute("_tracer_scope", scope);
+         
         }
     }
 
     public void endRequest(
             Servlet servlet, HttpServletRequest request, HttpServletResponse response) {
-        if (request.getAttribute("_trace") != null) {
-            MLogUtil.releaseTrailConfig();
+        if (request.getAttribute("_tracer_scope") != null) {
+        	// could also use ScopeManager
+            ((Scope)request.getAttribute("_tracer_scope")).close();
         }
+        
+    	AccessUtil.subjectCleanup();
     }
 
     @Override
