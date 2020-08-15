@@ -56,8 +56,8 @@ public class AaaSessionFilter extends MLog implements WebFilter {
 
                 Locale locale = req.getLocale();
 
-//XXX                AaaContext userContext = aaa.process(userTicket, locale);
-//                call.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
+                // XXX                AaaContext userContext = aaa.process(userTicket, locale);
+                //                call.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
             }
         } catch (Throwable t) {
             throw new MException(t);
@@ -67,42 +67,46 @@ public class AaaSessionFilter extends MLog implements WebFilter {
 
     @Override
     public void doFilterEnd(UUID instance, InternalCallContext call) throws MException {
-//        AaaContext userContext = (AaaContext) call.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
-//        if (userContext == null) return;
-//
-//        AccessApi aaa = M.l(AccessApi.class);
-//        aaa.release(userContext);
+        //        AaaContext userContext = (AaaContext)
+        // call.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
+        //        if (userContext == null) return;
+        //
+        //        AccessApi aaa = M.l(AccessApi.class);
+        //        aaa.release(userContext);
     }
 
     public static boolean isLoggedIn(CallContext context) {
-//        AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
-//        return userContext != null;
+        //        AaaContext userContext = (AaaContext)
+        // context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
+        //        return userContext != null;
         return false;
     }
 
     public static void login(CallContext context, String user, String pass) throws MException {
 
-//        AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
-//        if (userContext != null)
-//            throw new MException("already logged in", userContext.getAccountId());
-//
-//        AccessApi aaa = M.l(AccessApi.class);
-//
-//        String userTicket = aaa.createUserTicket(user, pass);
-//        context.getSession().setString(SESSION_PARAMETER_NAME, userTicket);
-//
-//        Locale locale = context.getHttpRequest().getLocale();
-//        userContext = aaa.process(userTicket, locale);
-//        context.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
+        //        AaaContext userContext = (AaaContext)
+        // context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
+        //        if (userContext != null)
+        //            throw new MException("already logged in", userContext.getAccountId());
+        //
+        //        AccessApi aaa = M.l(AccessApi.class);
+        //
+        //        String userTicket = aaa.createUserTicket(user, pass);
+        //        context.getSession().setString(SESSION_PARAMETER_NAME, userTicket);
+        //
+        //        Locale locale = context.getHttpRequest().getLocale();
+        //        userContext = aaa.process(userTicket, locale);
+        //        context.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
     }
 
     public static void logout(CallContext context, String user, String pass) {
 
-//        AaaContext userContext = (AaaContext) context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
-//        if (userContext == null) return;
-//
-//        AccessApi aaa = M.l(AccessApi.class);
-//        aaa.release(userContext);
+        //        AaaContext userContext = (AaaContext)
+        // context.getAttribute(CONTEXT_PARAMETER_AAA_CONTEXT);
+        //        if (userContext == null) return;
+        //
+        //        AccessApi aaa = M.l(AccessApi.class);
+        //        aaa.release(userContext);
 
         context.getSession().remove(SESSION_PARAMETER_NAME);
         context.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, null);

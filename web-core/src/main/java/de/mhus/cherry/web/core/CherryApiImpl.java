@@ -251,88 +251,96 @@ public class CherryApiImpl extends MLog implements CherryApi {
     public void beginRequest(
             Servlet servlet, HttpServletRequest request, HttpServletResponse response) {
         if (request != null) {
-        	
+
             // set user
             HttpSession session = request.getSession(false);
             if (session != null && session.getAttribute("_access_session_id") != null) {
-            	Subject subject = AccessUtil.createSubjectFromSessionId((String)session.getAttribute("_access_session_id"));
-            	request.setAttribute("_access_subject", subject);
-            	AccessUtil.subjectCleanup();
-            	AccessUtil.useSubject(subject);
+                Subject subject =
+                        AccessUtil.createSubjectFromSessionId(
+                                (String) session.getAttribute("_access_session_id"));
+                request.setAttribute("_access_subject", subject);
+                AccessUtil.subjectCleanup();
+                AccessUtil.useSubject(subject);
             }
 
             // tracing
-        	Scope scope = null;
-        	SpanContext parentSpanCtx = ITracer.get().tracer().extract(Format.Builtin.HTTP_HEADERS, new TextMap() {
+            Scope scope = null;
+            SpanContext parentSpanCtx =
+                    ITracer.get()
+                            .tracer()
+                            .extract(
+                                    Format.Builtin.HTTP_HEADERS,
+                                    new TextMap() {
 
-				@Override
-				public Iterator<Entry<String, String>> iterator() {
-						final Enumeration<String> enu = request.getHeaderNames();
-						return new Iterator<Entry<String,String>>() {
-							@Override
-							public boolean hasNext() {
-								return enu.hasMoreElements();
-							}
+                                        @Override
+                                        public Iterator<Entry<String, String>> iterator() {
+                                            final Enumeration<String> enu =
+                                                    request.getHeaderNames();
+                                            return new Iterator<Entry<String, String>>() {
+                                                @Override
+                                                public boolean hasNext() {
+                                                    return enu.hasMoreElements();
+                                                }
 
-							@Override
-							public Entry<String, String> next() {
-								final String key = enu.nextElement();
-								return new Entry<String, String>() {
+                                                @Override
+                                                public Entry<String, String> next() {
+                                                    final String key = enu.nextElement();
+                                                    return new Entry<String, String>() {
 
-									@Override
-									public String getKey() {
-										return key;
-									}
+                                                        @Override
+                                                        public String getKey() {
+                                                            return key;
+                                                        }
 
-									@Override
-									public String getValue() {
-										return request.getHeader(key);
-									}
+                                                        @Override
+                                                        public String getValue() {
+                                                            return request.getHeader(key);
+                                                        }
 
-									@Override
-									public String setValue(String value) {
-										return null;
-									}
-									
-								};
-							}
-						};
-				}
+                                                        @Override
+                                                        public String setValue(String value) {
+                                                            return null;
+                                                        }
+                                                    };
+                                                }
+                                            };
+                                        }
 
-				@Override
-				public void put(String key, String value) {
-					
-				}
-            });
-        	
+                                        @Override
+                                        public void put(String key, String value) {}
+                                    });
+
             String trace = request.getParameter("_trace");
             if (parentSpanCtx == null) {
-            	scope = ITracer.get().start("rest", trace);
-            } else
-            if (parentSpanCtx != null) {
-            	scope = ITracer.get().tracer().buildSpan("rest").asChildOf(parentSpanCtx).startActive(true);
-            	ITracer.get().activate(trace);
+                scope = ITracer.get().start("rest", trace);
+            } else if (parentSpanCtx != null) {
+                scope =
+                        ITracer.get()
+                                .tracer()
+                                .buildSpan("rest")
+                                .asChildOf(parentSpanCtx)
+                                .startActive(true);
+                ITracer.get().activate(trace);
             }
-            
+
             if (scope != null) {
                 Tags.SPAN_KIND.set(scope.span(), Tags.SPAN_KIND_SERVER);
                 Tags.HTTP_METHOD.set(scope.span(), request.getMethod());
                 Tags.HTTP_URL.set(scope.span(), request.getRequestURL().toString());
             }
-            
+
             request.setAttribute("_tracer_scope", scope);
-         
         }
     }
 
     public void endRequest(
             Servlet servlet, HttpServletRequest request, HttpServletResponse response) {
         if (request.getAttribute("_tracer_scope") != null) {
-        	// could also use ScopeManager
-            ((Scope)request.getAttribute("_tracer_scope")).close();
+            // could also use ScopeManager
+            ((Scope) request.getAttribute("_tracer_scope")).close();
         }
-        
-    	AccessUtil.subjectCleanup();
+
+        AccessUtil.subjectCleanup();
     }
 
     @Override

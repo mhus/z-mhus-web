@@ -264,10 +264,9 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
         Integer done = (Integer) call.getAttribute(CALL_FILTER_CNT);
         if (done == null) return; // none
         for (WebFilter filter : filtersReverse) {
-            if (cnt
-                    <= done) // do only end for filter they had begin called, expect the one
-                             // returned false
-            filter.doFilterEnd(instanceId, call);
+            if (cnt <= done) // do only end for filter they had begin called, expect the one
+                // returned false
+                filter.doFilterEnd(instanceId, call);
             cnt--;
         }
     }
