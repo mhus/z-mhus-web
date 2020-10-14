@@ -25,7 +25,7 @@
         <artifactId>mhus-karaf-oss</artifactId>
     </parent>
     <groupId>de.mhus.cherry</groupId>
-    <artifactId>cherry-web</artifactId>
+    <artifactId>mhus-web</artifactId>
     <version>7.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     
@@ -33,7 +33,7 @@
   <description>A virtual host enabling web portal, based on OSGi / apache karaf</description>
   <url>http://www.mhus.de</url>
     <properties>
-        <cherry-web.version>${project.version}</cherry-web.version>
+        <mhus-web.version>${project.version}</mhus-web.version>
     </properties>
   <licenses>
     <license>
