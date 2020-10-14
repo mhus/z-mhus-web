@@ -43,8 +43,8 @@
     </license>
   </licenses>
   <scm>
-    <url>https://github.com/mhus/cherry-web</url>
-    <connection>scm:git:https://github.com/mhus/cherry-web/</connection>
+    <url>https://github.com/mhus/mhus-web</url>
+    <connection>scm:git:https://github.com/mhus/mhus-web/</connection>
   </scm>
   <developers>
     <developer>
