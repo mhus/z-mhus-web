@@ -24,7 +24,7 @@
         <version>7.2.0-SNAPSHOT</version>
         <artifactId>mhus-karaf-oss</artifactId>
     </parent>
-    <groupId>de.mhus.cherry</groupId>
+    <groupId>de.mhus.app</groupId>
     <artifactId>mhus-web</artifactId>
     <version>7.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>

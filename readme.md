@@ -3,11 +3,11 @@ feature:repo-add mvn:de.mhus.osgi/mhus-features/7.0.0-SNAPSHOT/xml/features
 feature:install mhu-osgi-base
 feature:install http
 
-install -s mvn:de.mhus.cherry/web-api/1.0.0-SNAPSHOT
-install -s mvn:de.mhus.cherry/web-core/1.0.0-SNAPSHOT
-install -s mvn:de.mhus.cherry/web-util/1.0.0-SNAPSHOT
+install -s mvn:de.mhus.app/web-api/1.0.0-SNAPSHOT
+install -s mvn:de.mhus.app/web-core/1.0.0-SNAPSHOT
+install -s mvn:de.mhus.app/web-util/1.0.0-SNAPSHOT
 
-install -s mvn:de.mhus.cherry/web-jetty/1.0.0-SNAPSHOT
+install -s mvn:de.mhus.app/web-jetty/1.0.0-SNAPSHOT
 
 
 
@@ -19,13 +19,13 @@ Use javaxt http server
 1) Install javaxt port and javaxt connector
 
 install -s mvn:de.mhus.ports/ports-javaxt/1.3.6-SNAPSHOT
-install -s mvn:de.mhus.cherry/web-javaxt/1.0.0-SNAPSHOT
+install -s mvn:de.mhus.app/web-javaxt/1.0.0-SNAPSHOT
 
 2) Modify configuration (optional)
 
 mhus-config.xml default values:
 
-<de.mhus.cherry.web.javaxt.JavaXtServer
+<de.mhus.app.web.javaxt.JavaXtServer
 	ssl="false"
 	port="9080"
 	threads="50"
@@ -39,7 +39,7 @@ mhus-config.xml default values:
 
 To enable ssl the minimum configuration must be
 
-<de.mhus.cherry.web.javaxt.JavaXtServer
+<de.mhus.app.web.javaxt.JavaXtServer
 	ssl="true"
 />
 

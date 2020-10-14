@@ -23,7 +23,7 @@
 	<packaging>bundle</packaging>
 
 	<parent>
-		<groupId>de.mhus.cherry</groupId>
+		<groupId>de.mhus.app</groupId>
 		<artifactId>mhus-web</artifactId>
 		<version>7.2.0-SNAPSHOT</version>
 	</parent>
@@ -39,7 +39,7 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>
-							de.mhus.cherry.web.util*;version=${project.version}
+							de.mhus.app.web.util*;version=${project.version}
 						</Export-Package>
 						<Import-Package>
 							de.mhus.osgi.transform.*;resolution:=optional,
@@ -56,7 +56,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>de.mhus.cherry</groupId>
+			<groupId>de.mhus.app</groupId>
 			<artifactId>web-api</artifactId>
 		</dependency>
 		

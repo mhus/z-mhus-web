@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.mhus.cherry.web.javaxt;
+package de.mhus.app.web.javaxt;
 
 import java.io.IOException;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import de.mhus.cherry.web.api.InternalCallContext;
-import de.mhus.cherry.web.core.CherryApiImpl;
+import de.mhus.app.web.api.InternalCallContext;
+import de.mhus.app.web.core.CherryApiImpl;
 import de.mhus.lib.core.M;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;

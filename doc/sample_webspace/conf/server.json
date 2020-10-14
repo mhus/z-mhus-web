@@ -7,13 +7,13 @@
 		"defaultMimeType": "text/html",
 		"filters": [
 		    {
-		    	"class":"de.mhus.cherry.web.util.sample.TraceFilter"
+		    	"class":"de.mhus.app.web.util.sample.TraceFilter"
 		    }
 		],
 		"areas":[
 			{
 				"path":"/hello",
-				"class":"de.mhus.cherry.web.util.sample.HelloArea"
+				"class":"de.mhus.app.web.util.sample.HelloArea"
 			}
 		]
 	},
