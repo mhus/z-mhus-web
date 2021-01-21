@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
-    Copyright (C) 2020 Mike Hummel (mh@mhus.de)
+    Copyright (C) 2015 Mike Hummel (mh@mhus.de)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@
     <properties>
         <mhus-web.version>${project.version}</mhus-web.version>
     </properties>
+    <inceptionYear>2015</inceptionYear>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
