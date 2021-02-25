@@ -262,7 +262,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
                                 (String) session.getAttribute("_access_session_id"));
                 request.setAttribute("_access_subject", subject);
                 AccessUtil.subjectCleanup();
-                AccessUtil.useSubject(subject);
+                AccessUtil.asSubject(subject);
             }
 
             // tracing
