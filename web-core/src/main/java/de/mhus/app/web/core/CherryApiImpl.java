@@ -52,10 +52,10 @@ import de.mhus.app.web.api.WebSession;
 import de.mhus.lib.core.M;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.aaa.Aaa;
 import de.mhus.lib.core.cfg.CfgInt;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.ITracer;
-import de.mhus.lib.core.shiro.AccessUtil;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.servlet.security.SecurityApi;
 import de.mhus.osgi.api.util.MServiceTracker;
@@ -258,11 +258,11 @@ public class CherryApiImpl extends MLog implements CherryApi {
             HttpSession session = request.getSession(false);
             if (session != null && session.getAttribute("_access_session_id") != null) {
                 Subject subject =
-                        AccessUtil.createSubjectFromSessionId(
+                        Aaa.createSubjectFromSessionId(
                                 (String) session.getAttribute("_access_session_id"));
                 request.setAttribute("_access_subject", subject);
-                AccessUtil.subjectCleanup();
-                AccessUtil.asSubject(subject);
+                Aaa.subjectCleanup();
+                Aaa.asSubject(subject);
             }
 
             // tracing
@@ -342,7 +342,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
             ((Scope) request.getAttribute("_tracer_scope")).close();
         }
 
-        AccessUtil.subjectCleanup();
+        Aaa.subjectCleanup();
     }
 
     @Override
