@@ -58,7 +58,7 @@ import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.ITracer;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.servlet.security.SecurityApi;
-import de.mhus.osgi.api.util.MServiceTracker;
+import de.mhus.osgi.api.util.AbstractServiceTracker;
 import io.opentracing.Scope;
 import io.opentracing.SpanContext;
 import io.opentracing.propagation.Format;
@@ -83,8 +83,8 @@ public class CherryApiImpl extends MLog implements CherryApi {
         typeHeaderFactories.add(new TypeHeaderDynamic.Factory());
     }
 
-    MServiceTracker<VirtualHost> vHostTracker =
-            new MServiceTracker<VirtualHost>(VirtualHost.class) {
+    AbstractServiceTracker<VirtualHost> vHostTracker =
+            new AbstractServiceTracker<VirtualHost>(VirtualHost.class) {
 
                 @Override
                 protected void removeService(
