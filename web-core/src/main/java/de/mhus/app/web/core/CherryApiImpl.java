@@ -53,6 +53,7 @@ import de.mhus.lib.core.M;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.aaa.Aaa;
+import de.mhus.lib.core.aaa.SubjectEnvironment;
 import de.mhus.lib.core.cfg.CfgInt;
 import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.ITracer;
@@ -252,19 +253,23 @@ public class CherryApiImpl extends MLog implements CherryApi {
 
     public void beginRequest(
             Servlet servlet, HttpServletRequest request, HttpServletResponse response) {
-        if (request != null) {
+        if (request == null) return;
 
-            // set user
-            HttpSession session = request.getSession(false);
-            if (session != null && session.getAttribute("_access_session_id") != null) {
-                Subject subject =
-                        Aaa.createSubjectFromSessionId(
-                                (String) session.getAttribute("_access_session_id"));
-                request.setAttribute("_access_subject", subject);
-                Aaa.subjectCleanup();
-                Aaa.asSubject(subject);
-            }
-
+        // set user
+        HttpSession session = request.getSession(false);
+        // set aaa context
+        @SuppressWarnings("unused")
+        SubjectEnvironment access = null;
+        Aaa.subjectCleanup();
+        if (session != null && session.getAttribute("_access_session_id") != null) {
+            Subject subject =
+                    Aaa.createSubjectFromSessionId(
+                            (String) session.getAttribute("_access_session_id"));
+            request.setAttribute("_access_subject", subject);
+            access = Aaa.asSubject(subject);
+        }
+        // reset aaa context on error
+        try {
             // tracing
             Scope scope = null;
             SpanContext parentSpanCtx =
@@ -332,6 +337,9 @@ public class CherryApiImpl extends MLog implements CherryApi {
             }
 
             request.setAttribute("_tracer_scope", scope);
+        } catch (Throwable t) {
+            Aaa.subjectCleanup();
+            throw t;
         }
     }
 
