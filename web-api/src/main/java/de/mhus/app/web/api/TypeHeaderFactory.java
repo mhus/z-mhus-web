@@ -15,7 +15,7 @@
  */
 package de.mhus.app.web.api;
 
-import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 
 public interface TypeHeaderFactory {
@@ -27,5 +27,5 @@ public interface TypeHeaderFactory {
      * @return a typeheader if the config is accepted
      * @throws MException
      */
-    TypeHeader create(IConfig header) throws MException;
+    TypeHeader create(INode header) throws MException;
 }

@@ -21,7 +21,7 @@ import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 
 public interface CherryApi {
@@ -40,5 +40,5 @@ public interface CherryApi {
 
     Map<String, VirtualHost> getVirtualHosts();
 
-    TypeHeader createTypeHeader(IConfig header) throws MException;
+    TypeHeader createTypeHeader(INode header) throws MException;
 }

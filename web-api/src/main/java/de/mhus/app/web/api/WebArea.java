@@ -17,12 +17,12 @@ package de.mhus.app.web.api;
 
 import java.util.UUID;
 
-import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 
 public interface WebArea {
 
-    void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException;
+    void doInitialize(UUID instance, VirtualHost vHost, INode config) throws MException;
 
     /**
      * Return true if the area was able to consume the call.

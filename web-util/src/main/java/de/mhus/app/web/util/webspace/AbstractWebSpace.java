@@ -31,16 +31,16 @@ import de.mhus.app.web.api.WebFilter;
 import de.mhus.app.web.util.AbstractVirtualHost;
 import de.mhus.lib.core.M;
 import de.mhus.lib.core.MSystem;
-import de.mhus.lib.core.config.IConfig;
-import de.mhus.lib.core.config.IConfigFactory;
 import de.mhus.lib.core.io.FileWatch;
+import de.mhus.lib.core.node.INode;
+import de.mhus.lib.core.node.INodeFactory;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.api.util.OsgiBundleClassLoader;
 
 public abstract class AbstractWebSpace extends AbstractVirtualHost implements VirtualWebSpace {
 
     protected File root;
-    private IConfig cServer;
+    private INode cServer;
     private File configRoot;
     private File documentRoot;
     private FileWatch configWatch;
@@ -63,13 +63,13 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
 
         String configFile = prepareConfigName("server");
         log().i("start web space", configFile, getClass().getCanonicalName());
-        config = M.l(IConfigFactory.class).find(configRoot, configFile);
+        config = M.l(INodeFactory.class).find(configRoot, configFile);
         if (config == null) throw new MException("config for webspace not found", root);
         // get server config
         cServer = config.getObject("server");
         if (cServer == null) throw new MException("server in config not found", root);
         // get alias
-        setConfigAliases(IConfig.toStringArray(cServer.getObjectList("aliases"), "value"));
+        setConfigAliases(INode.toStringArray(cServer.getObjectList("aliases"), "value"));
         // set name
         name = getFirstAlias(); // default
         name = cServer.getString("name", name);
@@ -85,7 +85,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
         defaultMimeType = cServer.getString("defaultMimeType", defaultMimeType);
         // load filters
         OsgiBundleClassLoader loader = new OsgiBundleClassLoader();
-        for (IConfig filterDef : cServer.getObjectList("filters")) {
+        for (INode filterDef : cServer.getObjectList("filters")) {
             String filterClazzName = filterDef.getString("class");
             try {
                 Class<?> clazz = loader.loadClass(filterClazzName);
@@ -99,7 +99,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
             }
         }
         // load active areas
-        for (IConfig areaDef : cServer.getObjectList("areas")) {
+        for (INode areaDef : cServer.getObjectList("areas")) {
             String areaPath = areaDef.getString("path");
             String areaClazzName = areaDef.getString("class");
             try {
@@ -114,17 +114,17 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
             }
         }
 
-        for (IConfig typeDef : cServer.getObjectList("types")) {
+        for (INode typeDef : cServer.getObjectList("types")) {
             TypeDefinition type = new TypeDefinition();
             type.setName(typeDef.getString("name"));
             if (typeDef.isObject("extends"))
                 type.setExtends(
-                        IConfig.toStringArray(typeDef.getObject("extends").getObjects(), "value"));
+                        INode.toStringArray(typeDef.getObject("extends").getObjects(), "value"));
             type.setMimeType(typeDef.getString("mimetype", null));
 
             if (typeDef.isObject("headers")) {
-                IConfig headersDef = typeDef.getObject("headers");
-                for (IConfig header : headersDef.getObjects()) {
+                INode headersDef = typeDef.getObject("headers");
+                for (INode header : headersDef.getObjects()) {
                     TypeHeader obj = api.createTypeHeader(header);
                     if (obj != null) type.addHeader(obj);
                 }

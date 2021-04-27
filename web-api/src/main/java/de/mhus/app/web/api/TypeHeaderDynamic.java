@@ -18,7 +18,7 @@ package de.mhus.app.web.api;
 import javax.servlet.http.HttpServletResponse;
 
 import de.mhus.lib.core.MPeriod;
-import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 
 public class TypeHeaderDynamic implements TypeHeader {
@@ -90,7 +90,7 @@ public class TypeHeaderDynamic implements TypeHeader {
     public static class Factory implements TypeHeaderFactory {
 
         @Override
-        public TypeHeader create(IConfig header) throws MException {
+        public TypeHeader create(INode header) throws MException {
             String key = header.getString("key", null);
             String value = header.getString("definition", null);
             boolean add = header.getBoolean("add", false);

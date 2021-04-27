@@ -33,9 +33,9 @@ import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MPassword;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.cfg.CfgString;
-import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;
 import de.mhus.lib.core.net.Subnet;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.core.util.Base64;
 import de.mhus.lib.core.util.MUri;
 import de.mhus.lib.errors.MException;
@@ -63,7 +63,7 @@ public class CloudflareFilter extends MLog implements WebFilter {
             };
 
     @Override
-    public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
+    public void doInitialize(UUID instance, VirtualHost vHost, INode config) throws MException {
         vHost.getProperties().put(NAME + instance, new Config(vHost, config));
     }
 
@@ -232,10 +232,10 @@ public class CloudflareFilter extends MLog implements WebFilter {
         private HashMap<String, String> accounts = new HashMap<>();
         private boolean public_;
 
-        public Config(VirtualHost vHost, IConfig config) {
+        public Config(VirtualHost vHost, INode config) {
             message = config.getString("message", "Access denied");
             realm = config.getString("realm", "Access");
-            for (IConfig node : config.getObjectList("accounts"))
+            for (INode node : config.getObjectList("accounts"))
                 try {
                     accounts.put(node.getString("user"), node.getString("pass"));
                 } catch (MException e) {

@@ -55,8 +55,8 @@ import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.aaa.Aaa;
 import de.mhus.lib.core.aaa.SubjectEnvironment;
 import de.mhus.lib.core.cfg.CfgInt;
-import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.ITracer;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.servlet.security.SecurityApi;
 import de.mhus.osgi.api.util.AbstractServiceTracker;
@@ -354,7 +354,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
     }
 
     @Override
-    public TypeHeader createTypeHeader(IConfig header) throws MException {
+    public TypeHeader createTypeHeader(INode header) throws MException {
         synchronized (typeHeaderFactories) {
             for (TypeHeaderFactory factory : typeHeaderFactories) {
                 TypeHeader obj = factory.create(header);

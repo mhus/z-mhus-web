@@ -20,22 +20,22 @@ import java.util.UUID;
 import de.mhus.app.web.api.CallContext;
 import de.mhus.app.web.api.VirtualHost;
 import de.mhus.app.web.api.WebArea;
-import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 import de.mhus.lib.errors.NotFoundException;
 import de.mhus.osgi.api.MOsgi;
 
 public class AreaToService implements WebArea {
 
-    private IConfig config;
+    private INode config;
     private String serviceName;
     private WebArea webArea;
     private VirtualHost vHost;
     private UUID instanceId = UUID.randomUUID();
 
     @Override
-    public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
+    public void doInitialize(UUID instance, VirtualHost vHost, INode config) throws MException {
         this.config = config.getObject("config");
         serviceName = config.getString("service");
         this.vHost = vHost;

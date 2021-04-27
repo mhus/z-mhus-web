@@ -22,7 +22,7 @@ import java.util.Set;
 import org.osgi.framework.Bundle;
 
 import de.mhus.lib.core.IProperties;
-import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 
 public interface VirtualHost {
@@ -36,7 +36,7 @@ public interface VirtualHost {
      *
      * @return Config object
      */
-    IConfig getConfig();
+    INode getConfig();
 
     /**
      * Web Space specific properties.

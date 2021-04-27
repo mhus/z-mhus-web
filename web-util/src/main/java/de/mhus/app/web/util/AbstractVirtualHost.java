@@ -38,8 +38,8 @@ import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
-import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.logging.MLogUtil;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 
 public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
@@ -50,7 +50,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
     protected boolean traceAccess;
     private Set<String> aliases;
     protected String name = getClass().getCanonicalName();
-    protected IConfig config;
+    protected INode config;
     private MProperties properties = new MProperties();
     private Bundle bundle;
     protected LinkedList<WebFilter> filters = new LinkedList<>();
@@ -195,7 +195,7 @@ public abstract class AbstractVirtualHost extends MLog implements VirtualHost {
     protected abstract void doGetRequest(CallContext context) throws Exception;
 
     @Override
-    public IConfig getConfig() {
+    public INode getConfig() {
         return config;
     }
 

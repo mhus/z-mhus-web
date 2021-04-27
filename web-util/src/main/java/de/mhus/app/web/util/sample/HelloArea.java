@@ -22,7 +22,7 @@ import java.util.UUID;
 import de.mhus.app.web.api.CallContext;
 import de.mhus.app.web.api.VirtualHost;
 import de.mhus.app.web.api.WebArea;
-import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 
 public class HelloArea implements WebArea {
@@ -40,5 +40,5 @@ public class HelloArea implements WebArea {
     }
 
     @Override
-    public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) {}
+    public void doInitialize(UUID instance, VirtualHost vHost, INode config) {}
 }

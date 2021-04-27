@@ -25,12 +25,12 @@ import de.mhus.app.web.api.CallContext;
 import de.mhus.app.web.api.CherryApi;
 import de.mhus.lib.core.MDate;
 import de.mhus.lib.core.MFile;
-import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.errors.MException;
 
 public class DirectoryWebSpace extends AbstractWebSpace {
 
-    private IConfig cDir;
+    private INode cDir;
     private String[] indexes = new String[] {"index.html"};
 
     @Override

@@ -29,7 +29,7 @@ import de.mhus.app.web.util.CherryWebUtil;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MPassword;
 import de.mhus.lib.core.MString;
-import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.core.util.Base64;
 import de.mhus.lib.core.util.MUri;
 import de.mhus.lib.errors.MException;
@@ -40,7 +40,7 @@ public class BaseAuthFilter extends MLog implements WebFilter {
     public static String NAME = "base_auth_filter";
 
     @Override
-    public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) throws MException {
+    public void doInitialize(UUID instance, VirtualHost vHost, INode config) throws MException {
         vHost.getProperties().put(NAME + instance, new Config(vHost, config));
     }
 
@@ -121,14 +121,14 @@ public class BaseAuthFilter extends MLog implements WebFilter {
         private String message;
         private HashMap<String, String> accounts = new HashMap<>();
 
-        public Config(VirtualHost vHost, IConfig config) {
+        public Config(VirtualHost vHost, INode config) {
             String includedStr = config.getString("included", null);
             if (includedStr != null) included = Pattern.compile(includedStr);
             String excludedStr = config.getString("excluded", null);
             if (excludedStr != null) excluded = Pattern.compile(excludedStr);
             message = config.getString("message", "Access denied");
             realm = config.getString("realm", "Access");
-            for (IConfig node : config.getObjectList("accounts"))
+            for (INode node : config.getObjectList("accounts"))
                 try {
                     accounts.put(node.getString("user"), node.getString("pass"));
                 } catch (MException e) {

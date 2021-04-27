@@ -35,9 +35,9 @@ import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MProperties;
 import de.mhus.lib.core.MString;
 import de.mhus.lib.core.MSystem;
-import de.mhus.lib.core.config.IConfig;
 import de.mhus.lib.core.crypt.MRandom;
 import de.mhus.lib.core.io.http.MHttp;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.core.util.SoftHashMap;
 import de.mhus.lib.errors.MException;
 import de.mhus.osgi.transform.api.TransformUtil;
@@ -45,7 +45,7 @@ import de.mhus.osgi.transform.api.TransformUtil;
 public class TransformWebSpace extends AbstractWebSpace
         implements CanTransform, CallConfigProvider {
 
-    protected IConfig cDir;
+    protected INode cDir;
     protected String index = "index";
     protected String[] extensionOrder = new String[] {".twig"};
     protected String[] removeExtensions = new String[] {".html", ".htm"};
@@ -79,25 +79,25 @@ public class TransformWebSpace extends AbstractWebSpace
                 templateRoot = findTemplateFile(cDir.getString("templateRoot"));
             if (cDir.isProperty("extensionOrder")) {
                 extensionOrder =
-                        IConfig.toStringArray(
+                        INode.toStringArray(
                                 cDir.getObject("extensionOrder").getObjects(), "value");
                 MCollection.updateEach(extensionOrder, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("denyExtensions")) {
                 denyExtensions =
-                        IConfig.toStringArray(
+                        INode.toStringArray(
                                 cDir.getObject("denyExtensions").getObjects(), "value");
                 MCollection.updateEach(denyExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("removeExtensions")) {
                 removeExtensions =
-                        IConfig.toStringArray(
+                        INode.toStringArray(
                                 cDir.getObject("removeExtensions").getObjects(), "value");
                 MCollection.updateEach(removeExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("htmlExtensions")) {
                 htmlExtensions =
-                        IConfig.toStringArray(
+                        INode.toStringArray(
                                 cDir.getObject("htmlExtensions").getObjects(), "value");
                 MCollection.updateEach(htmlExtensions, e -> "." + e.toLowerCase());
             }
@@ -126,7 +126,7 @@ public class TransformWebSpace extends AbstractWebSpace
                 cfgExtension = "." + cDir.getString("cfgExtension").toLowerCase();
 
             csrfEnabled = cDir.getBoolean("csrfEnabled", true);
-            IConfig cEnv = cDir.getObject("environment");
+            INode cEnv = cDir.getObject("environment");
             if (cEnv != null) {
                 for (String key : cEnv.getPropertyKeys()) {
                     environment.put(key, cEnv.get(key));

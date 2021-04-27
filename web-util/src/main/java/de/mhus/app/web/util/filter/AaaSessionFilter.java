@@ -27,7 +27,7 @@ import de.mhus.app.web.api.WebFilter;
 import de.mhus.lib.core.M;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.aaa.AccessApi;
-import de.mhus.lib.core.config.IConfig;
+import de.mhus.lib.core.node.INode;
 import de.mhus.lib.core.util.Base64;
 import de.mhus.lib.errors.MException;
 
@@ -115,5 +115,5 @@ public class AaaSessionFilter extends MLog implements WebFilter {
     }
 
     @Override
-    public void doInitialize(UUID instance, VirtualHost vHost, IConfig config) {}
+    public void doInitialize(UUID instance, VirtualHost vHost, INode config) {}
 }
