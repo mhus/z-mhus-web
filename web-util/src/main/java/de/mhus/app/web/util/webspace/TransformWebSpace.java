@@ -79,14 +79,12 @@ public class TransformWebSpace extends AbstractWebSpace
                 templateRoot = findTemplateFile(cDir.getString("templateRoot"));
             if (cDir.isProperty("extensionOrder")) {
                 extensionOrder =
-                        INode.toStringArray(
-                                cDir.getObject("extensionOrder").getObjects(), "value");
+                        INode.toStringArray(cDir.getObject("extensionOrder").getObjects(), "value");
                 MCollection.updateEach(extensionOrder, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("denyExtensions")) {
                 denyExtensions =
-                        INode.toStringArray(
-                                cDir.getObject("denyExtensions").getObjects(), "value");
+                        INode.toStringArray(cDir.getObject("denyExtensions").getObjects(), "value");
                 MCollection.updateEach(denyExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("removeExtensions")) {
@@ -97,8 +95,7 @@ public class TransformWebSpace extends AbstractWebSpace
             }
             if (cDir.isProperty("htmlExtensions")) {
                 htmlExtensions =
-                        INode.toStringArray(
-                                cDir.getObject("htmlExtensions").getObjects(), "value");
+                        INode.toStringArray(cDir.getObject("htmlExtensions").getObjects(), "value");
                 MCollection.updateEach(htmlExtensions, e -> "." + e.toLowerCase());
             }
             if (cDir.isProperty("header")) {
