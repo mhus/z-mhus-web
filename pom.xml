@@ -31,7 +31,7 @@
     
   <name>Cherry Web Portal</name>
   <description>A virtual host enabling web portal, based on OSGi / apache karaf</description>
-  <url>http://www.mhus.de</url>
+  <url>http://www.mhus.info</url>
     <properties>
         <mhus-web.version>${project.version}</mhus-web.version>
     </properties>
@@ -44,8 +44,8 @@
     </license>
   </licenses>
   <scm>
-    <url>https://github.com/mhus/mhus-web</url>
-    <connection>scm:git:https://github.com/mhus/mhus-web/</connection>
+    <url>https://github.com/mhus-info/mhus-web</url>
+    <connection>scm:git:https://github.com/mhus-info/mhus-web/</connection>
   </scm>
   <developers>
     <developer>
