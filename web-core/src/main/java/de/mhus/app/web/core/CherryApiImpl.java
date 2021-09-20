@@ -61,6 +61,7 @@ import de.mhus.lib.errors.MException;
 import de.mhus.lib.servlet.security.SecurityApi;
 import de.mhus.osgi.api.util.AbstractServiceTracker;
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
@@ -321,19 +322,21 @@ public class CherryApiImpl extends MLog implements CherryApi {
             if (parentSpanCtx == null) {
                 scope = ITracer.get().start("rest", trace);
             } else if (parentSpanCtx != null) {
-                scope =
+                Span span =
                         ITracer.get()
                                 .tracer()
                                 .buildSpan("rest")
                                 .asChildOf(parentSpanCtx)
-                                .startActive(true);
+                                .start();
+                scope = ITracer.get().tracer().scopeManager().activate(span);
                 ITracer.get().activate(trace);
             }
 
-            if (scope != null) {
-                Tags.SPAN_KIND.set(scope.span(), Tags.SPAN_KIND_SERVER);
-                Tags.HTTP_METHOD.set(scope.span(), request.getMethod());
-                Tags.HTTP_URL.set(scope.span(), request.getRequestURL().toString());
+            Span span = ITracer.get().current();
+            if (span != null) {
+                Tags.SPAN_KIND.set(span, Tags.SPAN_KIND_SERVER);
+                Tags.HTTP_METHOD.set(span, request.getMethod());
+                Tags.HTTP_URL.set(span, request.getRequestURL().toString());
             }
 
             request.setAttribute("_tracer_scope", scope);
