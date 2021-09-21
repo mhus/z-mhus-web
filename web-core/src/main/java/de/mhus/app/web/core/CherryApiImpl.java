@@ -52,6 +52,7 @@ import de.mhus.app.web.api.WebSession;
 import de.mhus.lib.core.M;
 import de.mhus.lib.core.MFile;
 import de.mhus.lib.core.MLog;
+import de.mhus.lib.core.MThread;
 import de.mhus.lib.core.aaa.Aaa;
 import de.mhus.lib.core.aaa.SubjectEnvironment;
 import de.mhus.lib.core.cfg.CfgInt;
@@ -261,7 +262,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
         // set aaa context
         @SuppressWarnings("unused")
         SubjectEnvironment access = null;
-        Aaa.subjectCleanup();
+        MThread.cleanup();
         if (session != null && session.getAttribute("_access_session_id") != null) {
             Subject subject =
                     Aaa.createSubjectFromSessionId(
@@ -328,7 +329,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
                                 .buildSpan("rest")
                                 .asChildOf(parentSpanCtx)
                                 .start();
-                scope = ITracer.get().tracer().scopeManager().activate(span);
+                scope = ITracer.get().activate(span);
                 ITracer.get().activate(trace);
             }
 
@@ -353,7 +354,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
             ((Scope) request.getAttribute("_tracer_scope")).close();
         }
 
-        Aaa.subjectCleanup();
+        MThread.cleanup();
     }
 
     @Override
