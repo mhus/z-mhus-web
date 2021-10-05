@@ -324,11 +324,7 @@ public class CherryApiImpl extends MLog implements CherryApi {
                 scope = ITracer.get().start("rest", trace);
             } else if (parentSpanCtx != null) {
                 Span span =
-                        ITracer.get()
-                                .tracer()
-                                .buildSpan("rest")
-                                .asChildOf(parentSpanCtx)
-                                .start();
+                        ITracer.get().tracer().buildSpan("rest").asChildOf(parentSpanCtx).start();
                 scope = ITracer.get().activate(span);
                 ITracer.get().activate(trace);
             }
