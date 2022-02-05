@@ -29,6 +29,7 @@ import de.mhus.app.web.api.VirtualWebSpace;
 import de.mhus.app.web.api.WebArea;
 import de.mhus.app.web.api.WebFilter;
 import de.mhus.app.web.util.AbstractVirtualHost;
+import de.mhus.lib.basics.RC;
 import de.mhus.lib.core.M;
 import de.mhus.lib.core.MSystem;
 import de.mhus.lib.core.io.FileWatch;
@@ -54,8 +55,8 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
     @Override
     public void start(CherryApi api) throws MException {
         setUpdated();
-        if (!root.exists()) throw new MException("root for webspace not exists", root);
-        if (!root.isDirectory()) throw new MException("root for webspace not a directory", root);
+        if (!root.exists()) throw new MException(RC.INTERNAL_ERROR, "root for webspace not exists", root);
+        if (!root.isDirectory()) throw new MException(RC.INTERNAL_ERROR, "root for webspace not a directory", root);
 
         configRoot = new File(root, "conf"); // default configuration directory
         if (!configRoot.exists() || !configRoot.isDirectory())
@@ -64,10 +65,10 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
         String configFile = prepareConfigName("server");
         log().i("start web space", configFile, getClass().getCanonicalName());
         config = M.l(INodeFactory.class).find(configRoot, configFile);
-        if (config == null) throw new MException("config for webspace not found", root);
+        if (config == null) throw new MException(RC.INTERNAL_ERROR, "config for webspace not found", root);
         // get server config
         cServer = config.getObject("server");
-        if (cServer == null) throw new MException("server in config not found", root);
+        if (cServer == null) throw new MException(RC.INTERNAL_ERROR, "server in config not found", root);
         // get alias
         setConfigAliases(INode.toStringArray(cServer.getObjectList("aliases"), "value"));
         // set name
@@ -93,9 +94,9 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
                 filter.doInitialize(getInstanceId(), this, filterDef);
                 addFilter(filter);
             } catch (ClassNotFoundException e) {
-                throw new MException("filter not found", filterClazzName);
+                throw new MException(RC.INTERNAL_ERROR, "filter not found", filterClazzName);
             } catch (Throwable e) {
-                throw new MException("can't instanciate filter", filterClazzName, e);
+                throw new MException(RC.INTERNAL_ERROR, "can't instanciate filter", filterClazzName, e);
             }
         }
         // load active areas
@@ -108,9 +109,9 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
                 area.doInitialize(getInstanceId(), this, areaDef);
                 addArea(areaPath, area);
             } catch (ClassNotFoundException e) {
-                throw new MException("area not found", areaClazzName);
+                throw new MException(RC.INTERNAL_ERROR, "area not found", areaClazzName);
             } catch (Throwable e) {
-                throw new MException("can't instanciate area", areaClazzName, e);
+                throw new MException(RC.INTERNAL_ERROR, "can't instanciate area", areaClazzName, e);
             }
         }
 

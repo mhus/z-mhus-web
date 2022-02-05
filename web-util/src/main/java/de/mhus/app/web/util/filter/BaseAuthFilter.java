@@ -26,6 +26,7 @@ import de.mhus.app.web.api.InternalCallContext;
 import de.mhus.app.web.api.VirtualHost;
 import de.mhus.app.web.api.WebFilter;
 import de.mhus.app.web.util.CherryWebUtil;
+import de.mhus.lib.basics.RC;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.MPassword;
 import de.mhus.lib.core.MString;
@@ -106,7 +107,7 @@ public class BaseAuthFilter extends MLog implements WebFilter {
             os.write(config.message.getBytes()); // utf-8?
             os.flush();
         } catch (IOException e) {
-            throw new MException(e);
+            throw new MException(RC.ERROR, e);
         }
     }
 

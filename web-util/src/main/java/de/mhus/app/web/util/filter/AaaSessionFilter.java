@@ -24,6 +24,7 @@ import de.mhus.app.web.api.CallContext;
 import de.mhus.app.web.api.InternalCallContext;
 import de.mhus.app.web.api.VirtualHost;
 import de.mhus.app.web.api.WebFilter;
+import de.mhus.lib.basics.RC;
 import de.mhus.lib.core.M;
 import de.mhus.lib.core.MLog;
 import de.mhus.lib.core.aaa.AccessApi;
@@ -62,7 +63,7 @@ public class AaaSessionFilter extends MLog implements WebFilter {
                 //                call.setAttribute(CONTEXT_PARAMETER_AAA_CONTEXT, userContext);
             }
         } catch (Throwable t) {
-            throw new MException(t);
+            throw new MException(RC.ERROR, t);
         }
         return true;
     }
