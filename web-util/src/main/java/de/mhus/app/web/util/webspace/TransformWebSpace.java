@@ -248,7 +248,7 @@ public class TransformWebSpace extends AbstractWebSpace
                     os.flush();
 
                 } catch (Throwable t) {
-                    log().w(file, t);
+                    log().w("get failed", file, t);
                     sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null);
                 }
                 return;

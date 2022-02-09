@@ -98,7 +98,7 @@ public class DirectoryWebSpace extends AbstractWebSpace {
             os.close();
             is.close();
         } catch (Throwable t) {
-            log().w(file, t);
+            log().w("get failed", file, t);
             sendError(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t);
         }
     }

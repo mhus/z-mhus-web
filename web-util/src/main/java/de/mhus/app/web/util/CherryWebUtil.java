@@ -51,7 +51,7 @@ public class CherryWebUtil {
                 }
             }
         } catch (IOException e) {
-            MLogUtil.log().e(file, e);
+            MLogUtil.log().e("load accounts failed", file, e);
         }
     }
 
