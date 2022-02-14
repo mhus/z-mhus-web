@@ -27,7 +27,7 @@ public class TypeHeaderDynamic implements TypeHeader {
     private Object value;
     private String definition;
     private long lastUpdate;
-    private long timeout = MPeriod.MINUTE_IN_MILLISECOUNDS * 15;
+    private long timeout = MPeriod.MINUTE_IN_MILLISECONDS * 15;
     private boolean add;
 
     public TypeHeaderDynamic(String key, String value, boolean add) {

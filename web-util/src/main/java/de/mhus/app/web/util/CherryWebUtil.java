@@ -38,7 +38,7 @@ import de.mhus.lib.core.logging.MLogUtil;
 public class CherryWebUtil {
 
     private static CfgLong CFG_CSRF_TIMEOUT =
-            new CfgLong(CherryApi.class, "csrfTimeout", MPeriod.HOUR_IN_MILLISECOUNDS);
+            new CfgLong(CherryApi.class, "csrfTimeout", MPeriod.HOUR_IN_MILLISECONDS);
 
     public static void loadAccounts(File file, HashMap<String, String> accounts) {
         try {
