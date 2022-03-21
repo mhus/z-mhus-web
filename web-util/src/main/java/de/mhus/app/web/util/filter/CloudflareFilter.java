@@ -238,7 +238,7 @@ public class CloudflareFilter extends MLog implements WebFilter {
             realm = config.getString("realm", "Access");
             for (INode node : config.getObjectList("accounts"))
                 try {
-                    accounts.put(node.getString("user"), node.getString("pass"));
+                    accounts.put(node.getString("user"), node.getString("password"));
                 } catch (MException e) {
                     log().e(e);
                 }
