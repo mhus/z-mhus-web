@@ -55,8 +55,10 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
     @Override
     public void start(CherryApi api) throws MException {
         setUpdated();
-        if (!root.exists()) throw new MException(RC.INTERNAL_ERROR, "root for webspace not exists", root);
-        if (!root.isDirectory()) throw new MException(RC.INTERNAL_ERROR, "root for webspace not a directory", root);
+        if (!root.exists())
+            throw new MException(RC.INTERNAL_ERROR, "root for webspace not exists", root);
+        if (!root.isDirectory())
+            throw new MException(RC.INTERNAL_ERROR, "root for webspace not a directory", root);
 
         configRoot = new File(root, "conf"); // default configuration directory
         if (!configRoot.exists() || !configRoot.isDirectory())
@@ -65,10 +67,12 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
         String configFile = prepareConfigName("server");
         log().i("start web space", configFile, getClass().getCanonicalName());
         config = M.l(INodeFactory.class).find(configRoot, configFile);
-        if (config == null) throw new MException(RC.INTERNAL_ERROR, "config for webspace not found", root);
+        if (config == null)
+            throw new MException(RC.INTERNAL_ERROR, "config for webspace not found", root);
         // get server config
         cServer = config.getObject("server");
-        if (cServer == null) throw new MException(RC.INTERNAL_ERROR, "server in config not found", root);
+        if (cServer == null)
+            throw new MException(RC.INTERNAL_ERROR, "server in config not found", root);
         // get alias
         setConfigAliases(INode.toStringArray(cServer.getObjectList("aliases"), "value"));
         // set name
@@ -96,7 +100,8 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
             } catch (ClassNotFoundException e) {
                 throw new MException(RC.INTERNAL_ERROR, "filter not found", filterClazzName);
             } catch (Throwable e) {
-                throw new MException(RC.INTERNAL_ERROR, "can't instanciate filter", filterClazzName, e);
+                throw new MException(
+                        RC.INTERNAL_ERROR, "can't instanciate filter", filterClazzName, e);
             }
         }
         // load active areas
