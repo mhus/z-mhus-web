@@ -56,7 +56,7 @@ public abstract class AbstractWebSpace extends AbstractVirtualHost implements Vi
     public void start(CherryApi api) throws MException {
         setUpdated();
         if (!root.exists())
-            throw new MException(RC.INTERNAL_ERROR, "root for webspace not exists", root);
+            throw new MException(RC.INTERNAL_ERROR, "root for webspace does not exist", root);
         if (!root.isDirectory())
             throw new MException(RC.INTERNAL_ERROR, "root for webspace not a directory", root);
 
